@@ -403,7 +403,7 @@ function artHTML(n, revealed, bees){
 /* ---------- storage + settings ---------- */
 const $ = id => document.getElementById(id);
 const store = { get(k,d){ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){return d;} }, set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} } };
-const settings = Object.assign({mode:"units", modelAfter:"2", cues:"always", quiet:"reading", color:"nikud", font:"alef", scale:1, theme:"dark"}, store.get("ori.t3.settings",{}));
+const settings = Object.assign({mode:"units", modelAfter:"2", cues:"always", quiet:"reading", color:"tint", font:"alef", scale:1, theme:"dark"}, store.get("ori.t3.settings",{}));
 let reads = store.get("ori.t3.letterReads",{});
 function saveSettings(){ store.set("ori.t3.settings", settings); applySettings(); }
 function applySettings(){
