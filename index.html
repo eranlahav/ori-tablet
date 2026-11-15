@@ -3,398 +3,566 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#16120f">
+<meta name="theme-color" content="#221C30">
 <meta name="robots" content="noindex">
 <title>אורי והאי של הקוביות</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@500;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alef:wght@400;700&family=Frank+Ruhl+Libre:wght@500;700&family=Noto+Sans+Hebrew:wght@400;600;800&family=Rubik:wght@500;700&display=swap">
 <style>
 :root{
-  --bg:#16120f; --panel:#221c17; --panel2:#2c241d; --line:#3a3027;
-  --ink:#f3e6cf; --dim:#8c7f6c; --faint:#5a4f43;
-  --unit-bg:#3b2f22; --unit-ink:#fff3dc; --glow:#ffb54a;
-  --ok:#3f8f4a; --ok-ink:#eaffe6; --again:#a8641f; --again-ink:#fff1e0;
-  --rec:#e5483b;
-  --font:'Noto Sans Hebrew','Arial Hebrew',Arial,sans-serif;
-  --text-scale:1;
+  --night:#221C30; --surface:#322A45; --surface2:#3D3454; --line:#4A4063; --ink-on-dark:#F4EAD6; --dim-on-dark:#B9AFC8;
+  --paper:#F3EAD7; --ink:#2A2233; --dim-on-paper:#6B6072; --faint-word:#C9BDA8; --cue-card:#FFFDF7; --cue-ring:#E4D8BF; --amber:#F2A541; --rec:#E5483B;
+  --v-a:#C8321F; --v-i:#1F5FD0; --v-e:#1E7F45; --v-o:#C96A0A; --v-u:#7A35B5;
+  --quiet-btn:#2A2339; --quiet-line:#453B5C; --quiet-text:#CFC5DE;
+  --ui:'Noto Sans Hebrew','Arial Hebrew',Arial,sans-serif;
+  --word:'Alef','Noto Sans Hebrew',Arial,sans-serif;
+  --scale:1;
   color-scheme:dark;
 }
-body.sepia{ --bg:#2a2218; --panel:#352b1f; --panel2:#403426; --line:#4d3f2e; --ink:#fbeed6; --unit-bg:#5a4630; }
+body.sepia{ --paper:#E6D6B4; --cue-card:#F5EBD3; --faint-word:#B8A684; --night:#2A2218; --surface:#3A2F22; --surface2:#463928; --line:#57472F; }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);overflow:hidden}
-button{font-family:inherit;color:inherit;border:0;cursor:pointer;touch-action:manipulation}
+html,body{height:100%;margin:0;background:var(--night);color:var(--ink-on-dark);font-family:var(--ui);overflow:hidden}
+button{font-family:inherit;cursor:pointer;touch-action:manipulation;border:none}
 [hidden]{display:none!important}
-.app{position:fixed;inset:0;display:flex;flex-direction:column;padding:max(10px,env(safe-area-inset-top)) 16px max(10px,env(safe-area-inset-bottom))}
+svg{flex-shrink:0}
 
-/* top bar */
-.top{display:flex;align-items:center;gap:12px;min-height:52px}
-.dots{display:flex;gap:7px;flex:1;justify-content:center}
-.dots i{width:clamp(14px,1.6vmin,22px);height:clamp(14px,1.6vmin,22px);border-radius:3px;background:var(--line);display:block}
-.dots i.done{background:#5c9a43}
-.dots i.now{background:var(--glow)}
-.icon{background:var(--panel);border-radius:14px;min-width:52px;height:52px;font-size:24px;display:grid;place-items:center;padding:0 12px}
-.rec{display:flex;align-items:center;gap:8px;background:#3a1714;color:#ffd9d4;border-radius:14px;height:52px;padding:0 14px;font-weight:700;font-size:18px}
-.rec b{width:16px;height:16px;border-radius:50%;background:var(--rec);animation:pulse 1.2s infinite}
-@keyframes pulse{50%{opacity:.35}}
-.rec.off{background:var(--panel);color:var(--dim)}
-.rec.off b{background:var(--faint);animation:none}
+/* chunky buttons (from the design tokens) */
+.kb{position:relative;border:none;cursor:pointer;transition:transform .08s ease,box-shadow .08s ease;text-shadow:0 2px 0 rgba(0,0,0,.22)}
+.kb:active{transform:translateY(7px)}
+.kb-g{background:linear-gradient(#36A54F,#27853D);box-shadow:0 9px 0 #195C2A,0 16px 20px rgba(0,0,0,.4),inset 0 3px 0 rgba(255,255,255,.45);color:#fff}
+.kb-g:active{box-shadow:0 2px 0 #195C2A,0 4px 8px rgba(0,0,0,.4),inset 0 3px 0 rgba(255,255,255,.45)}
+.kb-o{background:linear-gradient(#FFB04E,#F08A24);box-shadow:0 9px 0 #A4530D,0 16px 20px rgba(0,0,0,.4),inset 0 3px 0 rgba(255,255,255,.55);text-shadow:0 2px 0 rgba(255,255,255,.3);color:#3A1C00}
+.kb-o:active{box-shadow:0 2px 0 #A4530D,0 4px 8px rgba(0,0,0,.4),inset 0 3px 0 rgba(255,255,255,.55)}
+.kb-b{background:linear-gradient(#4C8DE8,#356FCB);box-shadow:0 9px 0 #1F4A94,0 16px 20px rgba(0,0,0,.4),inset 0 3px 0 rgba(255,255,255,.45);color:#fff}
+.kb-b:active{box-shadow:0 2px 0 #1F4A94,0 4px 8px rgba(0,0,0,.4),inset 0 3px 0 rgba(255,255,255,.45)}
+.kb-r{background:linear-gradient(#D9503F,#B93A2E);box-shadow:0 9px 0 #7A2018,0 16px 20px rgba(0,0,0,.4),inset 0 3px 0 rgba(255,255,255,.4);color:#fff}
+.kb-r:active{box-shadow:0 2px 0 #7A2018,0 4px 8px rgba(0,0,0,.4),inset 0 3px 0 rgba(255,255,255,.4)}
+.kb-c{background:linear-gradient(#FFF8E8,#F0E3C8);box-shadow:0 9px 0 #B9A478,0 16px 20px rgba(0,0,0,.4),inset 0 3px 0 rgba(255,255,255,.9);text-shadow:none;color:var(--ink)}
+.kb-c:active{box-shadow:0 2px 0 #B9A478,0 4px 8px rgba(0,0,0,.4),inset 0 3px 0 rgba(255,255,255,.9)}
+.kb-v{background:linear-gradient(#5B4E7E,#473C65);box-shadow:0 7px 0 #2A2240,0 12px 16px rgba(0,0,0,.35),inset 0 2px 0 rgba(255,255,255,.22);color:var(--ink-on-dark)}
+.kb-v:active{box-shadow:0 1px 0 #2A2240,0 3px 6px rgba(0,0,0,.35),inset 0 2px 0 rgba(255,255,255,.22)}
+.bob{animation:bob 2.6s ease-in-out infinite}.bob:active{animation:none}
+@keyframes bob{50%{transform:translateY(-5px)}}
+.glow{animation:glow 2.6s ease-in-out infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(242,165,65,0)}50%{box-shadow:0 0 70px 14px rgba(242,165,65,.38)}}
+.star{position:absolute;left:50%;top:40%;margin:-22px 0 0 -22px;pointer-events:none;animation:pop .95s ease-out forwards;z-index:3}
+@keyframes pop{0%{transform:translate(0,0) scale(.2) rotate(0deg);opacity:0}15%{opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(1.15) rotate(220deg);opacity:0}}
+.bee{position:absolute;width:15px;height:10px;border-radius:3px;background:linear-gradient(90deg,#F2C94C 0 30%,#2A2233 30% 50%,#F2C94C 50% 72%,#2A2233 72%);box-shadow:3px -6px 0 -1px rgba(255,255,255,.85);pointer-events:none}
+.bee1{animation:fly1 7s ease-in-out infinite}.bee2{animation:fly2 9s ease-in-out infinite}.bee3{animation:fly3 6s ease-in-out infinite}
+@keyframes fly1{0%,100%{transform:translate(0,0)}25%{transform:translate(46px,-24px)}50%{transform:translate(90px,6px)}75%{transform:translate(38px,26px)}}
+@keyframes fly2{0%,100%{transform:translate(0,0)}30%{transform:translate(-52px,-18px)}60%{transform:translate(-20px,-46px)}80%{transform:translate(24px,-20px)}}
+@keyframes fly3{0%,100%{transform:translate(0,0)}20%{transform:translate(22px,14px)}55%{transform:translate(-34px,22px)}80%{transform:translate(-12px,-16px)}}
+@media (prefers-reduced-motion: reduce){.bob,.glow,.bee1,.bee2,.bee3,.star{animation:none!important}.star{display:none}.reveal{transition:none!important}}
 
-/* reading area */
-.stage{flex:1;display:grid;gap:18px;min-height:0;padding:10px 0}
-@media (orientation:landscape){ .stage{grid-template-columns:1.25fr 1fr;grid-template-areas:"text art"} }
-@media (orientation:portrait){ .stage{grid-template-rows:minmax(0,0.85fr) minmax(0,1.15fr);grid-template-areas:"art" "text"} }
-.art{grid-area:art;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2vmin;min-height:0;position:relative}
-.scene{width:100%;max-height:100%;aspect-ratio:16/10;border-radius:22px;overflow:hidden;background:#0f0c0a;flex:0 1 auto}
-.scene svg{width:100%;height:100%;display:block;filter:brightness(.82) saturate(.85)}
-.cue{width:min(42%,34vh);aspect-ratio:1;border-radius:18px;background:#fff8ec;padding:6px;box-shadow:0 8px 30px #0009;transform:scale(.6);opacity:0;transition:.25s;flex:none}
-.cue.show{transform:none;opacity:1}
-.cue img{width:100%;height:100%;object-fit:contain;border-radius:12px;filter:brightness(.92)}
-@media (orientation:portrait){ .scene{height:100%;width:auto;max-width:100%} .cue{position:absolute;bottom:10px;left:10px;width:min(34%,30vh)} }
-.text{grid-area:text;display:flex;flex-direction:column;justify-content:center;align-items:stretch;gap:2vmin;min-height:0}
-.sentence{font-size:calc(7.6vmin * var(--text-scale));line-height:1.9;font-weight:700;text-align:center;word-spacing:.25em}
-.w{display:inline-block;padding:0 .08em;color:var(--faint);transition:color .2s}
-.w.done{color:var(--dim)}
-.w.cur{color:var(--ink);font-size:1.45em}
-.u{display:inline-block;border-radius:.18em;padding:0 .04em}
-.w.cur .u{opacity:.38}
-.w.cur .u.on{opacity:1;background:var(--unit-bg);color:var(--unit-ink);box-shadow:0 0 0 .05em var(--glow) inset;padding:0 .1em}
-.w.cur.blend .u{opacity:1}
-.w.cur.blend{background:var(--unit-bg);border-radius:.18em;padding:0 .14em;box-shadow:0 0 0 .05em var(--glow) inset}
-.say{min-height:1.6em;font-size:clamp(20px,3vmin,34px);text-align:center;color:var(--dim)}
-.say b{color:var(--glow);font-size:1.3em}
+/* shell */
+.app{position:fixed;inset:0;display:flex;flex-direction:column;gap:16px;padding:max(18px,env(safe-area-inset-top)) 22px max(14px,env(safe-area-inset-bottom))}
+.top{display:flex;align-items:center;gap:12px;height:56px;flex-shrink:0}
+.ib{width:56px;height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rec{height:56px;padding:0 18px;border-radius:18px;color:#FFD9D4;font-size:20px;font-weight:800;display:flex;align-items:center;gap:10px}
+.rec i{width:16px;height:16px;border-radius:16px;background:var(--rec);display:inline-block}
+.rec.off{color:var(--dim-on-dark)} .rec.off i{background:#6B6080}
+.rec .t{direction:ltr;font-variant-numeric:tabular-nums}
+.prog{flex-grow:1;display:flex;align-items:center;justify-content:center;gap:16px;min-width:0}
+.dots{display:flex;gap:8px}
+.dots span{width:22px;height:22px;border-radius:6px;background:var(--line);display:block}
+.dots .done{background:#6FA85A}
+.dots .now{background:var(--amber);box-shadow:0 0 0 4px #5A4526}
+.prog b{font-size:20px;font-weight:600;color:var(--dim-on-dark)}
 
-/* parent bar */
-.bar{display:grid;grid-template-columns:2fr 1.4fr 1fr 1fr 1fr;gap:12px;padding-top:8px}
-.bar button{height:clamp(70px,10vmin,110px);border-radius:20px;font-size:clamp(20px,3vmin,30px);font-weight:800;background:var(--panel2);display:flex;align-items:center;justify-content:center;gap:10px}
-.bar .ok{background:var(--ok);color:var(--ok-ink);font-size:clamp(24px,3.6vmin,38px)}
-.bar .again{background:var(--again);color:var(--again-ink)}
-.bar button:active{transform:scale(.97);filter:brightness(1.2)}
-.bar small{font-size:.65em;font-weight:600;opacity:.8}
-@media (orientation:portrait){ .bar{grid-template-columns:1.6fr 1.3fr 1fr; } #bWhole{grid-row:2;grid-column:1/3} #bMark{grid-row:2;grid-column:3} .sentence{font-size:calc(9vmin * var(--text-scale))} }
+.main{flex:1 1 0;min-height:0;display:flex;gap:20px}
+.paper{flex:1 1 0;min-width:0;min-height:0;background:var(--paper);color:var(--ink);border-radius:28px;padding:20px 28px;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden}
+.art{position:relative;width:31%;border-radius:28px;overflow:hidden;flex-shrink:0;background:#1F1A30}
+.art picture,.art img{position:absolute;inset:0;width:100%;height:100%;display:block}
+.art img{object-fit:cover;object-position:50% 44%}
+.art .reveal{opacity:0;transition:opacity .9s ease}
+.art .reveal.on{opacity:1;animation:pulse .9s ease}
+@keyframes pulse{0%{transform:scale(1)}55%{transform:scale(1.04)}100%{transform:scale(1)}}
+
+.ptop{display:flex;align-items:center;gap:12px;height:28px;flex-shrink:0}
+.wdots{display:flex;gap:6px}
+.wdots span{width:14px;height:14px;border-radius:4px;background:#D9CBB0;display:block}
+.wdots .done{background:var(--ink)}
+.wdots .now{background:var(--amber);box-shadow:0 0 0 3px #F6D9A6}
+.ptop .lbl{font-size:20px;font-weight:600;color:var(--dim-on-paper)}
+.ptop .now-word{margin-inline-start:auto;font-size:22px;font-weight:600;color:var(--dim-on-paper)}
+.banner{display:flex;align-items:center;justify-content:center;gap:12px;background:#F7DDB0;border-radius:16px;padding:8px 18px;font-size:clamp(20px,2.6vmin,28px);font-weight:600}
+.banner b{font-family:var(--word);font-size:1.35em;font-weight:700}
+
+.stage{flex-grow:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;min-height:0}
+.wordrow{display:flex;align-items:baseline;justify-content:center;gap:.06em;direction:rtl}
+.unitbox{display:flex;align-items:baseline;justify-content:center;padding:0 30px;border-radius:48px;background:rgba(255,253,247,.55)}
+.u{position:relative;display:inline-block;font-family:var(--word);line-height:1.3;font-weight:700;letter-spacing:.03em;white-space:nowrap}
+.u .ov{position:absolute;top:0;right:0;color:var(--ink)}
+.u.big{font-size:calc(min(26vh,17vw) * var(--scale))}
+.u.side{font-size:calc(min(9vh,6vw) * var(--scale));color:var(--faint-word)}
+.u.whole{font-size:calc(min(22vh,13vw) * var(--scale))}
+
+.cues{display:flex;justify-content:center;align-items:flex-start;gap:22px;margin-top:4px}
+.cue{display:flex;flex-direction:column;align-items:center;transition:opacity .3s, transform .3s}
+.cue .stem{width:3px;height:14px;background:#D9CBB0;display:block}
+.cue .card{position:relative;isolation:isolate;width:var(--cs);height:var(--cs);border-radius:20px;background:var(--cue-card);box-shadow:0 0 0 2px var(--cue-ring);overflow:hidden}
+.cue .card img{width:100%;height:100%;object-fit:contain;display:block;mix-blend-mode:multiply}
+.cue.vowel .card{border-radius:999px;box-shadow:0 0 0 4px var(--vc);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.cue.vowel .card svg{width:58%;height:58%}
+.cue.vowel .card span{font-family:var(--word);font-size:calc(var(--cs) * .17);line-height:1;font-weight:700;color:var(--vc)}
+.cue.vowel .stem{background:var(--vc)}
+.cues{--cs:min(19vh,13vw)}
+.cues.small{--cs:min(11.5vh,7.5vw);gap:14px}
+.cues.small .cue{opacity:.75}
+.cue.faded{transform:scale(.78);opacity:.7}
+.cue.chip .card{width:calc(var(--cs) * .42);height:calc(var(--cs) * .42);border-radius:14px;display:grid;place-items:center;font-family:var(--word);font-size:calc(var(--cs) * .22);font-weight:700;color:var(--dim-on-paper);cursor:pointer}
+.tint .cue.letter .card{box-shadow:0 0 0 3px var(--vc)}
+
+.sentence{font-family:var(--word);font-weight:700;font-size:calc(min(14vh,8.4vw) * var(--scale));line-height:1.35;text-align:center;max-width:95%}
+.sentence-lbl{font-size:24px;color:var(--dim-on-paper);font-weight:600;font-family:var(--word)}
+
+.bar{display:grid;grid-template-columns:2fr 1.4fr 1.2fr;gap:14px;height:clamp(84px,12.2vh,112px);flex-shrink:0;margin-bottom:8px}
+.bar.two{grid-template-columns:1.66fr 1fr}
+.bar button{width:100%;height:100%;border-radius:26px;font-size:clamp(26px,4.4vh,40px);font-weight:800;display:flex;align-items:center;justify-content:center;gap:14px;padding:0 16px;min-width:0}
+.bar .ic{width:60px;height:60px;border-radius:30px;background:rgba(255,255,255,.24);box-shadow:inset 0 -3px 0 rgba(0,0,0,.16);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.bar .kb-o .ic{background:rgba(0,0,0,.14)}
+.bar .kb-o{font-size:clamp(22px,3.7vh,32px)}
+.bar .kb-b{font-size:clamp(20px,3vh,26px)}
+.bar .sub{display:flex;flex-direction:column;align-items:flex-start;gap:2px;line-height:1.15}
+.bar .sub small{font-size:17px;font-weight:600;opacity:.9}
+
+/* quiet mode */
+body.quiet .art,body.quiet .bee{display:none}
+body.quiet .glow,body.quiet .bob{animation:none}
+body.quiet .unitbox{background:transparent}
+body.quiet .bar button,body.quiet .top .kb-v{background:var(--quiet-btn);box-shadow:inset 0 0 0 2px var(--quiet-line);color:var(--quiet-text);text-shadow:none}
+body.quiet .bar button:active,body.quiet .top .kb-v:active{transform:none}
+body.quiet .bar .ic{background:none;box-shadow:none}
+body.quiet #bOk .ic{color:#6FCB86} body.quiet #bAgain .ic{color:var(--amber)} body.quiet #bWhole .ic{color:#7FAEF2}
+body.quiet #quietBtn{box-shadow:inset 0 0 0 2px var(--amber);color:var(--amber)}
+body.quiet .rec{background:none!important;box-shadow:none!important;padding:0 6px}
+body.quiet .rec span{display:none}
+body.quiet .rec.off{display:none}
+.flash{position:absolute;inset:0;z-index:4;border-radius:28px;overflow:hidden;opacity:0;transition:opacity .4s;pointer-events:none}
+.flash.on{opacity:1;pointer-events:auto}
+.flash img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* portrait */
+@media (orientation:portrait){
+  .main{flex-direction:column-reverse;gap:16px}
+  .art{width:100%;height:23vh}
+  .art img{object-position:50% 50%}
+  .u.big{font-size:calc(min(19vh,27vw) * var(--scale))}
+  .u.whole{font-size:calc(min(14vh,19vw) * var(--scale))}
+  .u.side{font-size:calc(min(6vh,8.5vw) * var(--scale))}
+  .cues{--cs:min(13vh,20vw)}
+  .cues.small{--cs:min(8.5vh,12.5vw)}
+  .bar{grid-template-columns:1.25fr 1fr;grid-template-rows:1fr .75fr;height:auto;row-gap:22px}
+  .bar>*{height:clamp(84px,9vh,112px)}
+  .bar>#wWhole{grid-column:1/3;height:clamp(70px,7vh,90px)}
+  .bar.two{grid-template-columns:1.5fr 1fr;grid-template-rows:1fr}
+  .sentence{font-size:calc(min(9vh,12vw) * var(--scale))}
+  .prog b{display:none}
+  .end-wrap,.start-wrap{flex-direction:column!important}
+  .end-wrap .art,.start-wrap .art{width:100%!important;height:34vh!important}
+}
 
 /* screens */
-.screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3vmin;padding:24px;text-align:center;background:var(--bg);z-index:5}
-.screen h1{font-size:clamp(34px,7vmin,80px);margin:0}
-.screen p{font-size:clamp(18px,2.6vmin,28px);color:var(--dim);margin:0;max-width:900px;line-height:1.5}
-.cover{width:min(70vw,620px);aspect-ratio:16/10;border-radius:22px;overflow:hidden}
-.cover svg{width:100%;height:100%;display:block;filter:brightness(.82) saturate(.85)}
-.big{border-radius:22px;padding:22px 36px;font-size:clamp(22px,3.4vmin,36px);font-weight:800;background:var(--panel2);min-width:300px}
-.big.go{background:var(--ok);color:var(--ok-ink)}
-.big.red{background:#7a2620;color:#ffe3df}
-.row{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
-.note{font-size:16px!important;color:var(--faint)!important}
-
-/* page done overlay */
-.pagedone{position:fixed;inset:0;display:grid;place-items:center;background:#000a;z-index:4}
-.pagedone .box{background:var(--panel);border-radius:28px;padding:5vmin 7vmin;text-align:center;display:flex;flex-direction:column;gap:3vmin;align-items:center}
-.pagedone .stars{font-size:clamp(50px,10vmin,110px)}
-.pagedone .box div:nth-child(2){font-size:clamp(26px,4.5vmin,50px);font-weight:800}
+.screen{position:fixed;inset:0;z-index:5;background:var(--night);display:flex;flex-direction:column;padding:max(18px,env(safe-area-inset-top)) 22px max(18px,env(safe-area-inset-bottom));gap:16px}
+.start-wrap,.end-wrap{flex:1;min-height:0;display:flex;gap:40px}
+.start-wrap .art,.end-wrap .art{width:41%;height:100%;order:2}
+.main.pe .art{width:40%}
+@media (orientation:portrait){.main.pe .art{width:100%;height:40vh}}
+.start-side{flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px;min-width:0}
+.kicker{color:var(--amber);font-size:20px;font-weight:800}
+.title{font-family:var(--word);font-weight:700;font-size:clamp(46px,10vh,92px);line-height:1.1;margin:0;color:var(--ink-on-dark)}
+.lead{font-size:clamp(20px,3vh,26px);color:var(--dim-on-dark);margin:0;line-height:1.5}
+.bigbtn{width:100%;min-height:clamp(80px,12vh,104px);border-radius:26px;font-size:clamp(26px,4vh,34px);font-weight:800;display:flex;align-items:center;justify-content:center;gap:16px}
+.bigbtn.second{min-height:clamp(70px,10vh,84px);font-size:clamp(22px,3.4vh,28px)}
+.note{font-size:18px;color:var(--dim-on-dark);margin:0}
+.recover{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--surface);border-radius:20px;padding:12px 12px 12px 20px;font-size:19px}
+.recover button{background:var(--surface2);color:var(--ink-on-dark);border-radius:16px;height:56px;padding:0 20px;font-size:19px;font-weight:800;display:flex;align-items:center;gap:10px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border-radius:24px;padding:18px 10px;text-align:center}
+.stats b{display:block;font-size:clamp(30px,5.4vh,46px);font-weight:800;line-height:1.1}
+.stats span{font-size:19px;color:var(--dim-on-dark)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pagesq{display:flex;gap:12px;justify-content:flex-start}
+.pagesq span{width:34px;height:34px;border-radius:8px;background:#6FA85A;display:block}
 
 /* parent panel */
-.veil{position:fixed;inset:0;background:#000b;z-index:10;display:flex;justify-content:flex-start}
-.panel{width:min(560px,100%);height:100%;overflow:auto;background:var(--panel);padding:22px;display:flex;flex-direction:column;gap:18px;font-size:19px}
-.panel h2{margin:0;font-size:26px}
-.panel h3{margin:0 0 8px;font-size:20px;color:var(--glow)}
-.panel section{background:var(--panel2);border-radius:16px;padding:16px}
-.panel button{background:var(--line);border-radius:12px;padding:14px 16px;font-size:18px;font-weight:700;margin:4px 0 4px 8px}
-.panel button.sel{background:var(--glow);color:#2a1a05}
-.panel label{display:flex;gap:10px;align-items:center;margin:6px 0}
-.panel input[type=range]{width:100%}
-.panel select{font-size:18px;padding:8px;border-radius:10px;background:var(--line);color:var(--ink);border:0}
-.panel video{width:100%;border-radius:12px;background:#000;margin-top:8px;transform:scaleX(-1)}
-.panel .hint{color:var(--dim);font-size:16px;line-height:1.5}
-.panel .err{color:#ff9d8f}
+.veil{position:fixed;inset:0;z-index:10;background:rgba(15,12,24,.55);display:flex;justify-content:flex-start}
+.panel{width:min(820px,100%);height:100%;background:var(--night);overflow:auto;padding:24px;display:flex;flex-direction:column;gap:16px;box-shadow:-20px 0 40px rgba(0,0,0,.4)}
+.phead{display:flex;justify-content:space-between;align-items:center}
+.phead h2{margin:0;font-size:32px}
+.pcols{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+@media (orientation:portrait){.pcols{grid-template-columns:1fr}}
+.pcol{display:flex;flex-direction:column;gap:16px}
+.sec{background:var(--surface);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.sec h3{margin:0;color:var(--amber);font-size:22px}
+.seg{display:flex;gap:10px;flex-wrap:wrap}
+.seg button,.pbtn{flex:1 1 0;min-height:56px;padding:8px 12px;border-radius:14px;background:var(--line);color:var(--ink-on-dark);font-size:19px;font-weight:800;line-height:1.25;display:flex;align-items:center;justify-content:center;gap:8px}
+.seg button[aria-pressed=true]{background:var(--amber);color:#2A1A05}
+.sec .hint{font-size:17px;color:var(--dim-on-dark);line-height:1.45}
+.sec label{display:flex;align-items:center;gap:12px;font-size:19px;min-height:44px}
+.sec input[type=checkbox]{width:26px;height:26px;accent-color:var(--amber)}
+.sec input[type=range]{flex:1;accent-color:var(--amber)}
+.sec video{width:100%;border-radius:12px;background:#000;transform:scaleX(-1)}
+.err{color:#FF9D8F}
+.key{display:flex;flex-wrap:wrap;gap:8px 18px}
+.key span{display:flex;align-items:center;gap:6px;font-size:22px;font-weight:600;font-family:var(--word)}
+.key i{width:18px;height:18px;border-radius:18px;display:inline-block}
+.fontpick button{font-size:22px}
 </style>
 </head>
-<body>
+<body class="quiet">
 
 <!-- START -->
-<div class="screen" id="start">
-  <div class="cover" id="coverArt"></div>
-  <h1>אוֹרִי וְהָאִי שֶׁל הַקֻּבִּיּוֹת</h1>
-  <p>סיפור של 10 דפים. אורי קורא, ההורה לוחץ ✓ או ✗.</p>
-  <div class="row">
-    <button class="big red" id="startRec">🔴 התחל עם הקלטה</button>
-    <button class="big" id="startNoRec">התחל בלי הקלטה</button>
+<section class="screen" id="start">
+  <div class="start-wrap">
+    <div class="art" id="startArt"></div>
+    <div class="start-side">
+      <div class="kicker">סיפור של 10 דפים</div>
+      <h1 class="title">אוֹרִי וְהָאִי<br>שֶׁל הַקֻּבִּיּוֹת</h1>
+      <p class="lead">אורי קורא מילה אחרי מילה. ההורה יושב לידו ומסמן נכון או עוד פעם.</p>
+      <button class="kb kb-c bigbtn" id="startRec"><i style="width:24px;height:24px;border-radius:24px;background:var(--rec);display:inline-block"></i>התחל עם הקלטה</button>
+      <button class="kb kb-v bigbtn second" id="startNoRec">התחל בלי הקלטה</button>
+      <p class="note" id="startNote">ההקלטה (מצלמה קדמית וקול) נשמרת רק בטאבלט, בתיקיית ההורדות.</p>
+      <div class="recover" id="recover" hidden><span>נמצאה הקלטה קודמת שלא נשמרה.</span><button id="recoverBtn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>שמור אותה</button></div>
+    </div>
   </div>
-  <p class="note" id="startNote">ההקלטה (מצלמה קדמית + קול) נשמרת רק בטאבלט, בתיקיית ההורדות.</p>
-  <p class="note" id="recover" hidden></p>
-</div>
+</section>
 
 <!-- READING -->
 <div class="app" id="app" hidden>
   <div class="top">
-    <button class="icon" id="gear" aria-label="הגדרות הורה">⚙︎</button>
-    <div class="rec off" id="recBadge"><b></b><span id="recTxt">לא מקליט</span></div>
-    <div class="dots" id="dots"></div>
-    <button class="icon" id="fs" aria-label="מסך מלא">⛶</button>
+    <button class="kb kb-v ib" id="gear" aria-label="פאנל הורה"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button>
+    <button class="kb kb-v rec off" id="recBadge" aria-label="מצב הקלטה, פתיחת פאנל הורה"><i></i><span id="recTxt">לא מקליט</span><span class="t" id="recTime"></span></button>
+    <div class="prog"><div class="dots" id="dots"></div><b id="pageLbl"></b></div>
+    <button class="kb kb-v ib" id="quietBtn" aria-label="מצב שקט"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+    <button class="kb kb-v ib" id="markBtn" aria-label="סימון רגע בהקלטה"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21V4"/><path d="M6 4h11l-2.5 4L17 12H6"/></svg></button>
+    <button class="kb kb-v ib" id="fsBtn" aria-label="מסך מלא"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
   </div>
-  <div class="stage">
-    <div class="text">
-      <div class="sentence" id="sentence"></div>
-      <div class="say" id="say"></div>
+
+  <div class="main" id="main">
+    <div class="paper" id="paper">
+      <div class="ptop" id="ptop"></div>
+      <div class="banner" id="banner" hidden></div>
+      <div class="stage" id="stageEl"></div>
+      <div class="flash" id="flash"></div>
     </div>
-    <div class="art"><div class="scene" id="art"></div>
-    <div class="cue" id="cue"><img id="cueImg" alt=""></div>
-    </div>
+    <div class="art" id="art"></div>
   </div>
+
   <div class="bar" id="bar">
-    <button class="ok" id="bOk">✓ נכון</button>
-    <button class="again" id="bAgain">✗ עוד פעם</button>
-    <button id="bHint">💡 רמז</button>
-    <button id="bWhole" class="opt">⏭ <span>כל המילה<br><small>קרא נכון</small></span></button>
-    <button id="bMark" class="opt">📍 <span>סמן<br><small>רגע</small></span></button>
+    <div id="wOk"><button class="kb kb-g bob" id="bOk"><span class="ic"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5L19.5 7"/></svg></span><span>נכון</span></button></div>
+    <div id="wAgain"><button class="kb kb-o" id="bAgain"><span class="ic"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4v5h5"/></svg></span><span>עוד פעם</span></button></div>
+    <div id="wWhole"><button class="kb kb-b" id="bWhole"><span class="ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5l-8 7 8 7z"/><path d="M6 5v14"/></svg></span><span class="sub"><span>כל המילה</span><small>קרא נכון ברצף</small></span></button></div>
+  </div>
+  <div class="bar two" id="barEnd" hidden>
+    <div><button class="kb kb-g" id="bNext"><span class="ic"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H5M11 6l-6 6 6 6"/></svg></span><span id="nextLbl" style="font-family:var(--word)">לַדַּף הַבָּא</span></button></div>
+    <div><button class="kb kb-o" id="bSentAgain"><span class="ic"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4v5h5"/></svg></span><span>עוד פעם</span></button></div>
   </div>
 </div>
 
-<div class="pagedone" id="pageDone" hidden>
-  <div class="box">
-    <div class="stars">⭐</div>
-    <div id="pdText">כָּל הַכָּבוֹד!</div>
-    <button class="big go" id="nextPage">לַדַּף הַבָּא ←</button>
+<!-- STORY END -->
+<section class="screen" id="end" hidden>
+  <div class="end-wrap">
+    <div class="art" id="endArt"></div>
+    <div class="start-side">
+      <h1 class="title">כָּל הַכָּבוֹד, אוֹרִי!</h1>
+      <div class="pagesq"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="stats"><div><b id="stMin">0</b><span>דקות</span></div><div><b id="stOk">0</b><span>נכון</span></div><div><b id="stAgain">0</b><span>עוד פעם</span></div><div><b id="stModel">0</b><span>אבא אמר</span></div></div>
+      <button class="kb kb-r bigbtn" id="endStopRec" hidden><i style="width:18px;height:18px;border-radius:3px;background:#fff;display:inline-block"></i>עצור ושמור הקלטה</button>
+      <div class="row2">
+        <button class="kb kb-v bigbtn second" id="endLog"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>הורד יומן סשן</button>
+        <button class="kb kb-b bigbtn second" id="endAgain"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4v5h5"/></svg>קרא שוב</button>
+      </div>
+      <p class="note" id="endNote"></p>
+    </div>
   </div>
-</div>
-
-<!-- END -->
-<div class="screen" id="end" hidden>
-  <div class="cover" id="endArt"></div>
-  <h1>כָּל הַכָּבוֹד אוֹרִי!</h1>
-  <p id="endStats"></p>
-  <div class="row">
-    <button class="big red" id="endStopRec" hidden>⏹ עצור ושמור הקלטה</button>
-    <button class="big" id="endLog">⬇ הורד יומן סשן</button>
-    <button class="big" id="endAgain">קרא שוב</button>
-  </div>
-  <p class="note" id="endNote"></p>
-</div>
+</section>
 
 <!-- PARENT PANEL -->
 <div class="veil" id="veil" hidden>
-  <div class="panel">
-    <div style="display:flex;justify-content:space-between;align-items:center"><h2>פאנל הורה</h2><button id="closeP">סגור ✕</button></div>
-    <section>
-      <h3>הקלטה</h3>
-      <div id="recState" class="hint"></div>
-      <button id="pRecStart">🔴 התחל הקלטה</button>
-      <button id="pRecStop">⏹ עצור ושמור</button>
-      <label><input type="checkbox" id="pPreview"> הצג תצוגה מקדימה של המצלמה (רק כאן)</label>
-      <video id="preview" muted playsinline hidden></video>
-      <div id="savedList" class="hint"></div>
-    </section>
-    <section>
-      <h3>איך מתקדמים</h3>
-      <button data-mode="units">יחידה אחרי יחידה</button>
-      <button data-mode="word">מילה קודם, יחידות אחרי טעות</button>
-      <div class="hint">בברירת המחדל כל מילה נקראת יחידה אחרי יחידה (אות + ניקוד) ואז כמילה שלמה. "כל המילה" בסרגל מדלג על היחידות כשאורי קרא את המילה נכון ברצף.</div>
-      <label>הצג רמז המורה אחרי <select id="hintAfter"><option value="1">טעות 1</option><option value="2">2 טעויות</option><option value="0">רק בלחיצה</option></select></label>
-      <label>"אבא אומר" אחרי <select id="modelAfter"><option value="2">2 טעויות</option><option value="3">3 טעויות</option></select></label>
-    </section>
-    <section>
-      <h3>תצוגה</h3>
-      <label>גודל טקסט <input type="range" id="scale" min="0.75" max="1.35" step="0.05"></label>
-      <button id="themeDark">כהה חם</button><button id="themeSepia">ספיה</button>
-    </section>
-    <section>
-      <h3>דפים</h3>
-      <button id="prevPage">→ דף קודם</button><button id="skipPage">דף הבא ←</button><button id="restart">התחל מחדש</button>
-    </section>
-    <section>
-      <h3>נתונים</h3>
-      <button id="dlJson">⬇ יומן JSON</button><button id="dlCsv">⬇ יומן CSV</button><button id="cpLog">📋 העתק יומן</button>
-      <div class="hint" id="logInfo"></div>
-    </section>
+  <div class="panel" role="dialog" aria-label="פאנל הורה">
+    <div class="phead"><h2>פאנל הורה</h2><button class="kb kb-v" id="closeP" style="height:56px;padding:0 20px;border-radius:18px;font-size:20px;font-weight:800;display:flex;align-items:center;gap:10px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>סגור</button></div>
+    <div class="pcols">
+      <div class="pcol">
+        <section class="sec"><h3>הקלטה</h3>
+          <div id="recState" style="font-size:19px"></div>
+          <button class="pbtn" id="pRecStart"><i style="width:16px;height:16px;border-radius:16px;background:var(--rec);display:inline-block"></i>התחל הקלטה</button>
+          <button class="pbtn" id="pRecStop"><i style="width:14px;height:14px;border-radius:2px;background:#fff;display:inline-block"></i>עצור ושמור</button>
+          <label><input type="checkbox" id="pPreview"> תצוגה מקדימה של המצלמה (רק כאן)</label>
+          <video id="preview" muted playsinline hidden></video>
+          <div id="savedList" class="hint"></div>
+        </section>
+        <section class="sec"><h3>מצב שקט</h3>
+          <div class="seg" data-set="quiet"><button data-v="reading">שקט בזמן הקריאה</button><button data-v="full">מלא כל הזמן</button></div>
+          <div class="hint">במצב שקט אין תמונה בזמן הפענוח. התמונה מופיעה כפרס כשמילת המפתח של הדף נקראת, ובסוף הדף.</div>
+        </section>
+        <section class="sec"><h3>דפים</h3>
+          <div class="seg"><button id="prevPage">→ דף קודם</button><button id="skipPage">דף הבא ←</button><button id="restart">התחל מחדש</button></div>
+        </section>
+        <section class="sec"><h3>נתונים</h3>
+          <div class="seg"><button id="dlJson">⬇ יומן JSON</button><button id="dlCsv">⬇ יומן CSV</button><button id="cpLog">העתק יומן</button></div>
+          <div class="hint" id="logInfo"></div>
+        </section>
+      </div>
+      <div class="pcol">
+        <section class="sec"><h3>איך מתקדמים</h3>
+          <div class="seg" data-set="mode"><button data-v="units">יחידה אחרי יחידה</button><button data-v="word">מילה קודם, יחידות אחרי טעות</button></div>
+          <label>"אבא אומר" אחרי <span class="seg" data-set="modelAfter" style="flex:1"><button data-v="2">2 טעויות</button><button data-v="3">3 טעויות</button></span></label>
+        </section>
+        <section class="sec"><h3>רמזי המורה</h3>
+          <div class="seg" data-set="cues"><button data-v="always">תמיד גלויים</button><button data-v="fade">דוהים אחרי 3 קריאות נכונות</button></div>
+          <div class="hint">רמז לכל אות ביחידה, צמוד לאות שלו. במצב דהייה: אחרי 3 קריאות נכונות של אות הרמז קטן, ואחרי 6 הוא הופך לכפתור קטן שנפתח בלחיצה.</div>
+          <button class="pbtn" id="resetFade" style="flex:none">איפוס ספירת הקריאות</button>
+        </section>
+        <section class="sec"><h3>תצוגה</h3>
+          <label>גודל טקסט <input type="range" id="scale" min="0.75" max="1.25" step="0.05"></label>
+          <div class="seg" data-set="theme"><button data-v="dark">לילה חם</button><button data-v="sepia">ספיה</button></div>
+          <div style="font-size:19px;font-weight:700">צבע לפי צליל הניקוד</div>
+          <div class="seg" data-set="color"><button data-v="nikud">רק הניקוד צבוע</button><button data-v="tint">כל היחידה צבועה</button><button data-v="off">בלי צבע</button></div>
+          <div class="key"><span><i style="background:#E8604E"></i>אַ אָ</span><span><i style="background:#5B93F5"></i>אִ</span><span><i style="background:#4FB877"></i>אֵ אֶ</span><span><i style="background:#F0A04A"></i>אוֹ</span><span><i style="background:#B07AE6"></i>אוּ אֻ</span></div>
+          <div style="font-size:19px;font-weight:700">פונט למילה</div>
+          <div class="seg fontpick" data-set="font"><button data-v="alef" style="font-family:Alef">אַלֶף</button><button data-v="noto" style="font-family:'Noto Sans Hebrew'">נוֹטוֹ</button><button data-v="rubik" style="font-family:Rubik">רוּבִּיק</button><button data-v="frank" style="font-family:'Frank Ruhl Libre'">פְרַנְק</button></div>
+        </section>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
 "use strict";
-/* ---------- story: one sentence per page, units = letter + nikud, anchored in the word.
-   Rule kept: no ב/כ/פ without dagesh (the teacher cues teach בּ כּ פּ), no final ך/ף. ---------- */
+/* ---------- story (approved 2026-11-15). Every ב/כ/פ has a dagesh; no final ך/ף.
+   words: [display text, units]; reveal = index of the word that reveals the page's hidden element ---------- */
 const PAGES = [
-  {scene:"arrive", words:[["אוֹרִי",["אוֹ","רִי"]],["בָּא",["בָּא"]],["לָאִי.",["לָ","אִי."]]]},
-  {scene:"trees",  words:[["עַל",["עַל"]],["הָאִי",["הָ","אִי"]],["יֵשׁ",["יֵשׁ"]],["עֵצִים.",["עֵ","צִים."]]]},
-  {scene:"chop",   words:[["אוֹרִי",["אוֹ","רִי"]],["כּוֹרֵת",["כּוֹ","רֵת"]],["עֵץ.",["עֵץ."]]]},
-  {scene:"house",  words:[["הוּא",["הוּא"]],["בּוֹנֶה",["בּוֹ","נֶה"]],["בַּיִת",["בַּ","יִת"]],["קָטָן.",["קָ","טָן."]]]},
-  {scene:"night",  words:[["פִּתְאוֹם",["פִּתְ","אוֹם"]],["יוֹרֵד",["יוֹ","רֵד"]],["לַיְלָה.",["לַיְ","לָה."]]]},
-  {scene:"zombie", words:[["זוֹמְבִּי",["זוֹמְ","בִּי"]],["בָּא",["בָּא"]],["אֶל",["אֶל"]],["הַבַּיִת!",["הַ","בַּ","יִת!"]]]},
-  {scene:"brave",  words:[["אוֹרִי",["אוֹ","רִי"]],["לֹא",["לֹא"]],["פּוֹחֵד.",["פּוֹ","חֵד."]]]},
-  {scene:"torch",  words:[["הוּא",["הוּא"]],["מַדְלִיק",["מַדְ","לִיק"]],["לַפִּיד",["לַ","פִּיד"]],["גָּדוֹל.",["גָּ","דוֹל."]]]},
-  {scene:"runaway",words:[["הַזּוֹמְבִּי",["הַ","זּוֹמְ","בִּי"]],["בּוֹרֵחַ!",["בּוֹ","רֵחַ!"]]]},
-  {scene:"treasure",words:[["בַּבֹּקֶר",["בַּ","בֹּ","קֶר"]],["אוֹרִי",["אוֹ","רִי"]],["מוֹצֵא",["מוֹ","צֵא"]],["אוֹצָר!",["אוֹ","צָר!"]]]}
+  {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["בָּא",["בָּא"]],["לָאִי.",["לָ","אִי"]]]},
+  {reveal:3, words:[["עַל",["עַל"]],["הָאִי",["הָ","אִי"]],["יֵשׁ",["יֵשׁ"]],["עֵצִים.",["עֵ","צִים"]]]},
+  {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["לָקַח",["לָ","קַח"]],["עֵץ.",["עֵץ"]]]},
+  {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["בָּנָה",["בָּ","נָה"]],["בַּיִת",["בַּ","יִת"]],["קָטָן.",["קָ","טָן"]]]},
+  {reveal:1, words:[["בָּא",["בָּא"]],["לַיְלָה",["לַיְ","לָה"]],["קַר.",["קַר"]]]},
+  {reveal:0, words:[["זוֹמְבִּי",["זוֹמְ","בִּי"]],["בָּא",["בָּא"]],["לַבַּיִת!",["לַ","בַּ","יִת"]]]},
+  {reveal:3, words:[["אוֹרִי",["אוֹ","רִי"]],["קָם.",["קָם"]],["אוֹרִי",["אוֹ","רִי"]],["חָזָק!",["חָ","זָק"]]]},
+  {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["לָקַח",["לָ","קַח"]],["פָּנָס.",["פָּ","נָס"]]]},
+  {reveal:1, words:[["הַזּוֹמְבִּי",["הַ","זּוֹמְ","בִּי"]],["בָּרַח!",["בָּ","רַח"]]]},
+  {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["מָצָא",["מָ","צָא"]],["אוֹצָר!",["אוֹ","צָר"]]]}
 ];
 const CUE_FILE = {"א":"alef","ב":"bet","ג":"gimel","ד":"dalet","ה":"he","ו":"vav","ז":"zayin","ח":"het","ט":"tet","י":"yod","כ":"kaf","ך":"kaf","ל":"lamed","מ":"mem","ם":"mem","נ":"nun","ן":"nun","ס":"samekh","ע":"ayin","פ":"pe","ף":"pe","צ":"tsadi","ץ":"tsadi","ק":"qof","ר":"resh","ש":"shin","ת":"tav"};
-const CUE_SRC = window.CUE_DATA || null; /* filled in the offline build */
-function cueUrl(letter){ const f=CUE_FILE[letter]; if(!f) return null; return CUE_SRC ? CUE_SRC[f] : "cues/"+f+".png"; }
+const CUE_WORD = {alef:"אַרְנָב",bet:"בֶּרֶז",gimel:"גִּבּוֹר עָל",dalet:"דַּחְלִיל",he:"הֶגֶה",vav:"וָפֶל",zayin:"זָנָב",het:"חֶדֶר",tet:"טֶלֶפוֹן",yod:"יוֹיוֹ",kaf:"כַּדּוּר",lamed:"לָשׁוֹן לְמַעְלָה",mem:"מְשֻׁלָּשׁ",nun:"נוּרָה",samekh:"סַל",ayin:"עַיִן",pe:"פֶּה",tsadi:"צָב",qof:"קוּקוּ",resh:"רֶגֶל",shin:"שִׁנַּיִם",tav:"תַּנִּין"};
+const VOWEL = {a:{c:"var(--v-a)",hex:"#C8321F",mark:"אַ",name:"פה פתוח"}, i:{c:"var(--v-i)",hex:"#1F5FD0",mark:"אִ",name:"חיוך רחב"}, e:{c:"var(--v-e)",hex:"#1E7F45",mark:"אֵ",name:"פה חצי פתוח"}, o:{c:"var(--v-o)",hex:"#C96A0A",mark:"אוֹ",name:"שפתיים עגולות"}, u:{c:"var(--v-u)",hex:"#7A35B5",mark:"אוּ",name:"שפתיים מכווצות"}};
+const MOUTH = {
+ a:'<svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="52" rx="36" ry="33" fill="#C8321F"/><ellipse cx="50" cy="53" rx="25" ry="22" fill="#3A1420"/><rect x="33" y="32" width="34" height="9" rx="3" fill="#FFFFFF"/><ellipse cx="50" cy="69" rx="15" ry="6.5" fill="#E88A8A"/></svg>',
+ e:'<svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="52" rx="38" ry="22" fill="#1E7F45"/><ellipse cx="50" cy="53" rx="27" ry="11" fill="#3A1420"/><rect x="32" y="43" width="36" height="6" rx="2" fill="#FFFFFF"/></svg>',
+ i:'<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M6 46 Q50 26 94 46 Q50 84 6 46Z" fill="#1F5FD0"/><path d="M19 47 Q50 37 81 47 Q50 68 19 47Z" fill="#FFFFFF"/><path d="M19 47 H81" stroke="#3A1420" stroke-width="2.5"/></svg>',
+ o:'<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="52" r="30" fill="#C96A0A"/><circle cx="50" cy="52" r="15" fill="#3A1420"/></svg>',
+ u:'<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="52" r="20" fill="#7A35B5"/><circle cx="50" cy="52" r="6.5" fill="#3A1420"/><path d="M24 38 L31 44 M76 38 L69 44 M24 66 L31 60 M76 66 L69 60" stroke="#7A35B5" stroke-width="4" stroke-linecap="round"/></svg>'};
+const FONTS = {alef:"'Alef'", noto:"'Noto Sans Hebrew'", rubik:"'Rubik'", frank:"'Frank Ruhl Libre'"};
+
+/* ---------- Hebrew unit analysis ---------- */
+const isLetter = ch => ch >= "א" && ch <= "ת";
 const strip = s => s.replace(/[.!,?]/g,"");
 const bare = s => s.replace(/[֑-ׇ]/g,"");
+const VOWEL_OF = {"ַ":"a","ָ":"a","ֲ":"a","ֳ":"a","ִ":"i","ֵ":"e","ֶ":"e","ֱ":"e","ֹ":"o","ֺ":"o","ֻ":"u"};
+function letters(unit){ const out=[]; for(const ch of strip(unit)){ if(isLetter(ch)) out.push({ch, marks:""}); else if(out.length) out[out.length-1].marks+=ch; } return out; }
+function analyze(unit){
+  const L = letters(unit); let vowel=null, vowelAt=-1;
+  L.forEach((l,i)=>{
+    l.v = null;
+    for(const m of l.marks) if(VOWEL_OF[m]) l.v = VOWEL_OF[m];
+    const prev = L[i-1];
+    if(l.ch==="ו" && /[ֹֺ]/.test(l.marks) && i>0){ l.carrier=true; l.v=null; if(!vowel){vowel="o"; vowelAt=i-1;} return; }
+    if(l.ch==="ו" && l.marks.includes("ּ") && !l.v && i>0 && prev && !prev.v){ l.carrier=true; l.shuruk=true; if(!vowel){vowel="u"; vowelAt=i-1;} return; }
+    if(l.ch==="י" && !l.marks && prev && (prev.v==="i"||prev.v==="e")){ l.carrier=true; return; }
+    if((l.ch==="א"||l.ch==="ה") && !l.marks && i===L.length-1 && i>0){ l.silent=true; return; }
+    if(l.v && !vowel){ vowel=l.v; vowelAt=i; }
+  });
+  return {letters:L, vowel, vowelAt};
+}
+/* text with vowel marks removed (keeps dagesh, shva, shin/sin dot); the shuruk dot is removed so it shows in colour */
+function overlayText(unit){ const A=analyze(unit); return A.letters.map(l=>{ let m=l.marks.replace(/[ֱ-ֻ]/g,""); if(l.shuruk) m=m.replace("ּ",""); return l.ch+m; }).join(""); }
+function unitHTML(unit, cls, colorMode){
+  const A = analyze(unit), t = strip(unit), vc = A.vowel ? VOWEL[A.vowel].c : "var(--ink)";
+  if(colorMode==="off" || !A.vowel) return `<span class="u ${cls}" style="color:var(--ink)">${t}</span>`;
+  if(colorMode==="tint") return `<span class="u ${cls}" style="color:${vc}">${t}</span>`;
+  return `<span class="u ${cls}" style="color:${vc}"><span>${t}</span><span class="ov" aria-hidden="true">${overlayText(unit)}</span></span>`;
+}
+function cueItems(unit){
+  const A = analyze(unit), items=[];
+  A.letters.forEach((l,i)=>{
+    if(!l.carrier && !l.silent && CUE_FILE[l.ch]) items.push({type:"letter", letter:l.ch, file:CUE_FILE[l.ch]});
+    if(i===A.vowelAt && A.vowel) items.push({type:"vowel", v:A.vowel});
+  });
+  return items;
+}
 
-/* ---------- pixel art (original blocky art) ---------- */
-const C = {sky:"#5f8fbf", skyN:"#141b33", sea:"#2f5f8f", seaN:"#16284a", grass:"#5c9a43", grassN:"#2d4d26", dirt:"#7a5230", dirtN:"#3e2a19",
-  sand:"#d8c48a", sandN:"#6b6145", trunk:"#6b4a2b", leaf:"#3f7f34", leafN:"#1f4220", plank:"#b88a52", plankN:"#5e4729", roof:"#8a3b2b", roofN:"#45201a",
-  skin:"#e2b48c", hair:"#4a2e1a", shirt:"#e07b2e", pants:"#3a6b8f", z:"#6fa64a", zs:"#6b4b8f", zp:"#3a3354", moon:"#f4ecc8", star:"#f4ecc8", fire:"#ffb54a", fire2:"#ff7a2a", gold:"#f2c94c", chest:"#9a6a35", gem:"#5fd3e0", win:"#ffd27a"};
-function R(x,y,w,h,c){ return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`; }
-function kid(x,y,flip){ /* 6 wide, 14 tall */
-  return `<g transform="translate(${x},${y})${flip?" scale(-1,1) translate(-6,0)":""}">`+R(1,0,4,1,C.hair)+R(1,1,4,4,C.skin)+R(1,1,4,1,C.hair)+R(3,2,1,1,"#222")+R(1,2,1,1,"#222")+R(0,5,6,5,C.shirt)+R(1,10,2,4,C.pants)+R(3,10,2,4,C.pants)+`</g>`;
-}
-function zombie(x,y,flip){
-  return `<g transform="translate(${x},${y})${flip?" scale(-1,1) translate(-6,0)":""}">`+R(1,0,4,5,C.z)+R(1,2,1,1,"#111")+R(3,2,1,1,"#111")+R(0,5,6,5,C.zs)+R(-3,6,3,2,C.z)+R(1,10,2,4,C.zp)+R(3,10,2,4,C.zp)+`</g>`;
-}
-function tree(x,y,n){ return R(x+3,y+8,3,10,C.trunk)+R(x,y,9,9,n?C.leafN:C.leaf)+R(x+2,y-3,5,3,n?C.leafN:C.leaf); }
-function house(x,y,n,lit){ return R(x,y+6,22,14,n?C.plankN:C.plank)+R(x-2,y+3,26,4,n?C.roofN:C.roof)+R(x+2,y,18,3,n?C.roofN:C.roof)+R(x+9,y+12,5,8,n?"#2a1d10":"#5a3a1c")+R(x+3,y+9,4,4,lit?C.win:(n?"#1c2333":"#9cc3e0"))+R(x+16,y+9,4,4,lit?C.win:(n?"#1c2333":"#9cc3e0")); }
-function torch(x,y,big){ return R(x,y+4,2,8,C.trunk)+R(x-1,y+1,4,4,C.fire2)+R(x,y,2,3,C.fire)+(big?`<circle cx="${x+1}" cy="${y+3}" r="22" fill="${C.fire}" opacity=".14"/><circle cx="${x+1}" cy="${y+3}" r="12" fill="${C.fire}" opacity=".18"/>`:""); }
-function stars(){ let s=""; [[12,8],[30,14],[52,6],[70,12],[96,5],[118,15],[140,8],[150,20],[84,20],[22,24]].forEach(([x,y])=>s+=R(x,y,1,1,C.star)); return s; }
-function island(n){ return R(0,62,160,38,n?C.seaN:C.sea)+R(20,58,120,6,n?C.sandN:C.sand)+R(26,54,108,6,n?C.grassN:C.grass)+R(26,60,108,8,n?C.dirtN:C.dirt); }
-function scene(name){
-  const night = ["night","zombie","brave","torch","runaway"].includes(name);
-  let s = R(0,0,160,100, night?C.skyN:(name==="treasure"?"#d9a066":C.sky));
-  if(name==="treasure") s += R(0,30,160,32,"#e8b77a")+R(70,40,20,6,"#f6d27d");
-  if(night) s += stars()+R(128,10,10,10,C.moon)+R(130,12,3,3,"#d8cf9f");
-  else if(name!=="treasure") s += R(132,10,12,12,"#f6d27d");
-  s += island(night);
-  const g=40; /* ground line y for feet: 54 */
-  switch(name){
-    case "arrive": s += R(6,60,16,4,"#7a5230")+R(8,57,12,3,"#9a6a35")+kid(60,40,false); break;
-    case "trees": s += tree(36,30)+tree(64,26)+tree(100,32)+kid(84,40,true); break;
-    case "chop": s += tree(50,30)+R(44,50,5,4,C.trunk)+R(38,50,5,4,C.trunk)+kid(68,40,true)+R(64,44,4,2,"#999")+R(66,46,1,5,C.trunk); break;
-    case "house": s += house(56,34,false,false)+kid(92,40,true)+tree(30,30); break;
-    case "night": s += house(56,34,true,true)+tree(30,30,true); break;
-    case "zombie": s += house(56,34,true,true)+zombie(104,40,true)+tree(30,30,true); break;
-    case "brave": s += house(40,34,true,true)+kid(76,40,false)+zombie(112,40,true); break;
-    case "torch": s += house(40,34,true,true)+kid(76,40,false)+torch(85,40,true)+zombie(116,40,true); break;
-    case "runaway": s += house(40,34,true,true)+kid(76,40,false)+torch(85,40,true)+zombie(140,42,false)+R(134,48,3,1,"#888")+R(132,51,3,1,"#888"); break;
-    case "treasure": s += house(30,34,false,false)+kid(72,40,true)+R(88,46,16,8,C.chest)+R(88,42,16,4,"#7a5228")+R(95,47,2,3,C.gold)+R(90,43,3,2,C.gold)+R(96,42,3,2,C.gem)+R(100,43,2,2,C.gold); break;
-  }
-  return `<svg viewBox="0 0 160 100" preserveAspectRatio="xMidYMid slice" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">${s}</svg>`;
+/* ---------- art ---------- */
+function artHTML(n, revealed, bees){
+  const pic = st => `<picture><source media="(orientation: portrait)" srcset="art/p${n}-${st}-wide.svg"><img src="art/p${n}-${st}-tall.svg" alt=""></picture>`;
+  const day = [1,2,3,4,10].includes(n);
+  return `<div style="position:absolute;inset:0">${pic("base")}</div><div class="reveal${revealed?" on":""}" style="position:absolute;inset:0">${pic("reveal")}</div>` +
+    (bees && day ? `<span class="bee bee1" style="left:40%;top:63%"></span><span class="bee bee2" style="left:58%;top:66%"></span><span class="bee bee3" style="left:47%;top:71%"></span>` : "");
 }
 
 /* ---------- storage + settings ---------- */
 const $ = id => document.getElementById(id);
 const store = { get(k,d){ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){return d;} }, set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} } };
-const settings = Object.assign({mode:"units", hintAfter:"1", modelAfter:"2", scale:1, theme:"dark"}, store.get("ori.tab.settings",{}));
-function saveSettings(){ store.set("ori.tab.settings", settings); applySettings(); }
-function applySettings(){ document.documentElement.style.setProperty("--text-scale", settings.scale); document.body.classList.toggle("sepia", settings.theme==="sepia"); }
-
-/* ---------- session state + log ---------- */
-let S = null;
-function now(){ return Date.now(); }
-function newSession(){
-  S = {id:new Date().toISOString().replace(/[:.]/g,"-"), started:now(), page:0, wi:0, ui:0, phase:"units", misses:0, t0:0, stats:{correct:0, again:0, models:0}, events:[]};
+const settings = Object.assign({mode:"units", modelAfter:"2", cues:"always", quiet:"reading", color:"nikud", font:"alef", scale:1, theme:"dark"}, store.get("ori.t3.settings",{}));
+let reads = store.get("ori.t3.letterReads",{});
+function saveSettings(){ store.set("ori.t3.settings", settings); applySettings(); }
+function applySettings(){
+  const r=document.documentElement.style; r.setProperty("--scale", settings.scale); r.setProperty("--word", FONTS[settings.font]+",'Noto Sans Hebrew',Arial,sans-serif");
+  document.body.classList.toggle("sepia", settings.theme==="sepia");
+  document.body.classList.toggle("tint", settings.color==="tint");
+  applyQuiet();
 }
+let quietOverride = null; /* moon button flips quiet for this session */
+function isQuiet(){ return quietOverride!=null ? quietOverride : settings.quiet==="reading"; }
+function applyQuiet(){ const reading = S && !$("app").hidden && S.phase!=="pageEnd"; document.body.classList.toggle("quiet", isQuiet() && !!reading); }
+
+/* ---------- session + log ---------- */
+let S = null;
+const now = () => Date.now();
+function newSession(){ S = {id:new Date().toISOString().replace(/[:.]/g,"-"), started:now(), page:0, wi:0, ui:0, phase:"units", misses:0, t0:0, wordFirst:false, revealed:false, stats:{correct:0, again:0, models:0}, events:[]}; }
 function log(type, extra){
   if(!S) return;
   const p = PAGES[S.page], w = p && p.words[S.wi];
-  const e = Object.assign({type, iso:new Date().toISOString(), t_session_s: +((now()-S.started)/1000).toFixed(2), t_video_s: REC.on ? +((now()-REC.started)/1000).toFixed(2) : null,
-    page:S.page+1, word: w ? strip(w[0]) : null, word_index:S.wi+1, step: S.phase==="blend" ? "word" : "unit", unit: w ? (S.phase==="blend" ? strip(w[0]) : strip(w[1][S.ui])) : null, unit_index: S.phase==="blend"?null:S.ui+1, try: S.misses+1, mode:settings.mode}, extra||{});
-  S.events.push(e);
-  persist();
+  const e = Object.assign({type, iso:new Date().toISOString(), t_session_s:+((now()-S.started)/1000).toFixed(2), t_video_s: REC.on ? +((now()-REC.started)/1000).toFixed(2) : null,
+    page:S.page+1, word: w ? strip(w[0]) : null, word_index:S.wi+1, step: S.phase==="blend" ? "word" : S.phase==="pageEnd" ? "sentence" : "unit",
+    unit: w ? (S.phase==="blend" ? strip(w[0]) : strip(w[1][S.ui]||"")) : null, unit_index: S.phase==="units" ? S.ui+1 : null, try:S.misses+1, mode:settings.mode, quiet:isQuiet(), color:settings.color, font:settings.font}, extra||{});
+  S.events.push(e); persist();
 }
 function persist(){ const all=store.get("ori.tab.sessions",{}); all[S.id]={id:S.id, started:S.started, events:S.events, stats:S.stats}; store.set("ori.tab.sessions",all); }
 
-/* ---------- reading flow ---------- */
-function paintDots(){ $("dots").innerHTML = PAGES.map((_,i)=>`<i class="${i<S.page?"done":i===S.page?"now":""}"></i>`).join(""); }
+/* ---------- painting ---------- */
+const curPage = () => PAGES[S.page];
+const curWord = () => curPage().words[S.wi];
+function paintTop(){
+  $("dots").innerHTML = PAGES.map((_,i)=>`<span class="${i<S.page?"done":i===S.page?"now":""}"></span>`).join("");
+  $("pageLbl").textContent = `דף ${S.page+1} מתוך ${PAGES.length}`;
+}
+function cueHTML(it, small){
+  if(it.type==="vowel"){ const V=VOWEL[it.v]; return `<div class="cue vowel" style="--vc:${V.c}"><span class="stem"></span><div class="card" role="img" aria-label="צורת הפה: ${V.name}">${MOUTH[it.v]}<span>${V.mark}</span></div></div>`; }
+  const n = reads[it.letter]||0, fade = settings.cues==="fade" && !small;
+  const state = fade ? (n>=6 ? "chip" : n>=3 ? "faded" : "") : "";
+  const vc = S && S.curVowel ? VOWEL[S.curVowel].c : "transparent";
+  if(state==="chip") return `<div class="cue letter chip" style="--vc:${vc}"><span class="stem"></span><div class="card" data-open="${it.letter}" role="button" aria-label="פתח רמז לאות ${it.letter}">${it.letter}</div></div>`;
+  return `<div class="cue letter ${state}" style="--vc:${vc}"><span class="stem"></span><div class="card"><img src="cues/${it.file}.png" alt="רמז המורה לאות ${it.letter}: ${CUE_WORD[it.file]||""}"></div></div>`;
+}
 function paint(){
-  const p = PAGES[S.page];
-  $("art").innerHTML = scene(p.scene);
-  $("sentence").innerHTML = p.words.map((w,i)=>{
-    const cls = i<S.wi ? "w done" : i===S.wi ? "w cur"+(S.phase==="blend"?" blend":"") : "w";
-    const inner = i===S.wi ? w[1].map((u,j)=>`<span class="u${(S.phase!=="blend" && j===S.ui)?" on":""}">${u}</span>`).join("") : w[0];
-    return `<span class="${cls}">${inner}</span>`;
-  }).join(" ");
-  $("say").innerHTML = S.phase==="blend" ? "עַכְשָׁו כָּל הַמִּלָּה" : "";
-  hideCue(); paintDots();
+  paintTop();
+  const p = curPage(), w = curWord(), blend = S.phase==="blend";
+  $("ptop").innerHTML = `<div class="wdots">${p.words.map((_,i)=>`<span class="${i<S.wi?"done":i===S.wi?"now":""}"></span>`).join("")}</div><span class="lbl">מילה ${S.wi+1} מתוך ${p.words.length}</span>` + (blend && w[1].length>1 ? `<span class="now-word">עַכְשָׁו כָּל הַמִּלָּה</span>` : "");
+  let html;
+  if(blend){
+    S.curVowel = null;
+    html = `<div class="unitbox glow"><div class="wordrow">${w[1].map(u=>unitHTML(u,"whole",settings.color)).join("")}</div></div>`;
+    const items = w[1].flatMap(cueItems);
+    html += `<div class="cues small">${items.map(it=>cueHTML(it,true)).join("")}</div>`;
+  } else {
+    const u = w[1][S.ui], A = analyze(u); S.curVowel = A.vowel;
+    const before = w[1].slice(0,S.ui).map(x=>`<span class="u side">${strip(x)}</span>`).join("");
+    const after = w[1].slice(S.ui+1).map(x=>`<span class="u side">${strip(x)}</span>`).join("");
+    html = `<div class="wordrow">${before}<div class="unitbox glow">${unitHTML(u,"big",settings.color)}</div>${after}</div>`;
+    html += `<div class="cues">${cueItems(u).map(it=>cueHTML(it,false)).join("")}</div>`;
+  }
+  $("stageEl").innerHTML = html;
+  $("art").innerHTML = artHTML(S.page+1, S.revealed, !isQuiet());
+  $("main").classList.remove("pe"); $("bar").hidden=false; $("barEnd").hidden=true;
+  $("bWhole").parentElement.style.visibility = (w[1].length>1 && !blend) || (S.wordFirst && blend) ? "visible" : "hidden";
+  applyQuiet();
 }
-function curWord(){ return PAGES[S.page].words[S.wi]; }
-function startStep(){ S.misses=0; S.t0=now(); paint(); log("step_shown"); }
-function firstLetter(u){ const b=bare(strip(u)); return b[0]; }
-function showCue(why){
-  const u = S.phase==="blend" ? curWord()[1][0] : curWord()[1][S.ui], L = firstLetter(u), url = cueUrl(L);
-  if(!url) return;
-  $("cueImg").src = url; $("cueImg").alt = L; $("cue").classList.add("show");
-  log("hint_shown",{why, letter:L});
+function banner(text){ const b=$("banner"); if(!text){ b.hidden=true; return; } b.hidden=false; b.innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>אַבָּא אוֹמֵר: <b>${text}</b> · אוֹרִי חוֹזֵר`; }
+
+/* ---------- reward: stars + chime ---------- */
+let actx=null;
+function chime(){ try{ actx = actx || new (window.AudioContext||window.webkitAudioContext)(); const t0=actx.currentTime;
+  [659,880,1319].forEach((f,i)=>{ const o=actx.createOscillator(), g=actx.createGain(); o.type="sine"; o.frequency.value=f; const t=t0+i*0.09; g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.16,t+0.02); g.gain.exponentialRampToValueAtTime(0.001,t+0.35); o.connect(g).connect(actx.destination); o.start(t); o.stop(t+0.37); });
+}catch(e){} }
+function stars(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box=$("paper");
+  for(let i=0;i<7;i++){ const a=(i/7)*Math.PI*2 + Math.random()*0.4, d=150+Math.random()*120;
+    const s=document.createElement("div"); s.className="star"; s.style.setProperty("--dx",Math.cos(a)*d+"px"); s.style.setProperty("--dy",Math.sin(a)*d*0.7+"px");
+    s.innerHTML='<svg width="44" height="44" viewBox="0 0 24 24"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 20.9l1.6-7L2 9.2l7.1-.6z" fill="#F2A541" stroke="#C97A12" stroke-width="1"/></svg>';
+    box.appendChild(s); setTimeout(()=>s.remove(),1000); }
 }
-function hideCue(){ $("cue").classList.remove("show"); }
+function reward(){ chime(); stars(); }
+
+/* ---------- flow ---------- */
+function startStep(){ S.misses=0; S.t0=now(); banner(null); paint(); log("step_shown"); }
+function wordDone(){
+  const isReveal = S.wi===curPage().reveal;
+  if(isReveal && !S.revealed){ S.revealed=true; log("reveal_shown",{reveal_word:strip(curWord()[0])});
+    const r=$("art").querySelector(".reveal"); if(r) r.classList.add("on");
+    if(isQuiet()){ const f=$("flash"); f.innerHTML=artHTML(S.page+1,true,false); f.classList.add("on"); setTimeout(()=>{ f.classList.remove("on"); nextWord(); }, 2200); return; }
+  }
+  nextWord();
+}
+function countReads(units){ units.forEach(u=>cueItems(u).forEach(it=>{ if(it.type==="letter") reads[it.letter]=(reads[it.letter]||0)+1; })); store.set("ori.t3.letterReads",reads); }
 function onOk(){
-  const ms = now()-S.t0; S.stats.correct++;
-  log("mark",{outcome:"correct", ms_on_step:ms});
-  advance();
-}
-function advance(){
-  const w = curWord();
-  if(S.phase==="word"){ /* word-first mode: read whole word correctly */ return nextWord(); }
+  if(!S || $("flash").classList.contains("on")) return;
+  S.stats.correct++; log("mark",{outcome:"correct", ms_on_step:now()-S.t0}); reward();
+  const w=curWord();
+  if(S.phase==="units") countReads([w[1][S.ui]]);
   if(S.phase==="units"){
     if(S.ui < w[1].length-1){ S.ui++; return startStep(); }
     if(w[1].length>1){ S.phase="blend"; return startStep(); }
   }
-  nextWord();
-}
-function nextWord(){
-  const p = PAGES[S.page];
-  if(S.wi < p.words.length-1){ S.wi++; S.ui=0; S.phase = settings.mode==="word" ? "blend" : "units"; S.wordFirst = settings.mode==="word"; return startStep(); }
-  pageDone();
+  wordDone();
 }
 function onAgain(){
-  const ms = now()-S.t0; S.misses++; S.stats.again++;
-  log("mark",{outcome:"again", ms_on_step:ms, try:S.misses});
-  /* word-first mode: a miss on the whole word drops to unit-by-unit */
-  if(S.wordFirst && S.phase==="blend" && S.ui===0 && curWord()[1].length>1){ S.wordFirst=false; S.phase="units"; S.ui=0; log("drop_to_units"); return startStep(); }
-  const ha = +settings.hintAfter, ma = +settings.modelAfter;
-  if(ha && S.misses>=ha) showCue("auto");
-  if(S.misses>=ma){
-    const shown = S.phase==="blend" ? strip(curWord()[0]) : strip(curWord()[1][S.ui]);
-    $("say").innerHTML = `אַבָּא אוֹמֵר: <b>${shown}</b> · אוֹרִי חוֹזֵר`;
-    S.stats.models++; log("model_shown");
-  }
+  if(!S || $("flash").classList.contains("on")) return;
+  S.misses++; S.stats.again++; log("mark",{outcome:"again", ms_on_step:now()-S.t0, try:S.misses});
+  if(S.wordFirst && S.phase==="blend" && curWord()[1].length>1){ S.wordFirst=false; S.phase="units"; S.ui=0; log("drop_to_units"); return startStep(); }
+  if(S.misses >= +settings.modelAfter){ const shown = S.phase==="blend" ? strip(curWord()[0]) : strip(curWord()[1][S.ui]); banner(shown); S.stats.models++; log("model_shown"); }
 }
-function onWhole(){ S.stats.correct++; log("mark",{outcome:"whole_word_correct", ms_on_step:now()-S.t0}); nextWord(); }
-function pageDone(){
-  log("page_done");
-  const msgs=["כָּל הַכָּבוֹד!","יוֹפִי!","מְצֻיָּן!","אַלּוּף!"];
-  $("pdText").textContent = msgs[S.page % msgs.length];
-  $("nextPage").textContent = S.page===PAGES.length-1 ? "לַסּוֹף ←" : "לַדַּף הַבָּא ←";
-  $("pageDone").hidden=false;
+function onWhole(){ if(!S || $("flash").classList.contains("on")) return; S.stats.correct++; log("mark",{outcome:"whole_word_correct", ms_on_step:now()-S.t0}); reward(); countReads(curWord()[1]); wordDone(); }
+function nextWord(){
+  if(S.wi < curPage().words.length-1){ S.wi++; S.ui=0; S.phase = settings.mode==="word" ? "blend" : "units"; S.wordFirst = settings.mode==="word"; return startStep(); }
+  pageEnd();
+}
+function pageEnd(){
+  $("main").classList.add("pe"); S.phase="pageEnd"; S.misses=0; S.t0=now(); log("page_end_shown"); banner(null);
+  const p=curPage();
+  $("ptop").innerHTML="";
+  $("stageEl").innerHTML = `<div class="sentence-lbl">עַכְשָׁו כָּל הַמִּשְׁפָּט</div><div class="sentence">${p.words.map(w=>w[0]).join(" ")}</div>`;
+  S.revealed=true; $("art").innerHTML = artHTML(S.page+1, true, true);
+  $("bar").hidden=true; $("barEnd").hidden=false;
+  $("nextLbl").textContent = S.page===PAGES.length-1 ? "לַסּוֹף" : "לַדַּף הַבָּא";
+  applyQuiet();
 }
 function gotoPage(i){
-  $("pageDone").hidden=true;
   if(i>=PAGES.length) return endSession();
-  S.page=Math.max(0,i); S.wi=0; S.ui=0; S.phase = settings.mode==="word" ? "blend" : "units"; S.wordFirst = settings.mode==="word";
+  S.page=Math.max(0,i); S.wi=0; S.ui=0; S.revealed=false; S.phase = settings.mode==="word" ? "blend" : "units"; S.wordFirst = settings.mode==="word";
   log("page_start"); startStep();
+  preload(S.page+2);
 }
+function preload(n){ if(n>PAGES.length) return; const portrait=matchMedia("(orientation: portrait)").matches; ["base","reveal"].forEach(st=>{ const im=new Image(); im.src=`art/p${n}-${st}-${portrait?"wide":"tall"}.svg`; }); }
 function begin(withRec){
-  newSession(); applySettings();
+  newSession(); quietOverride=null;
   $("start").hidden=true; $("end").hidden=true; $("app").hidden=false;
-  log("session_start",{user_agent:navigator.userAgent, screen:`${screen.width}x${screen.height}@${devicePixelRatio}`});
+  log("session_start",{user_agent:navigator.userAgent, screen:`${screen.width}x${screen.height}@${devicePixelRatio}`, settings:Object.assign({},settings)});
   keepAwake();
   if(withRec) startRec(); else paintRec();
   gotoPage(0);
 }
 function endSession(){
   log("session_end",{stats:S.stats});
-  $("app").hidden=true; $("end").hidden=false;
-  $("endArt").innerHTML = scene("treasure");
-  const st=S.stats, mins=Math.round((now()-S.started)/60000);
-  $("endStats").textContent = `${mins} דקות · ${st.correct} נכון · ${st.again} "עוד פעם" · ${st.models} פעמים אבא אמר`;
+  $("app").hidden=true; $("end").hidden=false; document.body.classList.remove("quiet");
+  $("endArt").innerHTML = artHTML(10,true,true);
+  $("stMin").textContent=Math.max(1,Math.round((now()-S.started)/60000)); $("stOk").textContent=S.stats.correct; $("stAgain").textContent=S.stats.again; $("stModel").textContent=S.stats.models;
   $("endStopRec").hidden = !REC.on;
-  $("endNote").textContent = REC.on ? "ההקלטה עדיין פועלת. לחצו 'עצור ושמור' כדי לשמור את הקובץ." : "";
+  $("endNote").textContent = REC.on ? "ההקלטה עדיין פועלת. היומן נשמר יחד עם הווידאו, כדי שהשניים תמיד יתאימו." : "";
 }
 
 /* ---------- recording: parent-started, always visible while on ---------- */
 const REC = {on:false, stream:null, rec:null, chunks:[], started:0, mime:"", timer:null, saved:[]};
-function pickMime(){
-  const c=["video/mp4;codecs=avc1,mp4a","video/mp4","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"];
-  if(!window.MediaRecorder) return null;
-  return c.find(m=>{ try{return MediaRecorder.isTypeSupported(m);}catch(e){return false;} }) || "";
-}
+function pickMime(){ const c=["video/mp4;codecs=avc1,mp4a","video/mp4","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"]; if(!window.MediaRecorder) return null; return c.find(m=>{ try{return MediaRecorder.isTypeSupported(m);}catch(e){return false;} }) || ""; }
 async function startRec(){
   if(REC.on) return;
   const mime = pickMime();
   if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || mime===null){ recError("הדפדפן הזה לא מאפשר הקלטה כאן. צריך לפתוח את הכתובת המלאה ב-Chrome (https)."); return; }
-  try{
-    REC.stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"user", width:{ideal:960}, height:{ideal:720}, frameRate:{ideal:24}}, audio:{echoCancellation:true, noiseSuppression:false, autoGainControl:true}});
-  }catch(e){ recError("לא התקבלה הרשאה למצלמה/מיקרופון ("+(e.name||e)+"). אפשר לאשר בהגדרות האתר ב-Chrome ולנסות שוב."); return; }
-  REC.mime = mime; REC.chunks=[]; REC.id = "rec-"+new Date().toISOString().replace(/[:.]/g,"-");
-  try{ REC.rec = new MediaRecorder(REC.stream, Object.assign({videoBitsPerSecond:1500000, audioBitsPerSecond:96000}, mime?{mimeType:mime}:{})); }
-  catch(e){ REC.rec = new MediaRecorder(REC.stream); }
+  try{ REC.stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"user", width:{ideal:960}, height:{ideal:720}, frameRate:{ideal:24}}, audio:{echoCancellation:true, noiseSuppression:false, autoGainControl:true}}); }
+  catch(e){ recError("לא התקבלה הרשאה למצלמה/מיקרופון ("+(e.name||e)+"). אפשר לאשר בהגדרות האתר ב-Chrome ולנסות שוב."); return; }
+  REC.chunks=[]; REC.id = "rec-"+new Date().toISOString().replace(/[:.]/g,"-");
+  try{ REC.rec = new MediaRecorder(REC.stream, Object.assign({videoBitsPerSecond:1500000, audioBitsPerSecond:96000}, mime?{mimeType:mime}:{})); } catch(e){ REC.rec = new MediaRecorder(REC.stream); }
   REC.mime = REC.rec.mimeType || mime || "video/webm";
   await idbClear();
   REC.rec.ondataavailable = ev => { if(ev.data && ev.data.size){ REC.chunks.push(ev.data); idbPut(ev.data); } };
@@ -403,39 +571,29 @@ async function startRec(){
   REC.on=true; REC.started=now();
   store.set("ori.tab.recMeta",{id:REC.id, mime:REC.mime, started:REC.started});
   log("rec_start",{mime:REC.mime, video_settings: REC.stream.getVideoTracks()[0]?.getSettings?.() || null});
-  REC.timer = setInterval(paintRec, 1000); paintRec();
-  attachPreview();
+  REC.timer = setInterval(paintRec, 1000); paintRec(); attachPreview();
 }
 function stopRec(){ if(!REC.on || !REC.rec) return; log("rec_stop"); REC.rec.stop(); }
 function finishRec(){
-  REC.on=false; clearInterval(REC.timer);
-  REC.stream.getTracks().forEach(t=>t.stop());
-  const blob = new Blob(REC.chunks,{type:REC.mime});
-  const ext = REC.mime.includes("mp4") ? "mp4" : "webm";
-  const name = `ori-${REC.id.slice(4,20)}.${ext}`;
-  download(blob, name);
-  REC.saved.push({name, size:blob.size, blob});
-  store.set("ori.tab.recMeta", null); idbClear();
-  paintRec(); paintSaved();
+  REC.on=false; clearInterval(REC.timer); REC.stream.getTracks().forEach(t=>t.stop());
+  const blob = new Blob(REC.chunks,{type:REC.mime}), ext = REC.mime.includes("mp4") ? "mp4" : "webm", name = `ori-${REC.id.slice(4,20)}.${ext}`;
+  download(blob, name); REC.saved.push({name, size:blob.size, blob});
+  store.set("ori.tab.recMeta", null); idbClear(); paintRec(); paintSaved();
   $("endStopRec").hidden=true;
-  if(!$("end").hidden) $("endNote").textContent = `ההקלטה נשמרה: ${name} (${(blob.size/1e6).toFixed(1)}MB) בתיקיית ההורדות. אל תשכחו להוריד גם את היומן.`;
-  /* the log is saved together with the video so the two always match */
+  if(!$("end").hidden) $("endNote").textContent = `ההקלטה נשמרה: ${name} (${(blob.size/1e6).toFixed(1)}MB) בתיקיית ההורדות, יחד עם היומן.`;
   if(S) downloadLog("json");
 }
-function recError(msg){ $("recState").innerHTML = `<span class="err">${msg}</span>`; $("startNote").innerHTML = `<span style="color:#ff9d8f">${msg}</span>`; paintRec(); if(S) log("rec_error",{msg}); }
-function fmt(s){ s=Math.floor(s); return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); }
+function recError(msg){ $("recState").innerHTML = `<span class="err">${msg}</span>`; $("startNote").innerHTML = `<span class="err">${msg}</span>`; paintRec(); if(S) log("rec_error",{msg}); }
+const fmt = s => { s=Math.floor(s); return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); };
 function paintRec(){
-  const b=$("recBadge");
-  b.classList.toggle("off", !REC.on);
-  $("recTxt").textContent = REC.on ? "מקליט "+fmt((now()-REC.started)/1000) : "לא מקליט";
-  if(!$("recState").querySelector(".err") || REC.on) $("recState").textContent = REC.on ? `מקליט עכשיו (${REC.mime}). העיגול האדום למעלה מראה שההקלטה פועלת.` : "ההקלטה כבויה.";
+  const b=$("recBadge"); b.classList.toggle("off", !REC.on);
+  $("recTxt").textContent = REC.on ? "מקליט" : "לא מקליט"; $("recTime").textContent = REC.on ? fmt((now()-REC.started)/1000) : "";
+  if(REC.on || !$("recState").querySelector(".err")) $("recState").innerHTML = REC.on ? `<span style="display:inline-block;width:14px;height:14px;border-radius:14px;background:var(--rec)"></span> מקליט עכשיו <b dir="ltr">${fmt((now()-REC.started)/1000)}</b>` : "ההקלטה כבויה.";
   $("pRecStart").hidden = REC.on; $("pRecStop").hidden = !REC.on;
 }
-function paintSaved(){ $("savedList").innerHTML = REC.saved.map((r,i)=>`נשמר: ${r.name} (${(r.size/1e6).toFixed(1)}MB) <button data-save="${i}">הורד שוב</button>${navigator.canShare?` <button data-share="${i}">שתף…</button>`:""}`).join("<br>"); }
+function paintSaved(){ $("savedList").innerHTML = REC.saved.map((r,i)=>`נשמר: ${r.name} (${(r.size/1e6).toFixed(1)}MB) <button class="pbtn" style="display:inline-flex;min-height:40px" data-save="${i}">הורד שוב</button>${navigator.canShare?` <button class="pbtn" style="display:inline-flex;min-height:40px" data-share="${i}">שתף…</button>`:""}`).join("<br>"); }
 function attachPreview(){ const v=$("preview"); if($("pPreview").checked && REC.stream){ v.srcObject=REC.stream; v.hidden=false; v.play().catch(()=>{}); } else { v.srcObject=null; v.hidden=true; } }
 function download(blob, name){ const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 60000); }
-
-/* chunks also go to IndexedDB so a crash or reload does not lose the recording */
 let dbp=null;
 function db(){ if(dbp) return dbp; dbp = new Promise((res,rej)=>{ const r=indexedDB.open("ori-rec",1); r.onupgradeneeded=()=>r.result.createObjectStore("chunks",{autoIncrement:true}); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); return dbp; }
 async function idbPut(b){ try{ const d=await db(); d.transaction("chunks","readwrite").objectStore("chunks").add(b); }catch(e){} }
@@ -444,66 +602,57 @@ async function idbAll(){ try{ const d=await db(); return await new Promise(r=>{ 
 async function checkRecover(){
   const meta=store.get("ori.tab.recMeta",null); if(!meta) return;
   const parts=await idbAll(); if(!parts.length) return;
-  const el=$("recover"); el.hidden=false;
-  el.innerHTML = `נמצאה הקלטה קודמת שלא נשמרה. <button class="big" id="recoverBtn" style="font-size:18px;padding:10px 18px;min-width:0">⬇ שמור אותה</button>`;
-  $("recoverBtn").onclick = async ()=>{ const blob=new Blob(parts,{type:meta.mime}); download(blob, `ori-recovered-${meta.id.slice(4,20)}.${meta.mime.includes("mp4")?"mp4":"webm"}`); store.set("ori.tab.recMeta",null); await idbClear(); el.textContent="נשמר לתיקיית ההורדות."; };
+  $("recover").hidden=false;
+  $("recoverBtn").onclick = async ()=>{ const blob=new Blob(parts,{type:meta.mime}); download(blob, `ori-recovered-${meta.id.slice(4,20)}.${meta.mime.includes("mp4")?"mp4":"webm"}`); store.set("ori.tab.recMeta",null); await idbClear(); $("recover").innerHTML="<span>נשמר לתיקיית ההורדות.</span>"; };
 }
 
 /* ---------- log export ---------- */
 function allEvents(){ const all=store.get("ori.tab.sessions",{}); return Object.values(all).flatMap(s=>s.events.map(e=>Object.assign({session:s.id},e))); }
 function downloadLog(kind){
-  const ev = S ? S.events.map(e=>Object.assign({session:S.id},e)) : allEvents();
-  const id = S ? S.id.slice(0,16) : "all";
-  if(kind==="json"){ download(new Blob([JSON.stringify({app:"ori-tablet-v1", session:S?S.id:null, recording: REC.saved.map(r=>r.name), pages:PAGES.map(p=>p.words.map(w=>w[0]).join(" ")), events:ev},null,1)],{type:"application/json"}), `ori-log-${id}.json`); }
-  else {
-    const cols=["session","type","iso","t_session_s","t_video_s","page","word_index","word","step","unit_index","unit","try","outcome","ms_on_step","why","letter","mode"];
+  const ev = S ? S.events.map(e=>Object.assign({session:S.id},e)) : allEvents(), id = S ? S.id.slice(0,16) : "all";
+  if(kind==="json") download(new Blob([JSON.stringify({app:"ori-tablet-v3", session:S?S.id:null, recording:REC.saved.map(r=>r.name), pages:PAGES.map(p=>p.words.map(w=>w[0]).join(" ")), events:ev},null,1)],{type:"application/json"}), `ori-log-${id}.json`);
+  else { const cols=["session","type","iso","t_session_s","t_video_s","page","word_index","word","step","unit_index","unit","try","outcome","ms_on_step","letter","reveal_word","quiet","mode","color","font"];
     const esc=v=>v==null?"":`"${String(typeof v==="object"?JSON.stringify(v):v).replace(/"/g,'""')}"`;
-    download(new Blob(["﻿"+cols.join(",")+"\n"+ev.map(e=>cols.map(c=>esc(e[c])).join(",")).join("\n")],{type:"text/csv"}), `ori-log-${id}.csv`);
-  }
+    download(new Blob(["﻿"+cols.join(",")+"\n"+ev.map(e=>cols.map(c=>esc(e[c])).join(",")).join("\n")],{type:"text/csv"}), `ori-log-${id}.csv`); }
 }
 
-/* ---------- misc: wake lock, fullscreen, parent panel ---------- */
+/* ---------- misc ---------- */
 let wake=null;
-async function keepAwake(){ try{ if("wakeLock" in navigator){ wake=await navigator.wakeLock.request("screen"); } }catch(e){} }
+async function keepAwake(){ try{ if("wakeLock" in navigator) wake=await navigator.wakeLock.request("screen"); }catch(e){} }
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible" && S && !$("app").hidden) keepAwake(); if(S) log(document.visibilityState==="visible"?"app_visible":"app_hidden"); });
 function goFs(){ if(!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(()=>{}); }
-function toggleFs(){ if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen?.().catch(()=>{}); }
-function openP(){
-  $("veil").hidden=false; paintRec(); paintSaved();
-  document.querySelectorAll("[data-mode]").forEach(b=>b.classList.toggle("sel", b.dataset.mode===settings.mode));
-  $("hintAfter").value=settings.hintAfter; $("modelAfter").value=settings.modelAfter; $("scale").value=settings.scale;
-  $("themeDark").classList.toggle("sel",settings.theme!=="sepia"); $("themeSepia").classList.toggle("sel",settings.theme==="sepia");
-  $("logInfo").textContent = S ? `${S.events.length} אירועים בסשן הזה.` : "";
-}
-$("gear").onclick=openP; $("closeP").onclick=()=>{$("veil").hidden=true; attachPreview();};
-$("veil").onclick=e=>{ if(e.target===$("veil")) $("closeP").onclick(); };
-document.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{ settings.mode=b.dataset.mode; saveSettings(); openP(); });
-$("hintAfter").onchange=e=>{settings.hintAfter=e.target.value; saveSettings();};
-$("modelAfter").onchange=e=>{settings.modelAfter=e.target.value; saveSettings();};
-$("scale").oninput=e=>{settings.scale=+e.target.value; saveSettings();};
-$("themeDark").onclick=()=>{settings.theme="dark"; saveSettings(); openP();};
-$("themeSepia").onclick=()=>{settings.theme="sepia"; saveSettings(); openP();};
+function toggleFs(){ if(document.fullscreenElement) document.exitFullscreen(); else goFs(); }
+function paintSeg(){ document.querySelectorAll("[data-set]").forEach(g=>g.querySelectorAll("button[data-v]").forEach(b=>b.setAttribute("aria-pressed", String(settings[g.dataset.set]===b.dataset.v)))); }
+function openP(){ $("veil").hidden=false; paintRec(); paintSaved(); paintSeg(); $("scale").value=settings.scale; $("logInfo").textContent = S ? `${S.events.length} אירועים בסשן הזה.` : ""; }
+function closeP(){ $("veil").hidden=true; attachPreview(); if(S && !$("app").hidden){ if(S.phase==="pageEnd") pageEnd(); else paint(); } }
+document.querySelectorAll("[data-set]").forEach(g=>g.addEventListener("click",e=>{ const b=e.target.closest("button[data-v]"); if(!b) return; const k=g.dataset.set; settings[k]=b.dataset.v; if(k==="quiet"){ quietOverride=null; log("quiet_mode",{on:isQuiet(), source:"panel"}); } saveSettings(); paintSeg(); }));
+$("gear").onclick=openP; $("recBadge").onclick=openP; $("closeP").onclick=closeP;
+$("veil").onclick=e=>{ if(e.target===$("veil")) closeP(); };
+$("scale").oninput=e=>{ settings.scale=+e.target.value; saveSettings(); };
+$("resetFade").onclick=()=>{ reads={}; store.set("ori.t3.letterReads",reads); $("resetFade").textContent="אופס ✓"; };
 $("pRecStart").onclick=startRec; $("pRecStop").onclick=stopRec; $("pPreview").onchange=attachPreview;
 $("savedList").onclick=e=>{ const s=e.target.dataset.save, sh=e.target.dataset.share; if(s!=null){ const r=REC.saved[+s]; download(r.blob,r.name);} if(sh!=null){ const r=REC.saved[+sh]; const f=new File([r.blob],r.name,{type:r.blob.type}); if(navigator.canShare({files:[f]})) navigator.share({files:[f]}).catch(()=>{}); } };
-$("prevPage").onclick=()=>{ $("veil").hidden=true; if(S) gotoPage(S.page-1); };
+$("prevPage").onclick=()=>{ $("veil").hidden=true; if(S){ $("end").hidden=true; $("app").hidden=false; gotoPage(S.page-1);} };
 $("skipPage").onclick=()=>{ $("veil").hidden=true; if(S){ log("page_skipped"); gotoPage(S.page+1);} };
-$("restart").onclick=()=>{ $("veil").hidden=true; if(S) gotoPage(0); };
+$("restart").onclick=()=>{ $("veil").hidden=true; if(S){ $("end").hidden=true; $("app").hidden=false; gotoPage(0);} };
 $("dlJson").onclick=()=>downloadLog("json"); $("dlCsv").onclick=()=>downloadLog("csv");
-$("cpLog").onclick=()=>{ const ev=S?S.events:allEvents(); navigator.clipboard.writeText(JSON.stringify(ev)).then(()=>{$("logInfo").textContent="היומן הועתק. אפשר להדביק אותו בצ'אט עם Claude.";},()=>{$("logInfo").textContent="ההעתקה נכשלה.";}); };
-$("fs").onclick=toggleFs;
-$("recBadge").onclick=openP;
-$("bOk").onclick=onOk; $("bAgain").onclick=onAgain; $("bHint").onclick=()=>{ showCue("button"); };
-$("bWhole").onclick=onWhole; $("bMark").onclick=()=>{ log("parent_marker"); const b=$("bMark"); b.style.background="#5a4a1a"; setTimeout(()=>b.style.background="",400); };
-$("nextPage").onclick=()=>gotoPage(S.page+1);
+$("cpLog").onclick=()=>{ const ev=S?S.events:allEvents(); navigator.clipboard.writeText(JSON.stringify(ev)).then(()=>{$("logInfo").textContent="היומן הועתק.";},()=>{$("logInfo").textContent="ההעתקה נכשלה.";}); };
+$("fsBtn").onclick=toggleFs;
+$("quietBtn").onclick=()=>{ quietOverride = !isQuiet(); log("quiet_mode",{on:quietOverride, source:"moon"}); if(S.phase==="pageEnd") pageEnd(); else paint(); };
+$("markBtn").onclick=()=>{ log("parent_marker"); const b=$("markBtn"); b.style.color="var(--amber)"; setTimeout(()=>b.style.color="",500); };
+$("stageEl").addEventListener("click",e=>{ const c=e.target.closest("[data-open]"); if(!c) return; const L=c.dataset.open; c.outerHTML=`<div class="card"><img src="cues/${CUE_FILE[L]}.png" alt=""></div>`; log("cue_opened",{letter:L}); log("hint_shown",{letter:L, why:"tap"}); });
+$("bOk").onclick=onOk; $("bAgain").onclick=onAgain; $("bWhole").onclick=onWhole;
+$("bSentAgain").onclick=()=>{ S.misses++; log("mark",{outcome:"sentence_again", ms_on_step:now()-S.t0}); };
+$("bNext").onclick=()=>{ log("mark",{outcome:"sentence_correct", ms_on_step:now()-S.t0}); reward(); gotoPage(S.page+1); };
 $("startRec").onclick=()=>{ goFs(); begin(true); };
 $("startNoRec").onclick=()=>{ goFs(); begin(false); };
 $("endStopRec").onclick=stopRec;
 $("endLog").onclick=()=>downloadLog("json");
 $("endAgain").onclick=()=>{ $("end").hidden=true; $("app").hidden=false; gotoPage(0); };
 window.addEventListener("beforeunload",e=>{ if(REC.on){ e.preventDefault(); e.returnValue=""; } });
-$("coverArt").innerHTML = scene("torch");
-applySettings(); checkRecover();
-if(window.self!==window.top || location.protocol==="http:" && location.hostname!=="localhost"){ $("startNote").textContent="בגרסה הזו ההקלטה וההורדות לא זמינות (חלון מוגן). הקריאה והיומן עובדים; את היומן אפשר להעתיק מפאנל ההורה."; }
+$("startArt").innerHTML = artHTML(2,true,true);
+applySettings(); checkRecover(); preload(1);
+if(window.self!==window.top){ $("startNote").textContent="בחלון הזה ההקלטה וההורדות לא זמינות. הקריאה והיומן עובדים; את היומן אפשר להעתיק מפאנל ההורה."; }
 </script>
 </body>
 </html>
