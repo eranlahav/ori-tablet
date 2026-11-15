@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16120f">
+<meta name="robots" content="noindex">
+<title>אורי והאי של הקוביות</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@500;700;800&display=swap">
+<style>
+:root{
+  --bg:#16120f; --panel:#221c17; --panel2:#2c241d; --line:#3a3027;
+  --ink:#f3e6cf; --dim:#8c7f6c; --faint:#5a4f43;
+  --unit-bg:#3b2f22; --unit-ink:#fff3dc; --glow:#ffb54a;
+  --ok:#3f8f4a; --ok-ink:#eaffe6; --again:#a8641f; --again-ink:#fff1e0;
+  --rec:#e5483b;
+  --font:'Noto Sans Hebrew','Arial Hebrew',Arial,sans-serif;
+  --text-scale:1;
+  color-scheme:dark;
+}
+body.sepia{ --bg:#2a2218; --panel:#352b1f; --panel2:#403426; --line:#4d3f2e; --ink:#fbeed6; --unit-bg:#5a4630; }
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);overflow:hidden}
+button{font-family:inherit;color:inherit;border:0;cursor:pointer;touch-action:manipulation}
+[hidden]{display:none!important}
+.app{position:fixed;inset:0;display:flex;flex-direction:column;padding:max(10px,env(safe-area-inset-top)) 16px max(10px,env(safe-area-inset-bottom))}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:12px;min-height:52px}
+.dots{display:flex;gap:7px;flex:1;justify-content:center}
+.dots i{width:clamp(14px,1.6vmin,22px);height:clamp(14px,1.6vmin,22px);border-radius:3px;background:var(--line);display:block}
+.dots i.done{background:#5c9a43}
+.dots i.now{background:var(--glow)}
+.icon{background:var(--panel);border-radius:14px;min-width:52px;height:52px;font-size:24px;display:grid;place-items:center;padding:0 12px}
+.rec{display:flex;align-items:center;gap:8px;background:#3a1714;color:#ffd9d4;border-radius:14px;height:52px;padding:0 14px;font-weight:700;font-size:18px}
+.rec b{width:16px;height:16px;border-radius:50%;background:var(--rec);animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.rec.off{background:var(--panel);color:var(--dim)}
+.rec.off b{background:var(--faint);animation:none}
+
+/* reading area */
+.stage{flex:1;display:grid;gap:18px;min-height:0;padding:10px 0}
+@media (orientation:landscape){ .stage{grid-template-columns:1.25fr 1fr;grid-template-areas:"text art"} }
+@media (orientation:portrait){ .stage{grid-template-rows:minmax(0,0.85fr) minmax(0,1.15fr);grid-template-areas:"art" "text"} }
+.art{grid-area:art;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2vmin;min-height:0;position:relative}
+.scene{width:100%;max-height:100%;aspect-ratio:16/10;border-radius:22px;overflow:hidden;background:#0f0c0a;flex:0 1 auto}
+.scene svg{width:100%;height:100%;display:block;filter:brightness(.82) saturate(.85)}
+.cue{width:min(42%,34vh);aspect-ratio:1;border-radius:18px;background:#fff8ec;padding:6px;box-shadow:0 8px 30px #0009;transform:scale(.6);opacity:0;transition:.25s;flex:none}
+.cue.show{transform:none;opacity:1}
+.cue img{width:100%;height:100%;object-fit:contain;border-radius:12px;filter:brightness(.92)}
+@media (orientation:portrait){ .scene{height:100%;width:auto;max-width:100%} .cue{position:absolute;bottom:10px;left:10px;width:min(34%,30vh)} }
+.text{grid-area:text;display:flex;flex-direction:column;justify-content:center;align-items:stretch;gap:2vmin;min-height:0}
+.sentence{font-size:calc(7.6vmin * var(--text-scale));line-height:1.9;font-weight:700;text-align:center;word-spacing:.25em}
+.w{display:inline-block;padding:0 .08em;color:var(--faint);transition:color .2s}
+.w.done{color:var(--dim)}
+.w.cur{color:var(--ink);font-size:1.45em}
+.u{display:inline-block;border-radius:.18em;padding:0 .04em}
+.w.cur .u{opacity:.38}
+.w.cur .u.on{opacity:1;background:var(--unit-bg);color:var(--unit-ink);box-shadow:0 0 0 .05em var(--glow) inset;padding:0 .1em}
+.w.cur.blend .u{opacity:1}
+.w.cur.blend{background:var(--unit-bg);border-radius:.18em;padding:0 .14em;box-shadow:0 0 0 .05em var(--glow) inset}
+.say{min-height:1.6em;font-size:clamp(20px,3vmin,34px);text-align:center;color:var(--dim)}
+.say b{color:var(--glow);font-size:1.3em}
+
+/* parent bar */
+.bar{display:grid;grid-template-columns:2fr 1.4fr 1fr 1fr 1fr;gap:12px;padding-top:8px}
+.bar button{height:clamp(70px,10vmin,110px);border-radius:20px;font-size:clamp(20px,3vmin,30px);font-weight:800;background:var(--panel2);display:flex;align-items:center;justify-content:center;gap:10px}
+.bar .ok{background:var(--ok);color:var(--ok-ink);font-size:clamp(24px,3.6vmin,38px)}
+.bar .again{background:var(--again);color:var(--again-ink)}
+.bar button:active{transform:scale(.97);filter:brightness(1.2)}
+.bar small{font-size:.65em;font-weight:600;opacity:.8}
+@media (orientation:portrait){ .bar{grid-template-columns:1.6fr 1.3fr 1fr; } #bWhole{grid-row:2;grid-column:1/3} #bMark{grid-row:2;grid-column:3} .sentence{font-size:calc(9vmin * var(--text-scale))} }
+
+/* screens */
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3vmin;padding:24px;text-align:center;background:var(--bg);z-index:5}
+.screen h1{font-size:clamp(34px,7vmin,80px);margin:0}
+.screen p{font-size:clamp(18px,2.6vmin,28px);color:var(--dim);margin:0;max-width:900px;line-height:1.5}
+.cover{width:min(70vw,620px);aspect-ratio:16/10;border-radius:22px;overflow:hidden}
+.cover svg{width:100%;height:100%;display:block;filter:brightness(.82) saturate(.85)}
+.big{border-radius:22px;padding:22px 36px;font-size:clamp(22px,3.4vmin,36px);font-weight:800;background:var(--panel2);min-width:300px}
+.big.go{background:var(--ok);color:var(--ok-ink)}
+.big.red{background:#7a2620;color:#ffe3df}
+.row{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
+.note{font-size:16px!important;color:var(--faint)!important}
+
+/* page done overlay */
+.pagedone{position:fixed;inset:0;display:grid;place-items:center;background:#000a;z-index:4}
+.pagedone .box{background:var(--panel);border-radius:28px;padding:5vmin 7vmin;text-align:center;display:flex;flex-direction:column;gap:3vmin;align-items:center}
+.pagedone .stars{font-size:clamp(50px,10vmin,110px)}
+.pagedone .box div:nth-child(2){font-size:clamp(26px,4.5vmin,50px);font-weight:800}
+
+/* parent panel */
+.veil{position:fixed;inset:0;background:#000b;z-index:10;display:flex;justify-content:flex-start}
+.panel{width:min(560px,100%);height:100%;overflow:auto;background:var(--panel);padding:22px;display:flex;flex-direction:column;gap:18px;font-size:19px}
+.panel h2{margin:0;font-size:26px}
+.panel h3{margin:0 0 8px;font-size:20px;color:var(--glow)}
+.panel section{background:var(--panel2);border-radius:16px;padding:16px}
+.panel button{background:var(--line);border-radius:12px;padding:14px 16px;font-size:18px;font-weight:700;margin:4px 0 4px 8px}
+.panel button.sel{background:var(--glow);color:#2a1a05}
+.panel label{display:flex;gap:10px;align-items:center;margin:6px 0}
+.panel input[type=range]{width:100%}
+.panel select{font-size:18px;padding:8px;border-radius:10px;background:var(--line);color:var(--ink);border:0}
+.panel video{width:100%;border-radius:12px;background:#000;margin-top:8px;transform:scaleX(-1)}
+.panel .hint{color:var(--dim);font-size:16px;line-height:1.5}
+.panel .err{color:#ff9d8f}
+</style>
+</head>
+<body>
+
+<!-- START -->
+<div class="screen" id="start">
+  <div class="cover" id="coverArt"></div>
+  <h1>אוֹרִי וְהָאִי שֶׁל הַקֻּבִּיּוֹת</h1>
+  <p>סיפור של 10 דפים. אורי קורא, ההורה לוחץ ✓ או ✗.</p>
+  <div class="row">
+    <button class="big red" id="startRec">🔴 התחל עם הקלטה</button>
+    <button class="big" id="startNoRec">התחל בלי הקלטה</button>
+  </div>
+  <p class="note" id="startNote">ההקלטה (מצלמה קדמית + קול) נשמרת רק בטאבלט, בתיקיית ההורדות.</p>
+  <p class="note" id="recover" hidden></p>
+</div>
+
+<!-- READING -->
+<div class="app" id="app" hidden>
+  <div class="top">
+    <button class="icon" id="gear" aria-label="הגדרות הורה">⚙︎</button>
+    <div class="rec off" id="recBadge"><b></b><span id="recTxt">לא מקליט</span></div>
+    <div class="dots" id="dots"></div>
+    <button class="icon" id="fs" aria-label="מסך מלא">⛶</button>
+  </div>
+  <div class="stage">
+    <div class="text">
+      <div class="sentence" id="sentence"></div>
+      <div class="say" id="say"></div>
+    </div>
+    <div class="art"><div class="scene" id="art"></div>
+    <div class="cue" id="cue"><img id="cueImg" alt=""></div>
+    </div>
+  </div>
+  <div class="bar" id="bar">
+    <button class="ok" id="bOk">✓ נכון</button>
+    <button class="again" id="bAgain">✗ עוד פעם</button>
+    <button id="bHint">💡 רמז</button>
+    <button id="bWhole" class="opt">⏭ <span>כל המילה<br><small>קרא נכון</small></span></button>
+    <button id="bMark" class="opt">📍 <span>סמן<br><small>רגע</small></span></button>
+  </div>
+</div>
+
+<div class="pagedone" id="pageDone" hidden>
+  <div class="box">
+    <div class="stars">⭐</div>
+    <div id="pdText">כָּל הַכָּבוֹד!</div>
+    <button class="big go" id="nextPage">לַדַּף הַבָּא ←</button>
+  </div>
+</div>
+
+<!-- END -->
+<div class="screen" id="end" hidden>
+  <div class="cover" id="endArt"></div>
+  <h1>כָּל הַכָּבוֹד אוֹרִי!</h1>
+  <p id="endStats"></p>
+  <div class="row">
+    <button class="big red" id="endStopRec" hidden>⏹ עצור ושמור הקלטה</button>
+    <button class="big" id="endLog">⬇ הורד יומן סשן</button>
+    <button class="big" id="endAgain">קרא שוב</button>
+  </div>
+  <p class="note" id="endNote"></p>
+</div>
+
+<!-- PARENT PANEL -->
+<div class="veil" id="veil" hidden>
+  <div class="panel">
+    <div style="display:flex;justify-content:space-between;align-items:center"><h2>פאנל הורה</h2><button id="closeP">סגור ✕</button></div>
+    <section>
+      <h3>הקלטה</h3>
+      <div id="recState" class="hint"></div>
+      <button id="pRecStart">🔴 התחל הקלטה</button>
+      <button id="pRecStop">⏹ עצור ושמור</button>
+      <label><input type="checkbox" id="pPreview"> הצג תצוגה מקדימה של המצלמה (רק כאן)</label>
+      <video id="preview" muted playsinline hidden></video>
+      <div id="savedList" class="hint"></div>
+    </section>
+    <section>
+      <h3>איך מתקדמים</h3>
+      <button data-mode="units">יחידה אחרי יחידה</button>
+      <button data-mode="word">מילה קודם, יחידות אחרי טעות</button>
+      <div class="hint">בברירת המחדל כל מילה נקראת יחידה אחרי יחידה (אות + ניקוד) ואז כמילה שלמה. "כל המילה" בסרגל מדלג על היחידות כשאורי קרא את המילה נכון ברצף.</div>
+      <label>הצג רמז המורה אחרי <select id="hintAfter"><option value="1">טעות 1</option><option value="2">2 טעויות</option><option value="0">רק בלחיצה</option></select></label>
+      <label>"אבא אומר" אחרי <select id="modelAfter"><option value="2">2 טעויות</option><option value="3">3 טעויות</option></select></label>
+    </section>
+    <section>
+      <h3>תצוגה</h3>
+      <label>גודל טקסט <input type="range" id="scale" min="0.75" max="1.35" step="0.05"></label>
+      <button id="themeDark">כהה חם</button><button id="themeSepia">ספיה</button>
+    </section>
+    <section>
+      <h3>דפים</h3>
+      <button id="prevPage">→ דף קודם</button><button id="skipPage">דף הבא ←</button><button id="restart">התחל מחדש</button>
+    </section>
+    <section>
+      <h3>נתונים</h3>
+      <button id="dlJson">⬇ יומן JSON</button><button id="dlCsv">⬇ יומן CSV</button><button id="cpLog">📋 העתק יומן</button>
+      <div class="hint" id="logInfo"></div>
+    </section>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ---------- story: one sentence per page, units = letter + nikud, anchored in the word.
+   Rule kept: no ב/כ/פ without dagesh (the teacher cues teach בּ כּ פּ), no final ך/ף. ---------- */
+const PAGES = [
+  {scene:"arrive", words:[["אוֹרִי",["אוֹ","רִי"]],["בָּא",["בָּא"]],["לָאִי.",["לָ","אִי."]]]},
+  {scene:"trees",  words:[["עַל",["עַל"]],["הָאִי",["הָ","אִי"]],["יֵשׁ",["יֵשׁ"]],["עֵצִים.",["עֵ","צִים."]]]},
+  {scene:"chop",   words:[["אוֹרִי",["אוֹ","רִי"]],["כּוֹרֵת",["כּוֹ","רֵת"]],["עֵץ.",["עֵץ."]]]},
+  {scene:"house",  words:[["הוּא",["הוּא"]],["בּוֹנֶה",["בּוֹ","נֶה"]],["בַּיִת",["בַּ","יִת"]],["קָטָן.",["קָ","טָן."]]]},
+  {scene:"night",  words:[["פִּתְאוֹם",["פִּתְ","אוֹם"]],["יוֹרֵד",["יוֹ","רֵד"]],["לַיְלָה.",["לַיְ","לָה."]]]},
+  {scene:"zombie", words:[["זוֹמְבִּי",["זוֹמְ","בִּי"]],["בָּא",["בָּא"]],["אֶל",["אֶל"]],["הַבַּיִת!",["הַ","בַּ","יִת!"]]]},
+  {scene:"brave",  words:[["אוֹרִי",["אוֹ","רִי"]],["לֹא",["לֹא"]],["פּוֹחֵד.",["פּוֹ","חֵד."]]]},
+  {scene:"torch",  words:[["הוּא",["הוּא"]],["מַדְלִיק",["מַדְ","לִיק"]],["לַפִּיד",["לַ","פִּיד"]],["גָּדוֹל.",["גָּ","דוֹל."]]]},
+  {scene:"runaway",words:[["הַזּוֹמְבִּי",["הַ","זּוֹמְ","בִּי"]],["בּוֹרֵחַ!",["בּוֹ","רֵחַ!"]]]},
+  {scene:"treasure",words:[["בַּבֹּקֶר",["בַּ","בֹּ","קֶר"]],["אוֹרִי",["אוֹ","רִי"]],["מוֹצֵא",["מוֹ","צֵא"]],["אוֹצָר!",["אוֹ","צָר!"]]]}
+];
+const CUE_FILE = {"א":"alef","ב":"bet","ג":"gimel","ד":"dalet","ה":"he","ו":"vav","ז":"zayin","ח":"het","ט":"tet","י":"yod","כ":"kaf","ך":"kaf","ל":"lamed","מ":"mem","ם":"mem","נ":"nun","ן":"nun","ס":"samekh","ע":"ayin","פ":"pe","ף":"pe","צ":"tsadi","ץ":"tsadi","ק":"qof","ר":"resh","ש":"shin","ת":"tav"};
+const CUE_SRC = window.CUE_DATA || null; /* filled in the offline build */
+function cueUrl(letter){ const f=CUE_FILE[letter]; if(!f) return null; return CUE_SRC ? CUE_SRC[f] : "cues/"+f+".png"; }
+const strip = s => s.replace(/[.!,?]/g,"");
+const bare = s => s.replace(/[֑-ׇ]/g,"");
+
+/* ---------- pixel art (original blocky art) ---------- */
+const C = {sky:"#5f8fbf", skyN:"#141b33", sea:"#2f5f8f", seaN:"#16284a", grass:"#5c9a43", grassN:"#2d4d26", dirt:"#7a5230", dirtN:"#3e2a19",
+  sand:"#d8c48a", sandN:"#6b6145", trunk:"#6b4a2b", leaf:"#3f7f34", leafN:"#1f4220", plank:"#b88a52", plankN:"#5e4729", roof:"#8a3b2b", roofN:"#45201a",
+  skin:"#e2b48c", hair:"#4a2e1a", shirt:"#e07b2e", pants:"#3a6b8f", z:"#6fa64a", zs:"#6b4b8f", zp:"#3a3354", moon:"#f4ecc8", star:"#f4ecc8", fire:"#ffb54a", fire2:"#ff7a2a", gold:"#f2c94c", chest:"#9a6a35", gem:"#5fd3e0", win:"#ffd27a"};
+function R(x,y,w,h,c){ return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`; }
+function kid(x,y,flip){ /* 6 wide, 14 tall */
+  return `<g transform="translate(${x},${y})${flip?" scale(-1,1) translate(-6,0)":""}">`+R(1,0,4,1,C.hair)+R(1,1,4,4,C.skin)+R(1,1,4,1,C.hair)+R(3,2,1,1,"#222")+R(1,2,1,1,"#222")+R(0,5,6,5,C.shirt)+R(1,10,2,4,C.pants)+R(3,10,2,4,C.pants)+`</g>`;
+}
+function zombie(x,y,flip){
+  return `<g transform="translate(${x},${y})${flip?" scale(-1,1) translate(-6,0)":""}">`+R(1,0,4,5,C.z)+R(1,2,1,1,"#111")+R(3,2,1,1,"#111")+R(0,5,6,5,C.zs)+R(-3,6,3,2,C.z)+R(1,10,2,4,C.zp)+R(3,10,2,4,C.zp)+`</g>`;
+}
+function tree(x,y,n){ return R(x+3,y+8,3,10,C.trunk)+R(x,y,9,9,n?C.leafN:C.leaf)+R(x+2,y-3,5,3,n?C.leafN:C.leaf); }
+function house(x,y,n,lit){ return R(x,y+6,22,14,n?C.plankN:C.plank)+R(x-2,y+3,26,4,n?C.roofN:C.roof)+R(x+2,y,18,3,n?C.roofN:C.roof)+R(x+9,y+12,5,8,n?"#2a1d10":"#5a3a1c")+R(x+3,y+9,4,4,lit?C.win:(n?"#1c2333":"#9cc3e0"))+R(x+16,y+9,4,4,lit?C.win:(n?"#1c2333":"#9cc3e0")); }
+function torch(x,y,big){ return R(x,y+4,2,8,C.trunk)+R(x-1,y+1,4,4,C.fire2)+R(x,y,2,3,C.fire)+(big?`<circle cx="${x+1}" cy="${y+3}" r="22" fill="${C.fire}" opacity=".14"/><circle cx="${x+1}" cy="${y+3}" r="12" fill="${C.fire}" opacity=".18"/>`:""); }
+function stars(){ let s=""; [[12,8],[30,14],[52,6],[70,12],[96,5],[118,15],[140,8],[150,20],[84,20],[22,24]].forEach(([x,y])=>s+=R(x,y,1,1,C.star)); return s; }
+function island(n){ return R(0,62,160,38,n?C.seaN:C.sea)+R(20,58,120,6,n?C.sandN:C.sand)+R(26,54,108,6,n?C.grassN:C.grass)+R(26,60,108,8,n?C.dirtN:C.dirt); }
+function scene(name){
+  const night = ["night","zombie","brave","torch","runaway"].includes(name);
+  let s = R(0,0,160,100, night?C.skyN:(name==="treasure"?"#d9a066":C.sky));
+  if(name==="treasure") s += R(0,30,160,32,"#e8b77a")+R(70,40,20,6,"#f6d27d");
+  if(night) s += stars()+R(128,10,10,10,C.moon)+R(130,12,3,3,"#d8cf9f");
+  else if(name!=="treasure") s += R(132,10,12,12,"#f6d27d");
+  s += island(night);
+  const g=40; /* ground line y for feet: 54 */
+  switch(name){
+    case "arrive": s += R(6,60,16,4,"#7a5230")+R(8,57,12,3,"#9a6a35")+kid(60,40,false); break;
+    case "trees": s += tree(36,30)+tree(64,26)+tree(100,32)+kid(84,40,true); break;
+    case "chop": s += tree(50,30)+R(44,50,5,4,C.trunk)+R(38,50,5,4,C.trunk)+kid(68,40,true)+R(64,44,4,2,"#999")+R(66,46,1,5,C.trunk); break;
+    case "house": s += house(56,34,false,false)+kid(92,40,true)+tree(30,30); break;
+    case "night": s += house(56,34,true,true)+tree(30,30,true); break;
+    case "zombie": s += house(56,34,true,true)+zombie(104,40,true)+tree(30,30,true); break;
+    case "brave": s += house(40,34,true,true)+kid(76,40,false)+zombie(112,40,true); break;
+    case "torch": s += house(40,34,true,true)+kid(76,40,false)+torch(85,40,true)+zombie(116,40,true); break;
+    case "runaway": s += house(40,34,true,true)+kid(76,40,false)+torch(85,40,true)+zombie(140,42,false)+R(134,48,3,1,"#888")+R(132,51,3,1,"#888"); break;
+    case "treasure": s += house(30,34,false,false)+kid(72,40,true)+R(88,46,16,8,C.chest)+R(88,42,16,4,"#7a5228")+R(95,47,2,3,C.gold)+R(90,43,3,2,C.gold)+R(96,42,3,2,C.gem)+R(100,43,2,2,C.gold); break;
+  }
+  return `<svg viewBox="0 0 160 100" preserveAspectRatio="xMidYMid slice" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">${s}</svg>`;
+}
+
+/* ---------- storage + settings ---------- */
+const $ = id => document.getElementById(id);
+const store = { get(k,d){ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){return d;} }, set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} } };
+const settings = Object.assign({mode:"units", hintAfter:"1", modelAfter:"2", scale:1, theme:"dark"}, store.get("ori.tab.settings",{}));
+function saveSettings(){ store.set("ori.tab.settings", settings); applySettings(); }
+function applySettings(){ document.documentElement.style.setProperty("--text-scale", settings.scale); document.body.classList.toggle("sepia", settings.theme==="sepia"); }
+
+/* ---------- session state + log ---------- */
+let S = null;
+function now(){ return Date.now(); }
+function newSession(){
+  S = {id:new Date().toISOString().replace(/[:.]/g,"-"), started:now(), page:0, wi:0, ui:0, phase:"units", misses:0, t0:0, stats:{correct:0, again:0, models:0}, events:[]};
+}
+function log(type, extra){
+  if(!S) return;
+  const p = PAGES[S.page], w = p && p.words[S.wi];
+  const e = Object.assign({type, iso:new Date().toISOString(), t_session_s: +((now()-S.started)/1000).toFixed(2), t_video_s: REC.on ? +((now()-REC.started)/1000).toFixed(2) : null,
+    page:S.page+1, word: w ? strip(w[0]) : null, word_index:S.wi+1, step: S.phase==="blend" ? "word" : "unit", unit: w ? (S.phase==="blend" ? strip(w[0]) : strip(w[1][S.ui])) : null, unit_index: S.phase==="blend"?null:S.ui+1, try: S.misses+1, mode:settings.mode}, extra||{});
+  S.events.push(e);
+  persist();
+}
+function persist(){ const all=store.get("ori.tab.sessions",{}); all[S.id]={id:S.id, started:S.started, events:S.events, stats:S.stats}; store.set("ori.tab.sessions",all); }
+
+/* ---------- reading flow ---------- */
+function paintDots(){ $("dots").innerHTML = PAGES.map((_,i)=>`<i class="${i<S.page?"done":i===S.page?"now":""}"></i>`).join(""); }
+function paint(){
+  const p = PAGES[S.page];
+  $("art").innerHTML = scene(p.scene);
+  $("sentence").innerHTML = p.words.map((w,i)=>{
+    const cls = i<S.wi ? "w done" : i===S.wi ? "w cur"+(S.phase==="blend"?" blend":"") : "w";
+    const inner = i===S.wi ? w[1].map((u,j)=>`<span class="u${(S.phase!=="blend" && j===S.ui)?" on":""}">${u}</span>`).join("") : w[0];
+    return `<span class="${cls}">${inner}</span>`;
+  }).join(" ");
+  $("say").innerHTML = S.phase==="blend" ? "עַכְשָׁו כָּל הַמִּלָּה" : "";
+  hideCue(); paintDots();
+}
+function curWord(){ return PAGES[S.page].words[S.wi]; }
+function startStep(){ S.misses=0; S.t0=now(); paint(); log("step_shown"); }
+function firstLetter(u){ const b=bare(strip(u)); return b[0]; }
+function showCue(why){
+  const u = S.phase==="blend" ? curWord()[1][0] : curWord()[1][S.ui], L = firstLetter(u), url = cueUrl(L);
+  if(!url) return;
+  $("cueImg").src = url; $("cueImg").alt = L; $("cue").classList.add("show");
+  log("hint_shown",{why, letter:L});
+}
+function hideCue(){ $("cue").classList.remove("show"); }
+function onOk(){
+  const ms = now()-S.t0; S.stats.correct++;
+  log("mark",{outcome:"correct", ms_on_step:ms});
+  advance();
+}
+function advance(){
+  const w = curWord();
+  if(S.phase==="word"){ /* word-first mode: read whole word correctly */ return nextWord(); }
+  if(S.phase==="units"){
+    if(S.ui < w[1].length-1){ S.ui++; return startStep(); }
+    if(w[1].length>1){ S.phase="blend"; return startStep(); }
+  }
+  nextWord();
+}
+function nextWord(){
+  const p = PAGES[S.page];
+  if(S.wi < p.words.length-1){ S.wi++; S.ui=0; S.phase = settings.mode==="word" ? "blend" : "units"; S.wordFirst = settings.mode==="word"; return startStep(); }
+  pageDone();
+}
+function onAgain(){
+  const ms = now()-S.t0; S.misses++; S.stats.again++;
+  log("mark",{outcome:"again", ms_on_step:ms, try:S.misses});
+  /* word-first mode: a miss on the whole word drops to unit-by-unit */
+  if(S.wordFirst && S.phase==="blend" && S.ui===0 && curWord()[1].length>1){ S.wordFirst=false; S.phase="units"; S.ui=0; log("drop_to_units"); return startStep(); }
+  const ha = +settings.hintAfter, ma = +settings.modelAfter;
+  if(ha && S.misses>=ha) showCue("auto");
+  if(S.misses>=ma){
+    const shown = S.phase==="blend" ? strip(curWord()[0]) : strip(curWord()[1][S.ui]);
+    $("say").innerHTML = `אַבָּא אוֹמֵר: <b>${shown}</b> · אוֹרִי חוֹזֵר`;
+    S.stats.models++; log("model_shown");
+  }
+}
+function onWhole(){ S.stats.correct++; log("mark",{outcome:"whole_word_correct", ms_on_step:now()-S.t0}); nextWord(); }
+function pageDone(){
+  log("page_done");
+  const msgs=["כָּל הַכָּבוֹד!","יוֹפִי!","מְצֻיָּן!","אַלּוּף!"];
+  $("pdText").textContent = msgs[S.page % msgs.length];
+  $("nextPage").textContent = S.page===PAGES.length-1 ? "לַסּוֹף ←" : "לַדַּף הַבָּא ←";
+  $("pageDone").hidden=false;
+}
+function gotoPage(i){
+  $("pageDone").hidden=true;
+  if(i>=PAGES.length) return endSession();
+  S.page=Math.max(0,i); S.wi=0; S.ui=0; S.phase = settings.mode==="word" ? "blend" : "units"; S.wordFirst = settings.mode==="word";
+  log("page_start"); startStep();
+}
+function begin(withRec){
+  newSession(); applySettings();
+  $("start").hidden=true; $("end").hidden=true; $("app").hidden=false;
+  log("session_start",{user_agent:navigator.userAgent, screen:`${screen.width}x${screen.height}@${devicePixelRatio}`});
+  keepAwake();
+  if(withRec) startRec(); else paintRec();
+  gotoPage(0);
+}
+function endSession(){
+  log("session_end",{stats:S.stats});
+  $("app").hidden=true; $("end").hidden=false;
+  $("endArt").innerHTML = scene("treasure");
+  const st=S.stats, mins=Math.round((now()-S.started)/60000);
+  $("endStats").textContent = `${mins} דקות · ${st.correct} נכון · ${st.again} "עוד פעם" · ${st.models} פעמים אבא אמר`;
+  $("endStopRec").hidden = !REC.on;
+  $("endNote").textContent = REC.on ? "ההקלטה עדיין פועלת. לחצו 'עצור ושמור' כדי לשמור את הקובץ." : "";
+}
+
+/* ---------- recording: parent-started, always visible while on ---------- */
+const REC = {on:false, stream:null, rec:null, chunks:[], started:0, mime:"", timer:null, saved:[]};
+function pickMime(){
+  const c=["video/mp4;codecs=avc1,mp4a","video/mp4","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"];
+  if(!window.MediaRecorder) return null;
+  return c.find(m=>{ try{return MediaRecorder.isTypeSupported(m);}catch(e){return false;} }) || "";
+}
+async function startRec(){
+  if(REC.on) return;
+  const mime = pickMime();
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || mime===null){ recError("הדפדפן הזה לא מאפשר הקלטה כאן. צריך לפתוח את הכתובת המלאה ב-Chrome (https)."); return; }
+  try{
+    REC.stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"user", width:{ideal:960}, height:{ideal:720}, frameRate:{ideal:24}}, audio:{echoCancellation:true, noiseSuppression:false, autoGainControl:true}});
+  }catch(e){ recError("לא התקבלה הרשאה למצלמה/מיקרופון ("+(e.name||e)+"). אפשר לאשר בהגדרות האתר ב-Chrome ולנסות שוב."); return; }
+  REC.mime = mime; REC.chunks=[]; REC.id = "rec-"+new Date().toISOString().replace(/[:.]/g,"-");
+  try{ REC.rec = new MediaRecorder(REC.stream, Object.assign({videoBitsPerSecond:1500000, audioBitsPerSecond:96000}, mime?{mimeType:mime}:{})); }
+  catch(e){ REC.rec = new MediaRecorder(REC.stream); }
+  REC.mime = REC.rec.mimeType || mime || "video/webm";
+  await idbClear();
+  REC.rec.ondataavailable = ev => { if(ev.data && ev.data.size){ REC.chunks.push(ev.data); idbPut(ev.data); } };
+  REC.rec.onstop = finishRec;
+  REC.rec.start(4000);
+  REC.on=true; REC.started=now();
+  store.set("ori.tab.recMeta",{id:REC.id, mime:REC.mime, started:REC.started});
+  log("rec_start",{mime:REC.mime, video_settings: REC.stream.getVideoTracks()[0]?.getSettings?.() || null});
+  REC.timer = setInterval(paintRec, 1000); paintRec();
+  attachPreview();
+}
+function stopRec(){ if(!REC.on || !REC.rec) return; log("rec_stop"); REC.rec.stop(); }
+function finishRec(){
+  REC.on=false; clearInterval(REC.timer);
+  REC.stream.getTracks().forEach(t=>t.stop());
+  const blob = new Blob(REC.chunks,{type:REC.mime});
+  const ext = REC.mime.includes("mp4") ? "mp4" : "webm";
+  const name = `ori-${REC.id.slice(4,20)}.${ext}`;
+  download(blob, name);
+  REC.saved.push({name, size:blob.size, blob});
+  store.set("ori.tab.recMeta", null); idbClear();
+  paintRec(); paintSaved();
+  $("endStopRec").hidden=true;
+  if(!$("end").hidden) $("endNote").textContent = `ההקלטה נשמרה: ${name} (${(blob.size/1e6).toFixed(1)}MB) בתיקיית ההורדות. אל תשכחו להוריד גם את היומן.`;
+  /* the log is saved together with the video so the two always match */
+  if(S) downloadLog("json");
+}
+function recError(msg){ $("recState").innerHTML = `<span class="err">${msg}</span>`; $("startNote").innerHTML = `<span style="color:#ff9d8f">${msg}</span>`; paintRec(); if(S) log("rec_error",{msg}); }
+function fmt(s){ s=Math.floor(s); return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); }
+function paintRec(){
+  const b=$("recBadge");
+  b.classList.toggle("off", !REC.on);
+  $("recTxt").textContent = REC.on ? "מקליט "+fmt((now()-REC.started)/1000) : "לא מקליט";
+  if(!$("recState").querySelector(".err") || REC.on) $("recState").textContent = REC.on ? `מקליט עכשיו (${REC.mime}). העיגול האדום למעלה מראה שההקלטה פועלת.` : "ההקלטה כבויה.";
+  $("pRecStart").hidden = REC.on; $("pRecStop").hidden = !REC.on;
+}
+function paintSaved(){ $("savedList").innerHTML = REC.saved.map((r,i)=>`נשמר: ${r.name} (${(r.size/1e6).toFixed(1)}MB) <button data-save="${i}">הורד שוב</button>${navigator.canShare?` <button data-share="${i}">שתף…</button>`:""}`).join("<br>"); }
+function attachPreview(){ const v=$("preview"); if($("pPreview").checked && REC.stream){ v.srcObject=REC.stream; v.hidden=false; v.play().catch(()=>{}); } else { v.srcObject=null; v.hidden=true; } }
+function download(blob, name){ const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 60000); }
+
+/* chunks also go to IndexedDB so a crash or reload does not lose the recording */
+let dbp=null;
+function db(){ if(dbp) return dbp; dbp = new Promise((res,rej)=>{ const r=indexedDB.open("ori-rec",1); r.onupgradeneeded=()=>r.result.createObjectStore("chunks",{autoIncrement:true}); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); return dbp; }
+async function idbPut(b){ try{ const d=await db(); d.transaction("chunks","readwrite").objectStore("chunks").add(b); }catch(e){} }
+async function idbClear(){ try{ const d=await db(); await new Promise(r=>{ const t=d.transaction("chunks","readwrite"); t.objectStore("chunks").clear(); t.oncomplete=r; t.onerror=r; }); }catch(e){} }
+async function idbAll(){ try{ const d=await db(); return await new Promise(r=>{ const q=d.transaction("chunks").objectStore("chunks").getAll(); q.onsuccess=()=>r(q.result||[]); q.onerror=()=>r([]); }); }catch(e){ return []; } }
+async function checkRecover(){
+  const meta=store.get("ori.tab.recMeta",null); if(!meta) return;
+  const parts=await idbAll(); if(!parts.length) return;
+  const el=$("recover"); el.hidden=false;
+  el.innerHTML = `נמצאה הקלטה קודמת שלא נשמרה. <button class="big" id="recoverBtn" style="font-size:18px;padding:10px 18px;min-width:0">⬇ שמור אותה</button>`;
+  $("recoverBtn").onclick = async ()=>{ const blob=new Blob(parts,{type:meta.mime}); download(blob, `ori-recovered-${meta.id.slice(4,20)}.${meta.mime.includes("mp4")?"mp4":"webm"}`); store.set("ori.tab.recMeta",null); await idbClear(); el.textContent="נשמר לתיקיית ההורדות."; };
+}
+
+/* ---------- log export ---------- */
+function allEvents(){ const all=store.get("ori.tab.sessions",{}); return Object.values(all).flatMap(s=>s.events.map(e=>Object.assign({session:s.id},e))); }
+function downloadLog(kind){
+  const ev = S ? S.events.map(e=>Object.assign({session:S.id},e)) : allEvents();
+  const id = S ? S.id.slice(0,16) : "all";
+  if(kind==="json"){ download(new Blob([JSON.stringify({app:"ori-tablet-v1", session:S?S.id:null, recording: REC.saved.map(r=>r.name), pages:PAGES.map(p=>p.words.map(w=>w[0]).join(" ")), events:ev},null,1)],{type:"application/json"}), `ori-log-${id}.json`); }
+  else {
+    const cols=["session","type","iso","t_session_s","t_video_s","page","word_index","word","step","unit_index","unit","try","outcome","ms_on_step","why","letter","mode"];
+    const esc=v=>v==null?"":`"${String(typeof v==="object"?JSON.stringify(v):v).replace(/"/g,'""')}"`;
+    download(new Blob(["﻿"+cols.join(",")+"\n"+ev.map(e=>cols.map(c=>esc(e[c])).join(",")).join("\n")],{type:"text/csv"}), `ori-log-${id}.csv`);
+  }
+}
+
+/* ---------- misc: wake lock, fullscreen, parent panel ---------- */
+let wake=null;
+async function keepAwake(){ try{ if("wakeLock" in navigator){ wake=await navigator.wakeLock.request("screen"); } }catch(e){} }
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible" && S && !$("app").hidden) keepAwake(); if(S) log(document.visibilityState==="visible"?"app_visible":"app_hidden"); });
+function goFs(){ if(!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(()=>{}); }
+function toggleFs(){ if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen?.().catch(()=>{}); }
+function openP(){
+  $("veil").hidden=false; paintRec(); paintSaved();
+  document.querySelectorAll("[data-mode]").forEach(b=>b.classList.toggle("sel", b.dataset.mode===settings.mode));
+  $("hintAfter").value=settings.hintAfter; $("modelAfter").value=settings.modelAfter; $("scale").value=settings.scale;
+  $("themeDark").classList.toggle("sel",settings.theme!=="sepia"); $("themeSepia").classList.toggle("sel",settings.theme==="sepia");
+  $("logInfo").textContent = S ? `${S.events.length} אירועים בסשן הזה.` : "";
+}
+$("gear").onclick=openP; $("closeP").onclick=()=>{$("veil").hidden=true; attachPreview();};
+$("veil").onclick=e=>{ if(e.target===$("veil")) $("closeP").onclick(); };
+document.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{ settings.mode=b.dataset.mode; saveSettings(); openP(); });
+$("hintAfter").onchange=e=>{settings.hintAfter=e.target.value; saveSettings();};
+$("modelAfter").onchange=e=>{settings.modelAfter=e.target.value; saveSettings();};
+$("scale").oninput=e=>{settings.scale=+e.target.value; saveSettings();};
+$("themeDark").onclick=()=>{settings.theme="dark"; saveSettings(); openP();};
+$("themeSepia").onclick=()=>{settings.theme="sepia"; saveSettings(); openP();};
+$("pRecStart").onclick=startRec; $("pRecStop").onclick=stopRec; $("pPreview").onchange=attachPreview;
+$("savedList").onclick=e=>{ const s=e.target.dataset.save, sh=e.target.dataset.share; if(s!=null){ const r=REC.saved[+s]; download(r.blob,r.name);} if(sh!=null){ const r=REC.saved[+sh]; const f=new File([r.blob],r.name,{type:r.blob.type}); if(navigator.canShare({files:[f]})) navigator.share({files:[f]}).catch(()=>{}); } };
+$("prevPage").onclick=()=>{ $("veil").hidden=true; if(S) gotoPage(S.page-1); };
+$("skipPage").onclick=()=>{ $("veil").hidden=true; if(S){ log("page_skipped"); gotoPage(S.page+1);} };
+$("restart").onclick=()=>{ $("veil").hidden=true; if(S) gotoPage(0); };
+$("dlJson").onclick=()=>downloadLog("json"); $("dlCsv").onclick=()=>downloadLog("csv");
+$("cpLog").onclick=()=>{ const ev=S?S.events:allEvents(); navigator.clipboard.writeText(JSON.stringify(ev)).then(()=>{$("logInfo").textContent="היומן הועתק. אפשר להדביק אותו בצ'אט עם Claude.";},()=>{$("logInfo").textContent="ההעתקה נכשלה.";}); };
+$("fs").onclick=toggleFs;
+$("recBadge").onclick=openP;
+$("bOk").onclick=onOk; $("bAgain").onclick=onAgain; $("bHint").onclick=()=>{ showCue("button"); };
+$("bWhole").onclick=onWhole; $("bMark").onclick=()=>{ log("parent_marker"); const b=$("bMark"); b.style.background="#5a4a1a"; setTimeout(()=>b.style.background="",400); };
+$("nextPage").onclick=()=>gotoPage(S.page+1);
+$("startRec").onclick=()=>{ goFs(); begin(true); };
+$("startNoRec").onclick=()=>{ goFs(); begin(false); };
+$("endStopRec").onclick=stopRec;
+$("endLog").onclick=()=>downloadLog("json");
+$("endAgain").onclick=()=>{ $("end").hidden=true; $("app").hidden=false; gotoPage(0); };
+window.addEventListener("beforeunload",e=>{ if(REC.on){ e.preventDefault(); e.returnValue=""; } });
+$("coverArt").innerHTML = scene("torch");
+applySettings(); checkRecover();
+if(window.self!==window.top || location.protocol==="http:" && location.hostname!=="localhost"){ $("startNote").textContent="בגרסה הזו ההקלטה וההורדות לא זמינות (חלון מוגן). הקריאה והיומן עובדים; את היומן אפשר להעתיק מפאנל ההורה."; }
+</script>
+</body>
+</html>
