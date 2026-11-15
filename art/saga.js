@@ -112,7 +112,7 @@ const VILLAGE_VIEW = { wide: { s: 34, cx: 780, cy: 270 }, tall: { s: 32, cx: 490
 const HERO_C = { x: 9.4, y: 9.4 };       // in the cave room
 const HERO_M = { x: 10.2, y: 7.4 };       // outside, at the cave mouth
 const HERO_V = { x: 13.0, y: 12.4 };     // in the village
-const VILL = [{ x: 16.4, y: 11.6 }, { x: 9.4, y: 11.8 }];
+const VILL = [{ x: 17.4, y: 10.0 }, { x: 9.2, y: 12.0 }];
 const VILL_UP = VILL.map(v => Object.assign({ arms: 'up' }, v));
 const SKEL = { x: 12.6, y: 5.2 };
 const ZS = [{ x: 17.2, y: 13.8 }, { x: 17.6, y: 10.4 }, { x: 18.4, y: 12.6 }];
