@@ -187,9 +187,34 @@ body.quiet .rec.off{display:none}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border-radius:24px;padding:18px 10px;text-align:center}
 .stats b{display:block;font-size:clamp(30px,5.4vh,46px);font-weight:800;line-height:1.1}
 .stats span{font-size:19px;color:var(--dim-on-dark)}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.row2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
 .pagesq{display:flex;gap:12px;justify-content:flex-start}
 .pagesq span{width:34px;height:34px;border-radius:8px;background:#6FA85A;display:block}
+
+
+/* home */
+.home{overflow-y:auto;overflow-x:hidden}
+.home .start-wrap{flex:none;height:min(66vh,620px)}
+.home .title{font-size:clamp(40px,8vh,80px)}
+.left{font-size:clamp(20px,3vh,26px);color:var(--ink-on-dark);font-weight:600}
+.left b{color:var(--amber)}
+.ach{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.ach div{background:var(--surface);border-radius:18px;padding:10px 6px;text-align:center}
+.ach b{display:block;font-size:clamp(26px,4.4vh,38px);font-weight:800;line-height:1.15}
+.ach span{font-size:16px;color:var(--dim-on-dark)}
+.coll-h{margin:6px 0 0;font-family:var(--word);font-size:30px;color:var(--ink-on-dark)}
+.coll-h small{font-family:var(--ui);font-size:18px;color:var(--dim-on-dark);font-weight:600}
+.tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;padding-bottom:20px}
+@media (orientation:portrait){.tiles{grid-template-columns:repeat(3,1fr)} .home .start-wrap{height:auto} .home .start-wrap .art{height:30vh!important}}
+.tile{position:relative;background:var(--surface);border-radius:20px;padding:8px;display:flex;flex-direction:column;gap:6px;color:var(--ink-on-dark);text-align:center;box-shadow:0 6px 0 #1A1526}
+.tile:active{transform:translateY(4px);box-shadow:0 2px 0 #1A1526}
+.tile img{width:100%;aspect-ratio:11/7;object-fit:cover;border-radius:14px;display:block}
+.tile.locked img{filter:grayscale(.85) brightness(.55)}
+.tile .nm{font-family:var(--word);font-size:24px;font-weight:700}
+.tile .num{position:absolute;top:14px;right:14px;background:rgba(20,16,30,.75);border-radius:10px;padding:2px 9px;font-size:16px;font-weight:800}
+.tile .ok{position:absolute;top:14px;left:14px;width:30px;height:30px;border-radius:30px;background:#36A54F;display:grid;place-items:center}
+.tile.cur{box-shadow:0 0 0 4px var(--amber),0 6px 0 #1A1526}
+.tile .q{position:absolute;inset:8px 8px auto 8px;aspect-ratio:11/7;display:grid;place-items:center;font-size:44px;font-weight:800;color:rgba(255,255,255,.55)}
 
 /* parent panel */
 .veil{position:fixed;inset:0;z-index:10;background:rgba(15,12,24,.55);display:flex;justify-content:flex-start}
@@ -219,29 +244,40 @@ body.quiet .rec.off{display:none}
 <body class="quiet">
 
 <!-- START -->
-<section class="screen" id="start">
+<section class="screen home" id="start">
   <div class="starttop" id="startTop">
-    <button class="kb kb-v" id="startFs"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>מסך מלא</button>
+    <span class="kicker" style="margin-inline-end:auto">מסך הבית</span>
+    <span class="rec" id="homeRec" hidden><i></i><span>מקליט</span><span class="t" id="homeRecTime"></span></span>
     <button class="kb kb-v" id="installBtn"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M12 7v8M9 12l3 3 3-3"/></svg>הוסף למסך הבית</button>
-    <span class="note" id="installHint" hidden></span>
+    <button class="kb kb-v" id="startFs"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>מסך מלא</span></button>
+    <button class="kb kb-v ib" id="homeGear" aria-label="פאנל הורה"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button>
   </div>
+  <span class="note" id="installHint" hidden></span>
   <div class="start-wrap">
     <div class="art" id="startArt"></div>
     <div class="start-side">
-      <div class="kicker">סיפור של 10 דפים</div>
       <h1 class="title">אוֹרִי וְהָאִי<br>שֶׁל הַקֻּבִּיּוֹת</h1>
-      <p class="lead">אורי קורא מילה אחרי מילה. ההורה יושב לידו ומסמן נכון או עוד פעם.</p>
-      <button class="kb kb-c bigbtn" id="startRec"><i style="width:24px;height:24px;border-radius:24px;background:var(--rec);display:inline-block"></i>התחל עם הקלטה</button>
-      <button class="kb kb-v bigbtn second" id="startNoRec">התחל בלי הקלטה</button>
-      <p class="note" id="startNote">ההקלטה (מצלמה קדמית וקול) נשמרת רק בטאבלט, בתיקיית ההורדות.</p>
+      <div class="left" id="leftLine"></div>
+      <div class="ach" id="ach"></div>
+      <div id="resumeBox" hidden>
+        <button class="kb kb-g bigbtn bob" id="resumeBtn"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H5M11 6l-6 6 6 6"/></svg><span id="resumeLbl">המשך לקרוא</span></button>
+      </div>
+      <div id="newBox" style="display:flex;flex-direction:column;gap:14px">
+        <button class="kb kb-c bigbtn" id="startRec"><i style="width:24px;height:24px;border-radius:24px;background:var(--rec);display:inline-block"></i><span id="startRecLbl">התחל עם הקלטה</span></button>
+        <button class="kb kb-v bigbtn second" id="startNoRec">התחל בלי הקלטה</button>
+        <p class="note" id="startNote">ההקלטה (מצלמה קדמית וקול) נשמרת רק בטאבלט, בתיקיית ההורדות.</p>
+      </div>
       <div class="recover" id="recover" hidden><span>נמצאה הקלטה קודמת שלא נשמרה.</span><button id="recoverBtn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>שמור אותה</button></div>
     </div>
   </div>
+  <h2 class="coll-h">הָאוֹסֶף שֶׁל אוֹרִי <small id="collCount"></small></h2>
+  <div class="tiles" id="tiles"></div>
 </section>
 
 <!-- READING -->
 <div class="app" id="app" hidden>
   <div class="top">
+    <button class="kb kb-v ib" id="homeBtn" aria-label="מסך הבית"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></button>
     <button class="kb kb-v ib" id="gear" aria-label="פאנל הורה"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button>
     <button class="kb kb-v rec off" id="recBadge" aria-label="מצב הקלטה, פתיחת פאנל הורה"><i></i><span id="recTxt">לא מקליט</span><span class="t" id="recTime"></span></button>
     <div class="prog"><div class="dots" id="dots"></div><b id="pageLbl"></b></div>
@@ -282,6 +318,7 @@ body.quiet .rec.off{display:none}
       <button class="kb kb-r bigbtn" id="endStopRec" hidden><i style="width:18px;height:18px;border-radius:3px;background:#fff;display:inline-block"></i>עצור ושמור הקלטה</button>
       <div class="row2">
         <button class="kb kb-v bigbtn second" id="endLog"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>הורד יומן סשן</button>
+        <button class="kb kb-v bigbtn second" id="endHome"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>מסך הבית</button>
         <button class="kb kb-b bigbtn second" id="endAgain"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4v5h5"/></svg>קרא שוב</button>
       </div>
       <p class="note" id="endNote"></p>
@@ -498,7 +535,7 @@ function reward(){ chime(); stars(); }
 
 /* ---------- flow ---------- */
 function startStep(){ S.misses=0; S.t0=now(); banner(null); paint(); log("step_shown"); }
-function wordDone(){
+function wordDone(){ PROG.words++; saveProg();
   const isReveal = S.wi===curPage().reveal;
   if(isReveal && !S.revealed){ S.revealed=true; log("reveal_shown",{reveal_word:strip(curWord()[0])});
     const r=$("art").querySelector(".reveal"); if(r) r.classList.add("on");
@@ -508,7 +545,7 @@ function wordDone(){
 }
 function countReads(units){ units.forEach(u=>cueItems(u).forEach(it=>{ if(it.type==="letter") reads[it.letter]=(reads[it.letter]||0)+1; })); store.set("ori.t3.letterReads",reads); }
 function onOk(){
-  if(!S || $("flash").classList.contains("on")) return;
+  if(!S || $("flash").classList.contains("on")) return; PROG.stars++; saveProg();
   S.stats.correct++; log("mark",{outcome:"correct", ms_on_step:now()-S.t0}); reward();
   const w=curWord();
   if(S.phase==="units") countReads([w[1][S.ui]]);
@@ -524,7 +561,7 @@ function onAgain(){
   if(S.wordFirst && S.phase==="blend" && curWord()[1].length>1){ S.wordFirst=false; S.phase="units"; S.ui=0; log("drop_to_units"); return startStep(); }
   if(S.misses >= +settings.modelAfter){ const shown = S.phase==="blend" ? strip(curWord()[0]) : strip(curWord()[1][S.ui]); banner(shown); S.stats.models++; log("model_shown"); }
 }
-function onWhole(){ if(!S || $("flash").classList.contains("on")) return; S.stats.correct++; log("mark",{outcome:"whole_word_correct", ms_on_step:now()-S.t0}); reward(); countReads(curWord()[1]); wordDone(); }
+function onWhole(){ if(!S || $("flash").classList.contains("on")) return; PROG.stars++; saveProg(); S.stats.correct++; log("mark",{outcome:"whole_word_correct", ms_on_step:now()-S.t0}); reward(); countReads(curWord()[1]); wordDone(); }
 function nextWord(){
   if(S.wi < curPage().words.length-1){ S.wi++; S.ui=0; S.phase = settings.mode==="word" ? "blend" : "units"; S.wordFirst = settings.mode==="word"; return startStep(); }
   pageEnd();
@@ -547,21 +584,56 @@ function gotoPage(i){
 }
 function preload(n){ if(n>PAGES.length) return; const portrait=matchMedia("(orientation: portrait)").matches; ["base","reveal"].forEach(st=>{ const im=new Image(); im.src=`art/p${n}-${st}-${portrait?"wide":"tall"}.svg`; }); }
 function begin(withRec){
-  newSession(); quietOverride=null;
+  newSession(); quietOverride=null; const first = startPage;
   $("start").hidden=true; $("end").hidden=true; $("app").hidden=false;
   log("session_start",{user_agent:navigator.userAgent, screen:`${screen.width}x${screen.height}@${devicePixelRatio}`, settings:Object.assign({},settings)});
   keepAwake();
   if(withRec) startRec(); else paintRec();
-  gotoPage(0);
+  gotoPage(first);
 }
 function endSession(){
-  log("session_end",{stats:S.stats});
+  log("session_end",{stats:S.stats}); S.ended=true; startPage=0;
   $("app").hidden=true; $("end").hidden=false; document.body.classList.remove("quiet");
   $("endArt").innerHTML = artHTML(10,true,true);
   $("stMin").textContent=Math.max(1,Math.round((now()-S.started)/60000)); $("stOk").textContent=S.stats.correct; $("stAgain").textContent=S.stats.again; $("stModel").textContent=S.stats.models;
   $("endStopRec").hidden = !REC.on;
   $("endNote").textContent = REC.on ? "ההקלטה עדיין פועלת. היומן נשמר יחד עם הווידאו, כדי שהשניים תמיד יתאימו." : "";
 }
+
+
+/* ---------- home: progress, achievements, collection, page picker ---------- */
+let PROG = Object.assign({done:{}, stars:0, words:0}, store.get("ori.t3.progress",{}));
+function saveProg(){ store.set("ori.t3.progress", PROG); }
+let startPage = 0;
+const live = () => S && !S.ended;
+function paintHome(){
+  const done = Object.keys(PROG.done).length, left = PAGES.length - done;
+  const cur = live() ? S.page : startPage;
+  $("leftLine").innerHTML = left>0 ? `נקראו <b>${done}</b> מתוך ${PAGES.length} דפים · נשארו <b>${left}</b> עד האוצר` : `<b>כל הסיפור נקרא!</b> אפשר לקרוא שוב כל דף`;
+  const mastered = Object.values(reads).filter(n=>n>=3).length;
+  $("ach").innerHTML = `<div><b>⭐ ${PROG.stars}</b><span>כוכבים</span></div><div><b>${done}/10</b><span>דפים</span></div><div><b>${PROG.words}</b><span>מילים</span></div><div><b>${mastered}</b><span>אותיות שאורי שולט</span></div>`;
+  $("resumeBox").hidden = !live(); $("newBox").style.display = live() ? "none" : "flex";
+  if(live()) $("resumeLbl").textContent = `המשך לקרוא · דף ${S.page+1}`;
+  $("startRecLbl").textContent = startPage ? `התחל עם הקלטה · מדף ${startPage+1}` : "התחל עם הקלטה";
+  $("startNoRec").textContent = startPage ? `התחל בלי הקלטה · מדף ${startPage+1}` : "התחל בלי הקלטה";
+  $("collCount").textContent = `${done} מתוך ${PAGES.length} פרסים`;
+  $("tiles").innerHTML = PAGES.map((p,i)=>{ const got = !!PROG.done[i+1]; const word = strip(p.words[p.reveal][0]);
+    return `<button class="tile${got?"":" locked"}${i===cur?" cur":""}" data-page="${i}" aria-label="דף ${i+1}${got?", נאסף":""}"><img src="art/thumb/p${i+1}-${got?"reveal":"base"}.jpg" alt="" loading="lazy">${got?"":'<span class="q">?</span>'}<span class="num">${i+1}</span>${got?'<span class="ok"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5L19.5 7"/></svg></span>':""}<span class="nm">${got?word:"…"}</span></button>`; }).join("");
+  $("homeRec").hidden = !REC.on; if(REC.on) $("homeRecTime").textContent = fmt((now()-REC.started)/1000);
+  $("startArt").innerHTML = artHTML(Math.min(10, (live()?S.page:startPage)+1), true, true);
+}
+function openHome(){
+  if(S && live()) log("home_open");
+  $("app").hidden=true; $("end").hidden=true; $("start").hidden=false; document.body.classList.remove("quiet");
+  paintHome();
+}
+function resume(){ $("start").hidden=true; $("app").hidden=false; if(S.phase==="pageEnd") pageEnd(); else paint(); log("home_resume"); }
+$("tiles").addEventListener("click",e=>{ const t=e.target.closest("[data-page]"); if(!t) return; const i=+t.dataset.page;
+  if(live()){ log("page_jump",{to:i+1}); $("start").hidden=true; $("app").hidden=false; gotoPage(i); }
+  else { startPage=i; paintHome(); } });
+$("resumeBtn").onclick=resume;
+$("homeBtn").onclick=openHome; $("endHome").onclick=openHome; $("homeGear").onclick=openP;
+setInterval(()=>{ if(!$("start").hidden && REC.on) $("homeRecTime").textContent = fmt((now()-REC.started)/1000); }, 1000);
 
 /* ---------- recording: parent-started, always visible while on ---------- */
 const REC = {on:false, stream:null, rec:null, chunks:[], started:0, mime:"", timer:null, saved:[]};
@@ -590,7 +662,7 @@ function finishRec(){
   const blob = new Blob(REC.chunks,{type:REC.mime}), ext = REC.mime.includes("mp4") ? "mp4" : "webm", name = `ori-${REC.id.slice(4,20)}.${ext}`;
   download(blob, name); REC.saved.push({name, size:blob.size, blob});
   store.set("ori.tab.recMeta", null); idbClear(); paintRec(); paintSaved();
-  $("endStopRec").hidden=true;
+  $("endStopRec").hidden=true; if(!$("start").hidden) paintHome();
   if(!$("end").hidden) $("endNote").textContent = `ההקלטה נשמרה: ${name} (${(blob.size/1e6).toFixed(1)}MB) בתיקיית ההורדות, יחד עם היומן.`;
   if(S) downloadLog("json");
 }
@@ -654,14 +726,14 @@ $("markBtn").onclick=()=>{ log("parent_marker"); const b=$("markBtn"); b.style.c
 $("stageEl").addEventListener("click",e=>{ const c=e.target.closest("[data-open]"); if(!c) return; const L=c.dataset.open; c.outerHTML=`<div class="card"><img src="cues/${CUE_FILE[L]}.png" alt=""></div>`; log("cue_opened",{letter:L}); log("hint_shown",{letter:L, why:"tap"}); });
 $("bOk").onclick=onOk; $("bAgain").onclick=onAgain; $("bWhole").onclick=onWhole;
 $("bSentAgain").onclick=()=>{ S.misses++; log("mark",{outcome:"sentence_again", ms_on_step:now()-S.t0}); };
-$("bNext").onclick=()=>{ log("mark",{outcome:"sentence_correct", ms_on_step:now()-S.t0}); reward(); gotoPage(S.page+1); };
+$("bNext").onclick=()=>{ log("mark",{outcome:"sentence_correct", ms_on_step:now()-S.t0}); reward(); PROG.done[S.page+1]=true; saveProg(); gotoPage(S.page+1); };
 $("startRec").onclick=()=>{ goFs(); begin(true); };
 $("startNoRec").onclick=()=>{ goFs(); begin(false); };
 $("endStopRec").onclick=stopRec;
 $("endLog").onclick=()=>downloadLog("json");
-$("endAgain").onclick=()=>{ $("end").hidden=true; $("app").hidden=false; gotoPage(0); };
+$("endAgain").onclick=()=>{ S.ended=false; $("end").hidden=true; $("app").hidden=false; gotoPage(0); };
 window.addEventListener("beforeunload",e=>{ if(REC.on){ e.preventDefault(); e.returnValue=""; } });
-$("startArt").innerHTML = artHTML(2,true,true);
+paintHome();
 applySettings(); checkRecover(); preload(1);
 /* install as an app (home-screen icon, opens full screen without the address bar) */
 const standalone = matchMedia("(display-mode: fullscreen)").matches || matchMedia("(display-mode: standalone)").matches;
