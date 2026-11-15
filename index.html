@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#221C30">
 <meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="mobile-web-app-capable" content="yes">
 <title>אורי והאי של הקוביות</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -165,6 +169,8 @@ body.quiet .rec.off{display:none}
 
 /* screens */
 .screen{position:fixed;inset:0;z-index:5;background:var(--night);display:flex;flex-direction:column;padding:max(18px,env(safe-area-inset-top)) 22px max(18px,env(safe-area-inset-bottom));gap:16px}
+.starttop{display:flex;gap:12px;align-items:center;flex-shrink:0}
+.starttop button{height:56px;padding:0 18px;border-radius:18px;font-size:19px;font-weight:800;display:flex;align-items:center;gap:10px}
 .start-wrap,.end-wrap{flex:1;min-height:0;display:flex;gap:40px}
 .start-wrap .art,.end-wrap .art{width:41%;height:100%;order:2}
 .main.pe .art{width:40%}
@@ -214,6 +220,11 @@ body.quiet .rec.off{display:none}
 
 <!-- START -->
 <section class="screen" id="start">
+  <div class="starttop" id="startTop">
+    <button class="kb kb-v" id="startFs"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>מסך מלא</button>
+    <button class="kb kb-v" id="installBtn"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M12 7v8M9 12l3 3 3-3"/></svg>הוסף למסך הבית</button>
+    <span class="note" id="installHint" hidden></span>
+  </div>
   <div class="start-wrap">
     <div class="art" id="startArt"></div>
     <div class="start-side">
@@ -652,6 +663,17 @@ $("endAgain").onclick=()=>{ $("end").hidden=true; $("app").hidden=false; gotoPag
 window.addEventListener("beforeunload",e=>{ if(REC.on){ e.preventDefault(); e.returnValue=""; } });
 $("startArt").innerHTML = artHTML(2,true,true);
 applySettings(); checkRecover(); preload(1);
+/* install as an app (home-screen icon, opens full screen without the address bar) */
+const standalone = matchMedia("(display-mode: fullscreen)").matches || matchMedia("(display-mode: standalone)").matches;
+let installEvt=null;
+if(standalone){ $("installBtn").hidden=true; }
+window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); installEvt=e; });
+window.addEventListener("appinstalled",()=>{ $("installBtn").hidden=true; $("installHint").hidden=false; $("installHint").textContent="נוסף למסך הבית. מעכשיו פותחים מהאייקון."; });
+$("installBtn").onclick=async()=>{ if(installEvt){ installEvt.prompt(); const r=await installEvt.userChoice; installEvt=null; if(r.outcome!=="accepted"){ $("installHint").hidden=false; $("installHint").textContent="אפשר גם דרך תפריט ⋮ של Chrome ← הוספה למסך הבית."; } }
+  else { $("installHint").hidden=false; $("installHint").textContent="בתפריט ⋮ של Chrome בחרו \"הוספה למסך הבית\" או \"התקנת אפליקציה\"."; } };
+$("startFs").onclick=toggleFs;
+document.addEventListener("fullscreenchange",()=>{ $("startFs").lastChild.textContent = document.fullscreenElement ? "יציאה ממסך מלא" : "מסך מלא"; });
+if("serviceWorker" in navigator && location.protocol==="https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
 if(window.self!==window.top){ $("startNote").textContent="בחלון הזה ההקלטה וההורדות לא זמינות. הקריאה והיומן עובדים; את היומן אפשר להעתיק מפאנל ההורה."; }
 </script>
 </body>
