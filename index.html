@@ -187,15 +187,18 @@ body.quiet .rec.off{display:none}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border-radius:24px;padding:18px 10px;text-align:center}
 .stats b{display:block;font-size:clamp(30px,5.4vh,46px);font-weight:800;line-height:1.1}
 .stats span{font-size:19px;color:var(--dim-on-dark)}
-.row2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .pagesq{display:flex;gap:12px;justify-content:flex-start}
 .pagesq span{width:34px;height:34px;border-radius:8px;background:#6FA85A;display:block}
 
 
 /* home */
 .home{overflow-y:auto;overflow-x:hidden}
-.home .start-wrap{flex:none;height:min(66vh,620px)}
-.home .title{font-size:clamp(40px,8vh,80px)}
+.home .start-wrap{flex:none;height:auto;min-height:min(62vh,600px)}
+.home .start-wrap .art{height:auto;min-height:min(62vh,600px)}
+.home .start-side{gap:14px}
+.home .title{font-size:clamp(34px,6.4vh,62px)}
+.home .ach{display:none}
 .left{font-size:clamp(20px,3vh,26px);color:var(--ink-on-dark);font-weight:600}
 .left b{color:var(--amber)}
 .ach{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
@@ -215,6 +218,59 @@ body.quiet .rec.off{display:none}
 .tile .ok{position:absolute;top:14px;left:14px;width:30px;height:30px;border-radius:30px;background:#36A54F;display:grid;place-items:center}
 .tile.cur{box-shadow:0 0 0 4px var(--amber),0 6px 0 #1A1526}
 .tile .q{position:absolute;inset:8px 8px auto 8px;aspect-ratio:11/7;display:grid;place-items:center;font-size:44px;font-weight:800;color:rgba(255,255,255,.55)}
+
+/* home: room button + story cards */
+.roombtn{height:76px!important;padding:0 22px 0 10px!important;font-size:26px!important;font-family:var(--word);gap:12px!important}
+.roombtn small{font-size:17px;font-weight:700;opacity:.85}
+.av{width:56px;height:56px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:rgba(255,255,255,.18);flex-shrink:0;box-shadow:0 0 0 3px rgba(255,255,255,.7)}
+.av img{width:100%;height:100%;object-fit:cover;display:block}
+.books{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.book{position:relative;background:var(--surface);border-radius:18px;padding:6px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--ink-on-dark);box-shadow:0 5px 0 #1A1526}
+.book img{width:100%;aspect-ratio:2/1;object-fit:cover;border-radius:12px;display:block}
+.book .bt{font-family:var(--word);font-size:24px;font-weight:700;line-height:1.1}
+.book .bp{position:absolute;top:10px;left:10px;background:rgba(20,16,30,.8);border-radius:10px;padding:1px 8px;font-size:16px;font-weight:800}
+.book.on{box-shadow:0 0 0 4px var(--amber),0 5px 0 #1A1526}
+/* room */
+.room{overflow-y:auto;overflow-x:hidden}
+.hero{display:flex;gap:28px;align-items:center;flex-shrink:0}
+.photo{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer}
+.av.big{width:clamp(130px,22vh,190px);height:clamp(130px,22vh,190px);box-shadow:0 0 0 6px var(--amber),0 10px 24px rgba(0,0,0,.45);background:var(--surface2);color:var(--dim-on-dark)}
+.photo .pl{font-size:18px;font-weight:800;color:var(--amber)}
+.hero-side{flex:1;display:flex;flex-direction:column;gap:14px;min-width:0}
+.rstats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.rstats div{background:var(--surface);border-radius:18px;padding:10px 6px;text-align:center}
+.rstats b{display:block;font-size:clamp(30px,5vh,44px);font-weight:800;line-height:1.1;color:var(--amber)}
+.rstats b small{font-size:.55em;color:var(--dim-on-dark)}
+.rstats span{font-size:17px;color:var(--dim-on-dark)}
+.next{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--surface);border-radius:20px;padding:12px 18px;font-size:22px;flex-shrink:0}
+.next b{color:var(--amber)}
+.next button{margin-inline-start:auto;height:60px;padding:0 24px;border-radius:18px;font-size:22px;font-weight:800}
+.shelf{flex-shrink:0;display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
+.sh{display:flex;align-items:center;gap:14px}
+.sh h3{margin:0;font-family:var(--word);font-size:30px;color:var(--ink-on-dark)}
+.sh .cnt{font-size:20px;font-weight:800;color:var(--dim-on-dark)}
+.bar2{flex:1;height:14px;border-radius:14px;background:var(--surface);overflow:hidden}
+.bar2 i{display:block;height:100%;background:linear-gradient(90deg,#F2A541,#FFD27A);border-radius:14px}
+.slots{display:grid;grid-template-columns:repeat(10,1fr);gap:10px}
+@media (orientation:portrait){.slots{grid-template-columns:repeat(5,1fr)} .rstats{grid-template-columns:repeat(2,1fr)} .hero{flex-direction:column}}
+.slot{position:relative;aspect-ratio:3/4;border-radius:16px;background:repeating-linear-gradient(45deg,#2B2440 0 10px,#302848 10px 20px);border:3px dashed #5A4E7A;color:#8A7FA6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:4px;overflow:hidden}
+.slot .lock{opacity:.9}
+.slot .nm{font-family:var(--word);font-size:22px;font-weight:700}
+.slot.got{background:var(--surface2);border:3px solid var(--amber);color:var(--ink-on-dark);justify-content:flex-start;box-shadow:0 0 18px rgba(242,165,65,.35)}
+.slot.got img{width:100%;flex:1;min-height:0;object-fit:cover;border-radius:10px;display:block}
+.slot.got .nm{font-size:clamp(16px,2.4vh,22px);white-space:nowrap}
+.letters{display:grid;grid-template-columns:repeat(11,1fr);gap:10px;padding-bottom:24px}
+@media (orientation:portrait){.letters{grid-template-columns:repeat(6,1fr)}}
+.lt{position:relative;aspect-ratio:1;border-radius:16px;background:#2B2440;border:3px dashed #5A4E7A;display:grid;place-items:center;overflow:hidden}
+.lt b{font-family:var(--word);font-size:clamp(28px,5vh,44px);color:#6E6390}
+.lt i{position:absolute;bottom:0;right:0;height:6px;background:var(--amber)}
+.lt.got{background:#FFFDF7;border:3px solid #36A54F}
+.lt.got img{width:100%;height:100%;object-fit:contain}
+.lt.got b{position:absolute;top:2px;right:6px;font-size:20px;color:#36A54F}
+.cue.rafe .card{display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 0 0 4px #B2524A}
+.cue.rafe .card svg{width:72%;height:auto}
+.cue.rafe .card span{font-family:var(--word);font-size:calc(var(--cs) * .17);font-weight:700;color:#B2524A;direction:rtl}
+.cue.rafe .card .rl{font-family:var(--word);font-size:calc(var(--cs) * .5);color:#B2524A}
 
 /* parent panel */
 .veil{position:fixed;inset:0;z-index:10;background:rgba(15,12,24,.55);display:flex;justify-content:flex-start}
@@ -246,7 +302,8 @@ body.quiet .rec.off{display:none}
 <!-- START -->
 <section class="screen home" id="start">
   <div class="starttop" id="startTop">
-    <span class="kicker" style="margin-inline-end:auto">מסך הבית</span>
+    <button class="kb kb-g roombtn" id="roomBtn"><span class="av" id="homeAvatar"></span><span>הַחֶדֶר שֶׁלִּי</span><small>אוֹצָרוֹת</small></button>
+    <span style="margin-inline-end:auto"></span>
     <span class="rec" id="homeRec" hidden><i></i><span>מקליט</span><span class="t" id="homeRecTime"></span></span>
     <button class="kb kb-v" id="installBtn"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M12 7v8M9 12l3 3 3-3"/></svg>הוסף למסך הבית</button>
     <button class="kb kb-v" id="startFs"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>מסך מלא</span></button>
@@ -256,7 +313,8 @@ body.quiet .rec.off{display:none}
   <div class="start-wrap">
     <div class="art" id="startArt"></div>
     <div class="start-side">
-      <h1 class="title">אוֹרִי וְהָאִי<br>שֶׁל הַקֻּבִּיּוֹת</h1>
+      <div class="books" id="books"></div>
+      <h1 class="title" id="bookTitle"></h1>
       <div class="left" id="leftLine"></div>
       <div class="ach" id="ach"></div>
       <div id="resumeBox" hidden>
@@ -272,6 +330,23 @@ body.quiet .rec.off{display:none}
   </div>
   <h2 class="coll-h">הָאוֹסֶף שֶׁל אוֹרִי <small id="collCount"></small></h2>
   <div class="tiles" id="tiles"></div>
+</section>
+
+<!-- ORI'S ROOM -->
+<section class="screen room" id="room" hidden>
+  <div class="starttop">
+    <button class="kb kb-v" id="roomHome"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>מסך הבית</button>
+  </div>
+  <div class="hero">
+    <label class="photo"><span class="av big" id="roomAvatar"></span><span class="pl" id="photoLbl">הוסף תמונה</span><input type="file" id="photoIn" accept="image/*" hidden></label>
+    <div class="hero-side">
+      <h1 class="title">הַחֶדֶר שֶׁל אוֹרִי</h1>
+      <div class="rstats" id="roomStats"></div>
+    </div>
+  </div>
+  <div class="next" id="roomNext"></div>
+  <div id="roomBooks"></div>
+  <section class="shelf"><div class="sh"><h3>הָאוֹתִיּוֹת שֶׁל אוֹרִי</h3><span class="cnt">כל אות נפתחת אחרי 3 קריאות נכונות</span></div><div class="letters" id="roomLetters"></div></section>
 </section>
 
 <!-- READING -->
@@ -318,6 +393,7 @@ body.quiet .rec.off{display:none}
       <button class="kb kb-r bigbtn" id="endStopRec" hidden><i style="width:18px;height:18px;border-radius:3px;background:#fff;display:inline-block"></i>עצור ושמור הקלטה</button>
       <div class="row2">
         <button class="kb kb-v bigbtn second" id="endLog"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>הורד יומן סשן</button>
+        <button class="kb kb-g bigbtn second" id="endRoom"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h16v10H4z"/><path d="M4 10l2-5h12l2 5M12 10v10"/></svg>החדר שלי</button>
         <button class="kb kb-v bigbtn second" id="endHome"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>מסך הבית</button>
         <button class="kb kb-b bigbtn second" id="endAgain"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4v5h5"/></svg>קרא שוב</button>
       </div>
@@ -380,7 +456,7 @@ body.quiet .rec.off{display:none}
 "use strict";
 /* ---------- story (approved 2026-11-15). Every ב/כ/פ has a dagesh; no final ך/ף.
    words: [display text, units]; reveal = index of the word that reveals the page's hidden element ---------- */
-const PAGES = [
+const PAGES_ISLAND = [
   {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["בָּא",["בָּא"]],["לָאִי.",["לָ","אִי"]]]},
   {reveal:3, words:[["עַל",["עַל"]],["הָאִי",["הָ","אִי"]],["יֵשׁ",["יֵשׁ"]],["עֵצִים.",["עֵ","צִים"]]]},
   {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["לָקַח",["לָ","קַח"]],["עֵץ.",["עֵץ"]]]},
@@ -392,6 +468,40 @@ const PAGES = [
   {reveal:1, words:[["הַזּוֹמְבִּי",["הַ","זּוֹמְ","בִּי"]],["בָּרַח!",["בָּ","רַח"]]]},
   {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["מָצָא",["מָ","צָא"]],["אוֹצָר!",["אוֹ","צָר"]]]}
 ];
+/* story 2 (2026-11-15): kamatz/patach only (plus the name אוֹרִי). Every ב/כ/פ has a dagesh, no sin, no final ך/ף. */
+const PAGES_PANDA = [
+  {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["בָּא",["בָּא"]],["לָהָר.",["לָ","הָר"]]]},
+  {reveal:1, words:[["אוֹרִי",["אוֹ","רִי"]],["כָּרָה,",["כָּ","רָה"]],["כָּרָה,",["כָּ","רָה"]],["כָּרָה!",["כָּ","רָה"]]]},
+  {reveal:2, words:[["שָׁם",["שָׁם"]],["עָמַד",["עָ","מַד"]],["אַרְגָּז.",["אַרְ","גָּז"]]]},
+  {reveal:1, words:[["בָּאַרְגָּז",["בָּ","אַרְ","גָּז"]],["מַפָּה!",["מַ","פָּה"]]]},
+  {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["רָץ",["רָץ"]],["לַיַּעַר.",["לַ","יַּ","עַר"]]]},
+  {reveal:2, words:[["שָׁם",["שָׁם"]],["יָשַׁן",["יָ","שַׁן"]],["פַּנְדָּה.",["פַּנְ","דָּה"]]]},
+  {reveal:3, words:[["הַפַּנְדָּה",["הַ","פַּנְ","דָּה"]],["קָם.",["קָם"]],["הַפַּנְדָּה",["הַ","פַּנְ","דָּה"]],["צָחַק!",["צָ","חַק"]]]},
+  {reveal:3, words:[["הַפַּנְדָּה",["הַ","פַּנְ","דָּה"]],["כָּרָה,",["כָּ","רָה"]],["אוֹרִי",["אוֹ","רִי"]],["כָּרָה.",["כָּ","רָה"]]]},
+  {reveal:2, words:[["שָׁם",["שָׁם"]],["עָמַד",["עָ","מַד"]],["שַׁעַר!",["שַׁ","עַר"]]]},
+  {reveal:3, words:[["אוֹרִי",["אוֹ","רִי"]],["בָּא.",["בָּא"]],["גַּם",["גַּם"]],["הַפַּנְדָּה",["הַ","פַּנְ","דָּה"]],["בָּא!",["בָּא"]]]}
+];
+/* story 3 (2026-11-15): kamatz/patach + hirik. One planned exception: the פ in כַּפְרִי has no dagesh (sounds f);
+   it gets an f-mouth card instead of the teacher's פֶּה cue. */
+const PAGES_VILLAGER = [
+  {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["רָאָה",["רָ","אָה"]],["בַּיִת",["בַּ","יִת"]],["קָטָן.",["קָ","טָן"]]]},
+  {reveal:2, words:[["בַּבַּיִת",["בַּ","בַּ","יִת"]],["גָּר",["גָּר"]],["כַּפְרִי.",["כַּפְ","רִי"]]]},
+  {reveal:2, words:[["הַכַּפְרִי",["הַ","כַּפְ","רִי"]],["רָצָה",["רָ","צָה"]],["חִטָּה.",["חִ","טָּה"]]]},
+  {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["רָץ",["רָץ"]],["לַגַּן.",["לַ","גַּן"]]]},
+  {reveal:3, words:[["אוֹרִי",["אוֹ","רִי"]],["לָקַח",["לָ","קַח"]],["חִטָּה",["חִ","טָּה"]],["רַבָּה.",["רַ","בָּה"]]]},
+  {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["נָתַן",["נָ","תַן"]],["לַכַּפְרִי",["לַ","כַּפְ","רִי"]],["חִטָּה.",["חִ","טָּה"]]]},
+  {reveal:2, words:[["הַכַּפְרִי",["הַ","כַּפְ","רִי"]],["נָתַן",["נָ","תַן"]],["אִזְמָרַגְד!",["אִזְ","מָ","רַגְד"]]]},
+  {reveal:1, words:[["כַּמָּה",["כַּ","מָּה"]],["אִזְמָרַגְדִּים?",["אִזְ","מָ","רַגְ","דִּים"]],["רַבִּים!",["רַ","בִּים"]]]},
+  {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["קָנָה",["קָ","נָה"]],["סִירָה.",["סִי","רָה"]]]},
+  {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["שָׁט",["שָׁט"]],["בַּסִּירָה!",["בַּ","סִּי","רָה"]]]}
+];
+const STORIES = [
+  {id:"island", title:"אוֹרִי וְהָאִי שֶׁל הַקֻּבִּיּוֹת", short:"הָאִי", art:"art/", day:[1,2,3,4,10], cover:10, pages:PAGES_ISLAND},
+  {id:"panda", title:"אוֹרִי וְהַפַּנְדָּה", short:"הַפַּנְדָּה", art:"art/s2/", day:[1,2,3,4,5,6,7,8], cover:7, pages:PAGES_PANDA},
+  {id:"villager", title:"אוֹרִי וְהַכַּפְרִי", short:"הַכַּפְרִי", art:"art/s3/", day:[1,2,3,4,5,6,7,8,9], cover:8, pages:PAGES_VILLAGER}
+];
+let BOOK = 0, PAGES = PAGES_ISLAND;
+function setBook(b){ BOOK = Math.max(0, Math.min(STORIES.length-1, b|0)); PAGES = STORIES[BOOK].pages; try{ localStorage.setItem("ori.t3.book", String(BOOK)); }catch(e){} }
 const CUE_FILE = {"א":"alef","ב":"bet","ג":"gimel","ד":"dalet","ה":"he","ו":"vav","ז":"zayin","ח":"het","ט":"tet","י":"yod","כ":"kaf","ך":"kaf","ל":"lamed","מ":"mem","ם":"mem","נ":"nun","ן":"nun","ס":"samekh","ע":"ayin","פ":"pe","ף":"pe","צ":"tsadi","ץ":"tsadi","ק":"qof","ר":"resh","ש":"shin","ת":"tav"};
 const CUE_WORD = {alef:"אַרְנָב",bet:"בֶּרֶז",gimel:"גִּבּוֹר עָל",dalet:"דַּחְלִיל",he:"הֶגֶה",vav:"וָפֶל",zayin:"זָנָב",het:"חֶדֶר",tet:"טֶלֶפוֹן",yod:"יוֹיוֹ",kaf:"כַּדּוּר",lamed:"לָשׁוֹן לְמַעְלָה",mem:"מְשֻׁלָּשׁ",nun:"נוּרָה",samekh:"סַל",ayin:"עַיִן",pe:"פֶּה",tsadi:"צָב",qof:"קוּקוּ",resh:"רֶגֶל",shin:"שִׁנַּיִם",tav:"תַּנִּין"};
 const VOWEL = {a:{c:"var(--v-a)",hex:"#C8321F",mark:"אַ",name:"פה פתוח"}, i:{c:"var(--v-i)",hex:"#1F5FD0",mark:"אִ",name:"חיוך רחב"}, e:{c:"var(--v-e)",hex:"#1E7F45",mark:"אֵ",name:"פה חצי פתוח"}, o:{c:"var(--v-o)",hex:"#C96A0A",mark:"אוֹ",name:"שפתיים עגולות"}, u:{c:"var(--v-u)",hex:"#7A35B5",mark:"אוּ",name:"שפתיים מכווצות"}};
@@ -401,9 +511,12 @@ const MOUTH = {
  i:'<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M6 46 Q50 26 94 46 Q50 84 6 46Z" fill="#1F5FD0"/><path d="M19 47 Q50 37 81 47 Q50 68 19 47Z" fill="#FFFFFF"/><path d="M19 47 H81" stroke="#3A1420" stroke-width="2.5"/></svg>',
  o:'<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="52" r="30" fill="#C96A0A"/><circle cx="50" cy="52" r="15" fill="#3A1420"/></svg>',
  u:'<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="52" r="20" fill="#7A35B5"/><circle cx="50" cy="52" r="6.5" fill="#3A1420"/><path d="M24 38 L31 44 M76 38 L69 44 M24 66 L31 60 M76 66 L69 60" stroke="#7A35B5" stroke-width="4" stroke-linecap="round"/></svg>'};
+/* f / v: upper teeth on the lower lip (for פ and ב without a dagesh) */
+const RAFE_MOUTH = '<svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="50" rx="38" ry="24" fill="#D9786A"/><rect x="24" y="34" width="52" height="15" rx="4" fill="#FFFFFF"/><path d="M14 54 Q50 76 86 54 Q50 64 14 54Z" fill="#B2524A"/><path d="M28 50 H72" stroke="#3A1420" stroke-width="3"/></svg>';
 const FONTS = {alef:"'Alef'", noto:"'Noto Sans Hebrew'", rubik:"'Rubik'", frank:"'Frank Ruhl Libre'"};
 
 /* ---------- Hebrew unit analysis ---------- */
+setBook(+(localStorage.getItem("ori.t3.book")||0));
 const isLetter = ch => ch >= "א" && ch <= "ת";
 const strip = s => s.replace(/[.!,?]/g,"");
 const bare = s => s.replace(/[֑-ׇ]/g,"");
@@ -434,7 +547,8 @@ function unitHTML(unit, cls, colorMode){
 function cueItems(unit){
   const A = analyze(unit), items=[];
   A.letters.forEach((l,i)=>{
-    if(!l.carrier && !l.silent && CUE_FILE[l.ch]) items.push({type:"letter", letter:l.ch, file:CUE_FILE[l.ch]});
+    if(!l.carrier && !l.silent && "בכפ".includes(l.ch) && !l.marks.includes("ּ")) items.push({type:"rafe", letter:l.ch});
+    else if(!l.carrier && !l.silent && CUE_FILE[l.ch]) items.push({type:"letter", letter:l.ch, file:CUE_FILE[l.ch]});
     if(i===A.vowelAt && A.vowel) items.push({type:"vowel", v:A.vowel});
   });
   return items;
@@ -442,8 +556,9 @@ function cueItems(unit){
 
 /* ---------- art ---------- */
 function artHTML(n, revealed, bees){
-  const pic = st => `<picture><source media="(orientation: portrait)" srcset="art/p${n}-${st}-wide.svg"><img src="art/p${n}-${st}-tall.svg" alt=""></picture>`;
-  const day = [1,2,3,4,10].includes(n);
+  const A = STORIES[BOOK].art;
+  const pic = st => `<picture><source media="(orientation: portrait)" srcset="${A}p${n}-${st}-wide.svg"><img src="${A}p${n}-${st}-tall.svg" alt=""></picture>`;
+  const day = STORIES[BOOK].day.includes(n);
   return `<div style="position:absolute;inset:0">${pic("base")}</div><div class="reveal${revealed?" on":""}" style="position:absolute;inset:0">${pic("reveal")}</div>` +
     (bees && day ? `<span class="bee bee1" style="left:40%;top:63%"></span><span class="bee bee2" style="left:58%;top:66%"></span><span class="bee bee3" style="left:47%;top:71%"></span>` : "");
 }
@@ -471,7 +586,7 @@ function newSession(){ S = {id:new Date().toISOString().replace(/[:.]/g,"-"), st
 function log(type, extra){
   if(!S) return;
   const p = PAGES[S.page], w = p && p.words[S.wi];
-  const e = Object.assign({type, iso:new Date().toISOString(), t_session_s:+((now()-S.started)/1000).toFixed(2), t_video_s: REC.on ? +((now()-REC.started)/1000).toFixed(2) : null,
+  const e = Object.assign({type, book:STORIES[BOOK].id, iso:new Date().toISOString(), t_session_s:+((now()-S.started)/1000).toFixed(2), t_video_s: REC.on ? +((now()-REC.started)/1000).toFixed(2) : null,
     page:S.page+1, word: w ? strip(w[0]) : null, word_index:S.wi+1, step: S.phase==="blend" ? "word" : S.phase==="pageEnd" ? "sentence" : "unit",
     unit: w ? (S.phase==="blend" ? strip(w[0]) : strip(w[1][S.ui]||"")) : null, unit_index: S.phase==="units" ? S.ui+1 : null, try:S.misses+1, mode:settings.mode, quiet:isQuiet(), color:settings.color, font:settings.font}, extra||{});
   S.events.push(e); persist();
@@ -486,6 +601,8 @@ function paintTop(){
   $("pageLbl").textContent = `דף ${S.page+1} מתוך ${PAGES.length}`;
 }
 function cueHTML(it, small){
+  if(it.type==="rafe"){ const snd = {"פ":"f","ב":"v","כ":"ח"}[it.letter]; const pic = it.letter==="כ" ? `<b class="rl">ח</b>` : RAFE_MOUTH;
+    return `<div class="cue rafe"><span class="stem"></span><div class="card" role="img" aria-label="${it.letter} בלי נקודה נשמעת ${snd}">${pic}<span>${it.letter} = ${snd}</span></div></div>`; }
   if(it.type==="vowel"){ const V=VOWEL[it.v]; return `<div class="cue vowel" style="--vc:${V.c}"><span class="stem"></span><div class="card" role="img" aria-label="צורת הפה: ${V.name}">${MOUTH[it.v]}<span>${V.mark}</span></div></div>`; }
   const n = reads[it.letter]||0, fade = settings.cues==="fade" && !small;
   const state = fade ? (n>=6 ? "chip" : n>=3 ? "faded" : "") : "";
@@ -535,7 +652,7 @@ function reward(){ chime(); stars(); }
 
 /* ---------- flow ---------- */
 function startStep(){ S.misses=0; S.t0=now(); banner(null); paint(); log("step_shown"); }
-function wordDone(){ PROG.words++; saveProg();
+function wordDone(){ PROG.words++; PROG.seen[wordKey(curWord()[0])]=1; saveProg();
   const isReveal = S.wi===curPage().reveal;
   if(isReveal && !S.revealed){ S.revealed=true; log("reveal_shown",{reveal_word:strip(curWord()[0])});
     const r=$("art").querySelector(".reveal"); if(r) r.classList.add("on");
@@ -582,7 +699,7 @@ function gotoPage(i){
   log("page_start"); startStep();
   preload(S.page+2);
 }
-function preload(n){ if(n>PAGES.length) return; const portrait=matchMedia("(orientation: portrait)").matches; ["base","reveal"].forEach(st=>{ const im=new Image(); im.src=`art/p${n}-${st}-${portrait?"wide":"tall"}.svg`; }); }
+function preload(n){ if(n>PAGES.length) return; const portrait=matchMedia("(orientation: portrait)").matches; ["base","reveal"].forEach(st=>{ const im=new Image(); im.src=`${STORIES[BOOK].art}p${n}-${st}-${portrait?"wide":"tall"}.svg`; }); }
 function begin(withRec){
   newSession(); quietOverride=null; const first = startPage;
   $("start").hidden=true; $("end").hidden=true; $("app").hidden=false;
@@ -603,28 +720,42 @@ function endSession(){
 
 /* ---------- home: progress, achievements, collection, page picker ---------- */
 let PROG = Object.assign({done:{}, stars:0, words:0}, store.get("ori.t3.progress",{}));
+/* v2 progress: one "done" map per story; the first story's old map moves over as is */
+if(!PROG.books){ PROG.books = {island:{done:PROG.done||{}}}; }
+STORIES.forEach(b=>{ if(!PROG.books[b.id]) PROG.books[b.id]={done:{}}; });
+if(!PROG.seen) PROG.seen = {};
+delete PROG.done;
+const doneOf = b => PROG.books[STORIES[b].id].done;
+const bookDone = () => doneOf(BOOK);
+const wordKey = w => strip(w).replace(/[?]/g,"");
+const ALL_WORDS = [...new Set(STORIES.flatMap(b=>b.pages.flatMap(p=>p.words.map(w=>wordKey(w[0])))))];
+const TOTAL_PAGES = STORIES.reduce((a,b)=>a+b.pages.length,0);
 function saveProg(){ store.set("ori.t3.progress", PROG); }
 let startPage = 0;
 const live = () => S && !S.ended;
 function paintHome(){
-  const done = Object.keys(PROG.done).length, left = PAGES.length - done;
+  const done = Object.keys(bookDone()).length, left = PAGES.length - done;
+  $("bookTitle").innerHTML = STORIES[BOOK].title;
+  $("books").innerHTML = STORIES.map((b,i)=>{ const d=Object.keys(doneOf(i)).length;
+    return `<button class="book${i===BOOK?" on":""}" data-book="${i}"><img src="${b.art}thumb/p${b.cover}-reveal.jpg" alt=""><span class="bt">${b.short}</span><span class="bp">${d===b.pages.length?"✓ ":""}${d}/${b.pages.length}</span></button>`; }).join("");
+  paintAvatar($("homeAvatar"));
   const cur = live() ? S.page : startPage;
   $("leftLine").innerHTML = left>0 ? `נקראו <b>${done}</b> מתוך ${PAGES.length} דפים · נשארו <b>${left}</b> עד האוצר` : `<b>כל הסיפור נקרא!</b> אפשר לקרוא שוב כל דף`;
   const mastered = Object.values(reads).filter(n=>n>=3).length;
-  $("ach").innerHTML = `<div><b>⭐ ${PROG.stars}</b><span>כוכבים</span></div><div><b>${done}/10</b><span>דפים</span></div><div><b>${PROG.words}</b><span>מילים</span></div><div><b>${mastered}</b><span>אותיות שאורי שולט</span></div>`;
+  $("ach").innerHTML = `<div><b>⭐ ${PROG.stars}</b><span>כוכבים</span></div><div><b>${done}/${PAGES.length}</b><span>דפים</span></div><div><b>${PROG.words}</b><span>מילים</span></div><div><b>${mastered}</b><span>אותיות שאורי שולט</span></div>`;
   $("resumeBox").hidden = !live(); $("newBox").style.display = live() ? "none" : "flex";
   if(live()) $("resumeLbl").textContent = `המשך לקרוא · דף ${S.page+1}`;
   $("startRecLbl").textContent = startPage ? `התחל עם הקלטה · מדף ${startPage+1}` : "התחל עם הקלטה";
   $("startNoRec").textContent = startPage ? `התחל בלי הקלטה · מדף ${startPage+1}` : "התחל בלי הקלטה";
   $("collCount").textContent = `${done} מתוך ${PAGES.length} פרסים`;
-  $("tiles").innerHTML = PAGES.map((p,i)=>{ const got = !!PROG.done[i+1]; const word = strip(p.words[p.reveal][0]);
-    return `<button class="tile${got?"":" locked"}${i===cur?" cur":""}" data-page="${i}" aria-label="דף ${i+1}${got?", נאסף":""}"><img src="art/thumb/p${i+1}-${got?"reveal":"base"}.jpg" alt="" loading="lazy">${got?"":'<span class="q">?</span>'}<span class="num">${i+1}</span>${got?'<span class="ok"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5L19.5 7"/></svg></span>':""}<span class="nm">${got?word:"…"}</span></button>`; }).join("");
+  $("tiles").innerHTML = PAGES.map((p,i)=>{ const got = !!bookDone()[i+1]; const word = strip(p.words[p.reveal][0]);
+    return `<button class="tile${got?"":" locked"}${i===cur?" cur":""}" data-page="${i}" aria-label="דף ${i+1}${got?", נאסף":""}"><img src="${STORIES[BOOK].art}thumb/p${i+1}-${got?"reveal":"base"}.jpg" alt="" loading="lazy">${got?"":'<span class="q">?</span>'}<span class="num">${i+1}</span>${got?'<span class="ok"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5L19.5 7"/></svg></span>':""}<span class="nm">${got?word:"…"}</span></button>`; }).join("");
   $("homeRec").hidden = !REC.on; if(REC.on) $("homeRecTime").textContent = fmt((now()-REC.started)/1000);
   $("startArt").innerHTML = artHTML(Math.min(10, (live()?S.page:startPage)+1), true, true);
 }
 function openHome(){
   if(S && live()) log("home_open");
-  $("app").hidden=true; $("end").hidden=true; $("start").hidden=false; document.body.classList.remove("quiet");
+  $("app").hidden=true; $("end").hidden=true; $("room").hidden=true; $("start").hidden=false; document.body.classList.remove("quiet");
   paintHome();
 }
 function resume(){ $("start").hidden=true; $("app").hidden=false; if(S.phase==="pageEnd") pageEnd(); else paint(); log("home_resume"); }
@@ -632,6 +763,43 @@ $("tiles").addEventListener("click",e=>{ const t=e.target.closest("[data-page]")
   if(live()){ log("page_jump",{to:i+1}); $("start").hidden=true; $("app").hidden=false; gotoPage(i); }
   else { startPage=i; paintHome(); } });
 $("resumeBtn").onclick=resume;
+/* pick a story (home cards or a room slot). A running session keeps going (and keeps recording) in the new story. */
+function openBook(b, page){
+  if(b!==BOOK){ if(live()) log("book_switch",{to:STORIES[b].id}); setBook(b); }
+  page = page||0;
+  if(live()){ $("start").hidden=true; $("room").hidden=true; $("end").hidden=true; $("app").hidden=false; log("page_jump",{to:page+1}); gotoPage(page); }
+  else { startPage=page; openHome(); }
+}
+$("books").addEventListener("click",e=>{ const t=e.target.closest("[data-book]"); if(!t) return; const b=+t.dataset.book;
+  if(b===BOOK) return; if(live()) return openBook(b,0); setBook(b); startPage=0; paintHome(); });
+
+/* ---------- Ori's room: photo, totals, every treasure slot (open or still locked), letters ---------- */
+function paintAvatar(el){ const ph = store.get("ori.t3.photo", null);
+  el.innerHTML = ph ? `<img src="${ph}" alt="התמונה של אורי">` : `<svg viewBox="0 0 24 24" width="55%" height="55%" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>`; }
+function openRoom(){ if(S && live()) log("room_open"); $("start").hidden=true; $("end").hidden=true; $("app").hidden=true; $("room").hidden=false; document.body.classList.remove("quiet"); paintRoom(); $("room").scrollTop=0; }
+function paintRoom(){
+  paintAvatar($("roomAvatar")); $("photoLbl").textContent = store.get("ori.t3.photo",null) ? "החלף תמונה" : "הוסף תמונה";
+  const treasures = STORIES.reduce((a,b,i)=>a+Object.keys(doneOf(i)).length,0);
+  const seen = ALL_WORDS.filter(w=>PROG.seen[w]).length;
+  const order = ["א","ב","ג","ד","ה","ו","ז","ח","ט","י","כ","ל","מ","נ","ס","ע","פ","צ","ק","ר","ש","ת"];
+  const mastered = order.filter(L=>(reads[L]||0)>=3).length;
+  $("roomStats").innerHTML = `<div><b>${treasures}<small>/${TOTAL_PAGES}</small></b><span>אוצרות נפתחו</span></div><div><b>${seen}<small>/${ALL_WORDS.length}</small></b><span>מילים נחשפו</span></div><div><b>${mastered}<small>/22</small></b><span>אותיות שאורי שולט</span></div><div><b>⭐ ${PROG.stars}</b><span>כוכבים</span></div>`;
+  let next = null; STORIES.some((b,i)=>{ const k=b.pages.findIndex((_,j)=>!doneOf(i)[j+1]); if(k>=0){ next={b:i,p:k}; return true; } return false; });
+  $("roomNext").innerHTML = next ? `<span>האוצר הבא מחכה:</span> <b>${STORIES[next.b].short.replace(/[֑-ׇ]/g,"")} · דף ${next.p+1}</b> <button class="kb kb-g" data-go="${next.b}:${next.p}">לך לשם ←</button>` : `<b>כל האוצרות נפתחו! 🏆</b>`;
+  $("roomBooks").innerHTML = STORIES.map((b,i)=>{ const D=doneOf(i), d=Object.keys(D).length;
+    const slots = b.pages.map((p,j)=>{ const got=!!D[j+1];
+      return got ? `<button class="slot got" data-go="${i}:${j}" aria-label="דף ${j+1}, נפתח"><img src="${b.art}thumb/p${j+1}-reveal.jpg" alt="" loading="lazy"><span class="nm">${strip(p.words[p.reveal][0])}</span></button>`
+                 : `<button class="slot" data-go="${i}:${j}" aria-label="דף ${j+1}, עדיין סגור"><span class="lock"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span><span class="nm">${j+1}</span></button>`; }).join("");
+    return `<section class="shelf"><div class="sh"><h3>${b.title}</h3><span class="cnt">${d}/${b.pages.length}</span><div class="bar2"><i style="width:${Math.round(d/b.pages.length*100)}%"></i></div></div><div class="slots">${slots}</div></section>`; }).join("");
+  $("roomLetters").innerHTML = order.map(L=>{ const n=reads[L]||0, got=n>=3;
+    return got ? `<div class="lt got"><img src="cues/${CUE_FILE[L]}.png" alt=""><b>${L}</b></div>` : `<div class="lt"><b>${L}</b><i style="width:${Math.min(100,Math.round(n/3*100))}%"></i></div>`; }).join("");
+}
+$("roomBooks").addEventListener("click",e=>{ const t=e.target.closest("[data-go]"); if(!t) return; const [b,p]=t.dataset.go.split(":").map(Number); openBook(b,p); });
+$("roomNext").addEventListener("click",e=>{ const t=e.target.closest("[data-go]"); if(!t) return; const [b,p]=t.dataset.go.split(":").map(Number); openBook(b,p); });
+$("roomBtn").onclick=openRoom; $("roomHome").onclick=openHome; $("endRoom").onclick=openRoom;
+$("photoIn").onchange=e=>{ const file=e.target.files&&e.target.files[0]; if(!file) return; const img=new Image(); const url=URL.createObjectURL(file);
+  img.onload=()=>{ const s=Math.min(img.width,img.height), c=document.createElement("canvas"); c.width=c.height=360; c.getContext("2d").drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,360,360);
+    store.set("ori.t3.photo", c.toDataURL("image/jpeg",0.85)); URL.revokeObjectURL(url); paintRoom(); }; img.src=url; e.target.value=""; };
 $("homeBtn").onclick=openHome; $("endHome").onclick=openHome; $("homeGear").onclick=openP;
 setInterval(()=>{ if(!$("start").hidden && REC.on) $("homeRecTime").textContent = fmt((now()-REC.started)/1000); }, 1000);
 
@@ -726,7 +894,7 @@ $("markBtn").onclick=()=>{ log("parent_marker"); const b=$("markBtn"); b.style.c
 $("stageEl").addEventListener("click",e=>{ const c=e.target.closest("[data-open]"); if(!c) return; const L=c.dataset.open; c.outerHTML=`<div class="card"><img src="cues/${CUE_FILE[L]}.png" alt=""></div>`; log("cue_opened",{letter:L}); log("hint_shown",{letter:L, why:"tap"}); });
 $("bOk").onclick=onOk; $("bAgain").onclick=onAgain; $("bWhole").onclick=onWhole;
 $("bSentAgain").onclick=()=>{ S.misses++; log("mark",{outcome:"sentence_again", ms_on_step:now()-S.t0}); };
-$("bNext").onclick=()=>{ log("mark",{outcome:"sentence_correct", ms_on_step:now()-S.t0}); reward(); PROG.done[S.page+1]=true; saveProg(); gotoPage(S.page+1); };
+$("bNext").onclick=()=>{ log("mark",{outcome:"sentence_correct", ms_on_step:now()-S.t0}); reward(); bookDone()[S.page+1]=true; saveProg(); gotoPage(S.page+1); };
 $("startRec").onclick=()=>{ goFs(); begin(true); };
 $("startNoRec").onclick=()=>{ goFs(); begin(false); };
 $("endStopRec").onclick=stopRec;
