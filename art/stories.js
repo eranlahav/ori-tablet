@@ -48,7 +48,7 @@ function build(o, Hm) {
     for (let z = 0; z <= h; z++) { const topv = z === h;
       if (h === 1) { S.vox(x, y, z, pick(SAND, hash(x, y, z))); continue; }
       if (inMt && z >= 2) { const oo = {};
-        if (x === MT.x1) { const t = tunnels.find(t => y >= t.y && y < t.y + 2 && z >= 3 && z <= 4); if (t) oo.decR = [[0, 0, 1, 1, DARK]];
+        if (x === MT.x1) { const t = tunnels.find(t => y >= t.y && y < t.y + (t.w || 2) && z >= (t.z0 || 3) && z <= (t.z1 || 4)); if (t) oo.decR = [[0, 0, 1, 1, DARK]];
           const ore = ores.find(q => q[0] === y && q[1] === z); if (ore) oo.decR = [[0.2, 0.25, 0.25, 0.25, ore[2]], [0.55, 0.55, 0.25, 0.25, ore[2]], [0.6, 0.15, 0.2, 0.2, ore[2]]]; }
         if (topv && h >= 9 && hash(x, y, 7) > 0.35) S.vox(x, y, z, '#F1F1F4', { side: pick(STONE, hash(x, y, z)) });
         else S.vox(x, y, z, pick(STONE, hash(x, y, z)), oo); continue; }
@@ -57,7 +57,7 @@ function build(o, Hm) {
       if (topv) S.vox(x, y, z, pick(GRASS, hash(x, y, 4)), { side: DIRT, lip: true, shadow: leafAt.has(x + ',' + y) || leafAt.has((x - 1) + ',' + (y - 1)) });
       else S.vox(x, y, z, DIRT); } }
   // dug-out tunnel floor: a dark slot in front of the cliff
-  for (const t of tunnels) for (let j = 0; j < 2; j++) S.box(MT.x1 + 1, t.y + j, G(MT.x1 + 1, t.y + j) - 0.02, 0.35, 1, 0.04, '#3A2E2A', { nojit: true });
+  for (const t of tunnels) for (let j = 0; j < (t.w || 2); j++) S.box(MT.x1 + 1, t.y + j, G(MT.x1 + 1, t.y + j) - 0.02, 0.35, 1, 0.04, '#3A2E2A', { nojit: true });
   for (const [tx, ty, th, , jungle] of (o.trees || [])) for (let i = 1; i <= th + 1; i++) S.vox(tx, ty, H(tx, ty) + i, jungle ? (i % 2 ? '#6B5A2E' : '#7A6634') : (i % 2 ? '#7A4E2B' : '#845630'));
   for (const [x, y, z, jungle] of leaves) { if (S.has(x, y, z)) continue; S.vox(x, y, z, pick(jungle ? JLEAF : LEAF, hash(x, y, z + 11))); }
   for (const [bx, by, bh] of (o.bamboo || [])) for (let i = 0; i < bh; i++) S.box(bx + 0.35, by + 0.35, G(bx, by) + i, 0.3, 0.3, 1, i % 2 ? '#7FB83E' : '#6EA634', { nojit: true, sort: bx + by + 1 });
@@ -77,7 +77,8 @@ function build(o, Hm) {
   if (o.panda) panda(S, G, o.panda);
   if (o.villager) person(S, G, Object.assign({ kind: 'villager' }, o.villager));
   if (o.ori) person(S, G, Object.assign({ kind: 'ori' }, o.ori));
-  if (!night) { cloud(S, -2, 6, 17, 1); cloud(S, 16, -3, 15.5, 0.8); cloud(S, -6, 17, 12, 0.7); }
+  if (o.extra) o.extra(S, G, H);
+  if (!night && !o.noClouds) { cloud(S, -2, 6, 17, 1); cloud(S, 16, -3, 15.5, 0.8); cloud(S, -6, 17, 12, 0.7); }
   return S;
 }
 function cloud(S, x, y, z, sc) { const o = { op: 0.92, nojit: true, top: '#FFF6E6', sideL: '#EBD9D2', sideR: '#D9C2C6' }; S.box(x, y, z, 4 * sc, 2 * sc, 0.9 * sc, '#FFF6E6', Object.assign({ sort: 100 }, o)); S.box(x + 1 * sc, y + 0.3 * sc, z + 0.9 * sc, 2.2 * sc, 1.4 * sc, 0.8 * sc, '#FFF6E6', Object.assign({ sort: 100.1 }, o)); S.box(x - 1.2 * sc, y + 0.4 * sc, z + 0.1 * sc, 1.6 * sc, 1.2 * sc, 0.6 * sc, '#FFF6E6', Object.assign({ sort: 99.9 }, o)); }
@@ -257,15 +258,19 @@ const STORY3 = {
 };
 
 const STORIES = { s2: { pages: STORY2, hm: () => { const h = hmMountain(); h.mt = true; return h; } }, s3: { pages: STORY3, hm: hmVillage } };
-const [onlyStory, onlyPage] = process.argv.slice(2);
+function renderAll(STORIES, args, baseDir, buildFn) { buildFn = buildFn || build;
+const [onlyStory, onlyPage] = args;
 for (const [sid, st] of Object.entries(STORIES)) { if (onlyStory && onlyStory !== sid) continue;
-  const Hm = st.hm(); const dir = path.join(__dirname, sid); fs.mkdirSync(dir, { recursive: true });
+  const Hm = st.hm(); const dir = path.join(baseDir || __dirname, sid); fs.mkdirSync(dir, { recursive: true });
   for (const [n, pg] of Object.entries(st.pages)) { if (onlyPage && onlyPage !== n) continue;
-    for (const stage of ['base', 'reveal']) { const o = pg[stage]; const S = build(o, Hm);
-      for (const [name, v] of Object.entries(variants)) {
-        let svg = S.render(Object.assign({ bg: sky(o.sky, v.W, v.H, v.horizon, v.sunX), light: LIGHT[o.sky] }, v));
+    for (const stage of ['base', 'reveal']) { const o = pg[stage]; const S = buildFn(o, Hm);
+      for (const [name, v0] of Object.entries(variants)) { const v = Object.assign({}, v0, o.view ? o.view[name] : {});
+        let svg = S.render(Object.assign({ bg: o.bg ? o.bg(v) : sky(o.sky, v.W, v.H, v.horizon, v.sunX), light: o.light || LIGHT[o.sky] }, v));
         let extra = ''; if (o.glow) extra += glow(v, o.glow, 'gl'); if (o.bubble) extra += bubble(v, o.bubble);
         if (extra) svg = svg.replace('</svg>', extra + '</svg>');
         fs.writeFileSync(path.join(dir, `p${n}-${stage}-${name}.svg`), svg);
       } } } }
-console.log('done');
+}
+
+module.exports = { build, person, house, chest, portal, gem, boat, cloud, sky, LIGHT, variants, P, glow, islandH, renderAll, N, c, pick, GRASS, SAND, WATER, DIRT, STONE, LEAF, GOLD, DIAM, EMER, EMER2, DARK };
+if (require.main === module) { renderAll(STORIES, process.argv.slice(2)); console.log('done'); }

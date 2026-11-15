@@ -252,6 +252,21 @@ body.quiet .rec.off{display:none}
 .bar2{flex:1;height:14px;border-radius:14px;background:var(--surface);overflow:hidden}
 .bar2 i{display:block;height:100%;background:linear-gradient(90deg,#F2A541,#FFD27A);border-radius:14px}
 .slots{display:grid;grid-template-columns:repeat(10,1fr);gap:10px}
+/* item inventory: one slot per item, block-game style */
+.inv{display:flex;flex-wrap:wrap;gap:12px}
+.islot{position:relative;width:118px;height:132px;border-radius:6px;background:#8B8B8B;border:4px solid;border-color:#373737 #FFFFFF #FFFFFF #373737;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px 4px 4px;color:#1E1822}
+.islot img{width:76px;height:76px;image-rendering:pixelated;display:block}
+.islot .nm{font-family:var(--word);font-size:21px;font-weight:700;line-height:1.1;text-align:center}
+.islot .cnt{position:absolute;top:58px;left:10px;font-size:24px;font-weight:900;color:#fff;text-shadow:2px 2px 0 #3F3F3F}
+.islot:not(.got){background:#5E5A66;border-color:#2A2730 #8C8896 #8C8896 #2A2730;color:#CFC8DA}
+.islot:not(.got) img{opacity:.85}
+.islot .q{position:absolute;top:30px;font-size:34px;font-weight:900;color:#E9E2F5;text-shadow:2px 2px 0 #1E1822}
+.islot.got{box-shadow:0 0 16px rgba(242,201,76,.45)}
+.itoast{position:absolute;top:18px;left:50%;transform:translate(-50%,-160%);display:flex;align-items:center;gap:16px;background:#212121;border:4px solid #5A5A5A;border-radius:10px;padding:10px 22px 10px 16px;color:#fff;z-index:30;pointer-events:none;transition:transform .35s ease;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.itoast.on{transform:translate(-50%,0)}
+.itoast img{width:64px;height:64px;image-rendering:pixelated}
+.itoast small{display:block;font-size:18px;color:#F2C94C;font-weight:800}
+.itoast b{font-family:var(--word);font-size:32px}
 @media (orientation:portrait){.slots{grid-template-columns:repeat(5,1fr)} .rstats{grid-template-columns:repeat(2,1fr)} .hero{flex-direction:column}}
 .slot{position:relative;aspect-ratio:3/4;border-radius:16px;background:repeating-linear-gradient(45deg,#2B2440 0 10px,#302848 10px 20px);border:3px dashed #5A4E7A;color:#8A7FA6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:4px;overflow:hidden}
 .slot .lock{opacity:.9}
@@ -367,6 +382,7 @@ body.quiet .rec.off{display:none}
       <div class="banner" id="banner" hidden></div>
       <div class="stage" id="stageEl"></div>
       <div class="flash" id="flash"></div>
+      <div class="itoast" id="itemToast" aria-live="polite"></div>
     </div>
     <div class="art" id="art"></div>
   </div>
@@ -459,25 +475,25 @@ body.quiet .rec.off{display:none}
 const PAGES_ISLAND = [
   {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["בָּא",["בָּא"]],["לָאִי.",["לָ","אִי"]]]},
   {reveal:3, words:[["עַל",["עַל"]],["הָאִי",["הָ","אִי"]],["יֵשׁ",["יֵשׁ"]],["עֵצִים.",["עֵ","צִים"]]]},
-  {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["לָקַח",["לָ","קַח"]],["עֵץ.",["עֵץ"]]]},
+  {item:"log", reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["לָקַח",["לָ","קַח"]],["עֵץ.",["עֵץ"]]]},
   {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["בָּנָה",["בָּ","נָה"]],["בַּיִת",["בַּ","יִת"]],["קָטָן.",["קָ","טָן"]]]},
   {reveal:1, words:[["בָּא",["בָּא"]],["לַיְלָה",["לַיְ","לָה"]],["קַר.",["קַר"]]]},
   {reveal:0, words:[["זוֹמְבִּי",["זוֹמְ","בִּי"]],["בָּא",["בָּא"]],["לַבַּיִת!",["לַ","בַּ","יִת"]]]},
   {reveal:3, words:[["אוֹרִי",["אוֹ","רִי"]],["קָם.",["קָם"]],["אוֹרִי",["אוֹ","רִי"]],["חָזָק!",["חָ","זָק"]]]},
-  {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["לָקַח",["לָ","קַח"]],["פָּנָס.",["פָּ","נָס"]]]},
+  {item:"lantern", reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["לָקַח",["לָ","קַח"]],["פָּנָס.",["פָּ","נָס"]]]},
   {reveal:1, words:[["הַזּוֹמְבִּי",["הַ","זּוֹמְ","בִּי"]],["בָּרַח!",["בָּ","רַח"]]]},
-  {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["מָצָא",["מָ","צָא"]],["אוֹצָר!",["אוֹ","צָר"]]]}
+  {item:"treasure", reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["מָצָא",["מָ","צָא"]],["אוֹצָר!",["אוֹ","צָר"]]]}
 ];
 /* story 2 (2026-11-15): kamatz/patach only (plus the name אוֹרִי). Every ב/כ/פ has a dagesh, no sin, no final ך/ף. */
 const PAGES_PANDA = [
   {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["בָּא",["בָּא"]],["לָהָר.",["לָ","הָר"]]]},
-  {reveal:1, words:[["אוֹרִי",["אוֹ","רִי"]],["כָּרָה,",["כָּ","רָה"]],["כָּרָה,",["כָּ","רָה"]],["כָּרָה!",["כָּ","רָה"]]]},
-  {reveal:2, words:[["שָׁם",["שָׁם"]],["עָמַד",["עָ","מַד"]],["אַרְגָּז.",["אַרְ","גָּז"]]]},
-  {reveal:1, words:[["בָּאַרְגָּז",["בָּ","אַרְ","גָּז"]],["מַפָּה!",["מַ","פָּה"]]]},
+  {item:"pickaxe", reveal:1, words:[["אוֹרִי",["אוֹ","רִי"]],["כָּרָה,",["כָּ","רָה"]],["כָּרָה,",["כָּ","רָה"]],["כָּרָה!",["כָּ","רָה"]]]},
+  {item:"chest", reveal:2, words:[["שָׁם",["שָׁם"]],["עָמַד",["עָ","מַד"]],["אַרְגָּז.",["אַרְ","גָּז"]]]},
+  {item:"map", reveal:1, words:[["בָּאַרְגָּז",["בָּ","אַרְ","גָּז"]],["מַפָּה!",["מַ","פָּה"]]]},
   {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["רָץ",["רָץ"]],["לַיַּעַר.",["לַ","יַּ","עַר"]]]},
   {reveal:2, words:[["שָׁם",["שָׁם"]],["יָשַׁן",["יָ","שַׁן"]],["פַּנְדָּה.",["פַּנְ","דָּה"]]]},
   {reveal:3, words:[["הַפַּנְדָּה",["הַ","פַּנְ","דָּה"]],["קָם.",["קָם"]],["הַפַּנְדָּה",["הַ","פַּנְ","דָּה"]],["צָחַק!",["צָ","חַק"]]]},
-  {reveal:3, words:[["הַפַּנְדָּה",["הַ","פַּנְ","דָּה"]],["כָּרָה,",["כָּ","רָה"]],["אוֹרִי",["אוֹ","רִי"]],["כָּרָה.",["כָּ","רָה"]]]},
+  {item:["emerald",3], reveal:3, words:[["הַפַּנְדָּה",["הַ","פַּנְ","דָּה"]],["כָּרָה,",["כָּ","רָה"]],["אוֹרִי",["אוֹ","רִי"]],["כָּרָה.",["כָּ","רָה"]]]},
   {reveal:2, words:[["שָׁם",["שָׁם"]],["עָמַד",["עָ","מַד"]],["שַׁעַר!",["שַׁ","עַר"]]]},
   {reveal:3, words:[["אוֹרִי",["אוֹ","רִי"]],["בָּא.",["בָּא"]],["גַּם",["גַּם"]],["הַפַּנְדָּה",["הַ","פַּנְ","דָּה"]],["בָּא!",["בָּא"]]]}
 ];
@@ -488,17 +504,72 @@ const PAGES_VILLAGER = [
   {reveal:2, words:[["בַּבַּיִת",["בַּ","בַּ","יִת"]],["גָּר",["גָּר"]],["כַּפְרִי.",["כַּפְ","רִי"]]]},
   {reveal:2, words:[["הַכַּפְרִי",["הַ","כַּפְ","רִי"]],["רָצָה",["רָ","צָה"]],["חִטָּה.",["חִ","טָּה"]]]},
   {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["רָץ",["רָץ"]],["לַגַּן.",["לַ","גַּן"]]]},
-  {reveal:3, words:[["אוֹרִי",["אוֹ","רִי"]],["לָקַח",["לָ","קַח"]],["חִטָּה",["חִ","טָּה"]],["רַבָּה.",["רַ","בָּה"]]]},
+  {item:["wheat",5], reveal:3, words:[["אוֹרִי",["אוֹ","רִי"]],["לָקַח",["לָ","קַח"]],["חִטָּה",["חִ","טָּה"]],["רַבָּה.",["רַ","בָּה"]]]},
   {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["נָתַן",["נָ","תַן"]],["לַכַּפְרִי",["לַ","כַּפְ","רִי"]],["חִטָּה.",["חִ","טָּה"]]]},
-  {reveal:2, words:[["הַכַּפְרִי",["הַ","כַּפְ","רִי"]],["נָתַן",["נָ","תַן"]],["אִזְמָרַגְד!",["אִזְ","מָ","רַגְד"]]]},
-  {reveal:1, words:[["כַּמָּה",["כַּ","מָּה"]],["אִזְמָרַגְדִּים?",["אִזְ","מָ","רַגְ","דִּים"]],["רַבִּים!",["רַ","בִּים"]]]},
-  {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["קָנָה",["קָ","נָה"]],["סִירָה.",["סִי","רָה"]]]},
+  {item:"emerald", reveal:2, words:[["הַכַּפְרִי",["הַ","כַּפְ","רִי"]],["נָתַן",["נָ","תַן"]],["אִזְמָרַגְד!",["אִזְ","מָ","רַגְד"]]]},
+  {item:["emerald",5], reveal:1, words:[["כַּמָּה",["כַּ","מָּה"]],["אִזְמָרַגְדִּים?",["אִזְ","מָ","רַגְ","דִּים"]],["רַבִּים!",["רַ","בִּים"]]]},
+  {item:"boat", reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["קָנָה",["קָ","נָה"]],["סִירָה.",["סִי","רָה"]]]},
   {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["שָׁט",["שָׁט"]],["בַּסִּירָה!",["בַּ","סִּי","רָה"]]]}
 ];
+/* saga episode 4 (2026-11-15): first person ("I"), adds tsere/segol (e). Every ב/כ/פ has a dagesh. */
+const PAGES_CAVE = [
+  {reveal:3, words:[["בָּאתִי",["בָּא","תִי"]],["אֶל",["אֶל"]],["אִי",["אִי"]],["חָדָשׁ.",["חָ","דָשׁ"]]]},
+  {reveal:3, words:[["עַל",["עַל"]],["הָאִי",["הָ","אִי"]],["יֵשׁ",["יֵשׁ"]],["מְעָרָה.",["מְ","עָ","רָה"]]]},
+  {reveal:0, words:[["בַּמְּעָרָה",["בַּ","מְּ","עָ","רָה"]],["אֵין",["אֵין"]],["אוֹר.",["אוֹר"]]]},
+  {reveal:1, item:"torch", words:[["לָקַחְתִּי",["לָ","קַחְ","תִּי"]],["לַפִּיד.",["לַ","פִּיד"]]]},
+  {reveal:3, words:[["עַל",["עַל"]],["הַקִּיר",["הַ","קִּיר"]],["יֵשׁ",["יֵשׁ"]],["בַּרְזֶל!",["בַּרְ","זֶל"]]]},
+  {reveal:2, item:["iron",3], words:[["כָּרִיתִי",["כָּ","רִי","תִי"]],["אֶת",["אֶת"]],["הַבַּרְזֶל.",["הַ","בַּרְ","זֶל"]]]},
+  {reveal:2, words:[["פִּתְאוֹם",["פִּתְ","אוֹם"]],["בָּא",["בָּא"]],["שֶׁלֶד!",["שֶׁ","לֶד"]]]},
+  {reveal:2, item:"arrow", words:[["הַשֶּׁלֶד",["הַ","שֶּׁ","לֶד"]],["יָרָה",["יָ","רָה"]],["חֵץ!",["חֵץ"]]]},
+  {reveal:0, item:"bone", words:[["הִכֵּיתִי",["הִ","כֵּי","תִי"]],["אֶת",["אֶת"]],["הַשֶּׁלֶד!",["הַ","שֶּׁ","לֶד"]]]},
+  {reveal:1, item:"bow", words:[["מָצָאתִי",["מָ","צָא","תִי"]],["קֶשֶׁת!",["קֶ","שֶׁת"]]]}
+];
+/* saga episode 5: e practice. Soft פ in כְּפָר (f card, as in כַּפְרִי) and soft ב in חֶרֶב (same teeth-on-lip card, v). */
+const PAGES_SWORD = [
+  {reveal:1, words:[["יָצָאתִי",["יָ","צָא","תִי"]],["מֵהַמְּעָרָה.",["מֵ","הַ","מְּ","עָ","רָה"]]]},
+  {reveal:1, words:[["רָאִיתִי",["רָ","אִי","תִי"]],["כְּפָר",["כְּ","פָר"]],["קָטָן.",["קָ","טָן"]]]},
+  {reveal:1, words:[["הִדְלַקְתִּי",["הִדְ","לַקְ","תִּי"]],["אֵשׁ.",["אֵשׁ"]]]},
+  {reveal:1, words:[["הַבַּרְזֶל",["הַ","בַּרְ","זֶל"]],["בָּאֵשׁ.",["בָּ","אֵשׁ"]]]},
+  {reveal:3, item:["iron",3], words:[["הַבַּרְזֶל",["הַ","בַּרְ","זֶל"]],["חַם,",["חַם"]],["חַם,",["חַם"]],["חַם!",["חַם"]]]},
+  {reveal:1, item:"sword", words:[["בָּנִיתִי",["בָּ","נִי","תִי"]],["חֶרֶב!",["חֶ","רֶב"]]]},
+  {reveal:1, item:"shield", words:[["בָּנִיתִי",["בָּ","נִי","תִי"]],["מָגֵן!",["מָ","גֵן"]]]},
+  {reveal:1, item:"helmet", words:[["בָּנִיתִי",["בָּ","נִי","תִי"]],["קַסְדָּה!",["קַסְ","דָּה"]]]},
+  {reveal:1, words:[["בָּא",["בָּא"]],["לַיְלָה",["לַיְ","לָה"]],["קַר.",["קַר"]]]},
+  {reveal:2, words:[["מִי",["מִי"]],["בָּא",["בָּא"]],["לַכְּפָר?",["לַ","כְּ","פָר"]]]}
+];
+/* saga episode 6: adds holam (o). */
+const PAGES_NIGHT = [
+  {reveal:0, words:[["זוֹמְבִּים",["זוֹמְ","בִּים"]],["בָּאִים",["בָּ","אִים"]],["לַכְּפָר!",["לַ","כְּ","פָר"]]]},
+  {reveal:1, words:[["הַכַּפְרִים",["הַ","כַּפְ","רִים"]],["פּוֹחֲדִים.",["פּוֹ","חֲ","דִים"]]]},
+  {reveal:2, words:[["אֲנִי",["אֲ","נִי"]],["לֹא",["לֹא"]],["פּוֹחֵד!",["פּוֹ","חֵד"]]]},
+  {reveal:2, words:[["יֵשׁ",["יֵשׁ"]],["לִי",["לִי"]],["חֶרֶב.",["חֶ","רֶב"]],["יֵשׁ",["יֵשׁ"]],["לִי",["לִי"]],["מָגֵן.",["מָ","גֵן"]]]},
+  {reveal:0, words:[["הִכֵּיתִי",["הִ","כֵּי","תִי"]],["זוֹמְבִּי",["זוֹמְ","בִּי"]],["אֶחָד!",["אֶ","חָד"]]]},
+  {reveal:0, words:[["עוֹד",["עוֹד"]],["זוֹמְבִּי!",["זוֹמְ","בִּי"]],["עוֹד",["עוֹד"]],["אֶחָד!",["אֶ","חָד"]]]},
+  {reveal:1, words:[["הַזּוֹמְבִּים",["הַ","זּוֹמְ","בִּים"]],["רַבִּים",["רַ","בִּים"]],["מִדַּי!",["מִ","דַּי"]]]},
+  {reveal:1, words:[["בָּנִיתִי",["בָּ","נִי","תִי"]],["גּוֹלֶם",["גּוֹ","לֶם"]],["מִבַּרְזֶל!",["מִ","בַּרְ","זֶל"]]]},
+  {reveal:1, words:[["הַגּוֹלֶם",["הַ","גּוֹ","לֶם"]],["חָזָק",["חָ","זָק"]],["מְאֹד!",["מְ","אֹד"]]]},
+  {reveal:2, item:"dmap", words:[["בַּבֹּקֶר",["בַּ","בֹּ","קֶר"]],["קִבַּלְתִּי",["קִ","בַּלְ","תִּי"]],["מַפָּה!",["מַ","פָּה"]]]}
+];
+/* collectible items: one slot each in the room; a page that gives an item says item:"id" or item:["id",count].
+   future:true = waits for a later episode (shown as a silhouette, so there is something to look forward to). */
+const ITEMS = [
+  {id:"log", name:"עֵץ"}, {id:"lantern", name:"פָּנָס"}, {id:"treasure", name:"אוֹצָר"},
+  {id:"pickaxe", name:"מַכּוֹשׁ"}, {id:"chest", name:"אַרְגָּז"}, {id:"map", name:"מַפָּה"}, {id:"emerald", name:"אֶמֶרַלְד"},
+  {id:"wheat", name:"חִטָּה"}, {id:"boat", name:"סִירָה"},
+  {id:"torch", name:"לַפִּיד"}, {id:"iron", name:"בַּרְזֶל"}, {id:"arrow", name:"חֵץ"}, {id:"bone", name:"עֶצֶם"}, {id:"bow", name:"קֶשֶׁת"},
+  {id:"sword", name:"חֶרֶב"}, {id:"shield", name:"מָגֵן"}, {id:"helmet", name:"קַסְדָּה"}, {id:"dmap", name:"מַפַּת יַהֲלוֹמִים"},
+  {id:"diamond", name:"יַהֲלוֹם", future:true}, {id:"dpick", name:"מַכּוֹשׁ יַהֲלוֹם", future:true}, {id:"obsidian", name:"אוֹבְּסִידְיָאן", future:true},
+  {id:"firerod", name:"מוֹט אֵשׁ", future:true}, {id:"eye", name:"עַיִן", future:true}, {id:"egg", name:"בֵּיצַת דְּרָקוֹן", future:true}
+];
+const ITEM = Object.fromEntries(ITEMS.map(i=>[i.id,i]));
+const pageItem = p => !p.item ? null : Array.isArray(p.item) ? {id:p.item[0], n:p.item[1]} : {id:p.item, n:1};
 const STORIES = [
   {id:"island", title:"אוֹרִי וְהָאִי שֶׁל הַקֻּבִּיּוֹת", short:"הָאִי", art:"art/", day:[1,2,3,4,10], cover:10, pages:PAGES_ISLAND},
   {id:"panda", title:"אוֹרִי וְהַפַּנְדָּה", short:"הַפַּנְדָּה", art:"art/s2/", day:[1,2,3,4,5,6,7,8], cover:7, pages:PAGES_PANDA},
-  {id:"villager", title:"אוֹרִי וְהַכַּפְרִי", short:"הַכַּפְרִי", art:"art/s3/", day:[1,2,3,4,5,6,7,8,9], cover:8, pages:PAGES_VILLAGER}
+  {id:"villager", title:"אוֹרִי וְהַכַּפְרִי", short:"הַכַּפְרִי", art:"art/s3/", day:[1,2,3,4,5,6,7,8,9], cover:8, pages:PAGES_VILLAGER},
+  {id:"cave", title:"פֶּרֶק 4: הַמְּעָרָה", short:"הַמְּעָרָה", art:"art/s4/", day:[], cover:7, pages:PAGES_CAVE},
+  {id:"sword", title:"פֶּרֶק 5: הַחֶרֶב", short:"הַחֶרֶב", art:"art/s5/", day:[2,3,4,5,6,7,8], cover:8, pages:PAGES_SWORD},
+  {id:"night", title:"פֶּרֶק 6: הַלַּיְלָה בַּכְּפָר", short:"הַלַּיְלָה", art:"art/s6/", day:[], cover:8, pages:PAGES_NIGHT}
 ];
 let BOOK = 0, PAGES = PAGES_ISLAND;
 function setBook(b){ BOOK = Math.max(0, Math.min(STORIES.length-1, b|0)); PAGES = STORIES[BOOK].pages; try{ localStorage.setItem("ori.t3.book", String(BOOK)); }catch(e){} }
@@ -731,6 +802,11 @@ const wordKey = w => strip(w).replace(/[?]/g,"");
 const ALL_WORDS = [...new Set(STORIES.flatMap(b=>b.pages.flatMap(p=>p.words.map(w=>wordKey(w[0])))))];
 const TOTAL_PAGES = STORIES.reduce((a,b)=>a+b.pages.length,0);
 function saveProg(){ store.set("ori.t3.progress", PROG); }
+/* items owned = sum over every finished page that gives one (nothing extra is stored) */
+function inventory(){ const inv={}; STORIES.forEach((b,i)=>{ const D=doneOf(i); b.pages.forEach((p,j)=>{ const pi=pageItem(p); if(pi && D[j+1]) inv[pi.id]=(inv[pi.id]||0)+pi.n; }); }); return inv; }
+function itemToast(pi){ const it=ITEM[pi.id]; if(!it) return; const t=$("itemToast");
+  t.innerHTML = `<img src="art/items/${it.id}.svg" alt=""><div><small>חדש בתיק!</small><b>${it.name}${pi.n>1?` ×${pi.n}`:""}</b></div>`;
+  t.classList.remove("on"); void t.offsetWidth; t.classList.add("on"); clearTimeout(itemToast.tm); itemToast.tm=setTimeout(()=>t.classList.remove("on"), 2600); }
 let startPage = 0;
 const live = () => S && !S.ended;
 function paintHome(){
@@ -779,18 +855,21 @@ function paintAvatar(el){ const ph = store.get("ori.t3.photo", null);
 function openRoom(){ if(S && live()) log("room_open"); $("start").hidden=true; $("end").hidden=true; $("app").hidden=true; $("room").hidden=false; document.body.classList.remove("quiet"); paintRoom(); $("room").scrollTop=0; }
 function paintRoom(){
   paintAvatar($("roomAvatar")); $("photoLbl").textContent = store.get("ori.t3.photo",null) ? "החלף תמונה" : "הוסף תמונה";
-  const treasures = STORIES.reduce((a,b,i)=>a+Object.keys(doneOf(i)).length,0);
+  const inv = inventory(); const gotItems = ITEMS.filter(it=>inv[it.id]).length;
   const seen = ALL_WORDS.filter(w=>PROG.seen[w]).length;
   const order = ["א","ב","ג","ד","ה","ו","ז","ח","ט","י","כ","ל","מ","נ","ס","ע","פ","צ","ק","ר","ש","ת"];
   const mastered = order.filter(L=>(reads[L]||0)>=3).length;
-  $("roomStats").innerHTML = `<div><b>${treasures}<small>/${TOTAL_PAGES}</small></b><span>אוצרות נפתחו</span></div><div><b>${seen}<small>/${ALL_WORDS.length}</small></b><span>מילים נחשפו</span></div><div><b>${mastered}<small>/22</small></b><span>אותיות שאורי שולט</span></div><div><b>⭐ ${PROG.stars}</b><span>כוכבים</span></div>`;
+  $("roomStats").innerHTML = `<div><b>${gotItems}<small>/${ITEMS.length}</small></b><span>חפצים נאספו</span></div><div><b>${seen}<small>/${ALL_WORDS.length}</small></b><span>מילים נחשפו</span></div><div><b>${mastered}<small>/22</small></b><span>אותיות שאורי שולט</span></div><div><b>⭐ ${PROG.stars}</b><span>כוכבים</span></div>`;
   let next = null; STORIES.some((b,i)=>{ const k=b.pages.findIndex((_,j)=>!doneOf(i)[j+1]); if(k>=0){ next={b:i,p:k}; return true; } return false; });
   $("roomNext").innerHTML = next ? `<span>האוצר הבא מחכה:</span> <b>${STORIES[next.b].short.replace(/[֑-ׇ]/g,"")} · דף ${next.p+1}</b> <button class="kb kb-g" data-go="${next.b}:${next.p}">לך לשם ←</button>` : `<b>כל האוצרות נפתחו! 🏆</b>`;
+  const slot = (it, go) => { const n=inv[it.id]||0;
+    return n ? `<button class="islot got" ${go?`data-go="${go}"`:""} aria-label="${bare(it.name)}"><img src="art/items/${it.id}.svg" alt="">${n>1?`<b class="cnt">${n}</b>`:""}<span class="nm">${it.name}</span></button>`
+             : `<button class="islot" ${go?`data-go="${go}"`:""} aria-label="עדיין לא נאסף"><img src="art/items/${it.id}-locked.svg" alt=""><span class="q">?</span><span class="nm">…</span></button>`; };
   $("roomBooks").innerHTML = STORIES.map((b,i)=>{ const D=doneOf(i), d=Object.keys(D).length;
-    const slots = b.pages.map((p,j)=>{ const got=!!D[j+1];
-      return got ? `<button class="slot got" data-go="${i}:${j}" aria-label="דף ${j+1}, נפתח"><img src="${b.art}thumb/p${j+1}-reveal.jpg" alt="" loading="lazy"><span class="nm">${strip(p.words[p.reveal][0])}</span></button>`
-                 : `<button class="slot" data-go="${i}:${j}" aria-label="דף ${j+1}, עדיין סגור"><span class="lock"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span><span class="nm">${j+1}</span></button>`; }).join("");
-    return `<section class="shelf"><div class="sh"><h3>${b.title}</h3><span class="cnt">${d}/${b.pages.length}</span><div class="bar2"><i style="width:${Math.round(d/b.pages.length*100)}%"></i></div></div><div class="slots">${slots}</div></section>`; }).join("");
+    const seen = new Set(), slots = [];
+    b.pages.forEach((p,j)=>{ const pi=pageItem(p); if(pi && !seen.has(pi.id)){ seen.add(pi.id); slots.push(slot(ITEM[pi.id], `${i}:${j}`)); } });
+    return `<section class="shelf"><div class="sh"><h3>${b.title}</h3><span class="cnt">${d}/${b.pages.length} דפים</span><div class="bar2"><i style="width:${Math.round(d/b.pages.length*100)}%"></i></div></div><div class="inv">${slots.join("")}</div></section>`; }).join("")
+    + `<section class="shelf"><div class="sh"><h3>בַּהֶמְשֵׁךְ… עַד הַדְּרָקוֹן</h3></div><div class="inv">${ITEMS.filter(it=>it.future).map(it=>slot(it,null)).join("")}</div></section>`;
   $("roomLetters").innerHTML = order.map(L=>{ const n=reads[L]||0, got=n>=3;
     return got ? `<div class="lt got"><img src="cues/${CUE_FILE[L]}.png" alt=""><b>${L}</b></div>` : `<div class="lt"><b>${L}</b><i style="width:${Math.min(100,Math.round(n/3*100))}%"></i></div>`; }).join("");
 }
@@ -894,7 +973,8 @@ $("markBtn").onclick=()=>{ log("parent_marker"); const b=$("markBtn"); b.style.c
 $("stageEl").addEventListener("click",e=>{ const c=e.target.closest("[data-open]"); if(!c) return; const L=c.dataset.open; c.outerHTML=`<div class="card"><img src="cues/${CUE_FILE[L]}.png" alt=""></div>`; log("cue_opened",{letter:L}); log("hint_shown",{letter:L, why:"tap"}); });
 $("bOk").onclick=onOk; $("bAgain").onclick=onAgain; $("bWhole").onclick=onWhole;
 $("bSentAgain").onclick=()=>{ S.misses++; log("mark",{outcome:"sentence_again", ms_on_step:now()-S.t0}); };
-$("bNext").onclick=()=>{ log("mark",{outcome:"sentence_correct", ms_on_step:now()-S.t0}); reward(); bookDone()[S.page+1]=true; saveProg(); gotoPage(S.page+1); };
+$("bNext").onclick=()=>{ log("mark",{outcome:"sentence_correct", ms_on_step:now()-S.t0}); reward(); const first=!bookDone()[S.page+1]; bookDone()[S.page+1]=true; saveProg();
+  const pi=pageItem(curPage()); if(pi){ log("item_collected",{item:pi.id, count:pi.n, first}); itemToast(pi); } gotoPage(S.page+1); };
 $("startRec").onclick=()=>{ goFs(); begin(true); };
 $("startNoRec").onclick=()=>{ goFs(); begin(false); };
 $("endStopRec").onclick=stopRec;
