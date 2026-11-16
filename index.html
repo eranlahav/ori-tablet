@@ -431,6 +431,7 @@ body.quiet .rec.off{display:none}
           <label><input type="checkbox" id="pPreview"> תצוגה מקדימה של המצלמה (רק כאן)</label>
           <video id="preview" muted playsinline hidden></video>
           <div id="savedList" class="hint"></div>
+          <div class="hint">בעצירה נשמרים אוטומטית שני קבצים: הווידאו והיומן (json). אם Chrome שואל על הורדת כמה קבצים, לבחור "אפשר" פעם אחת.</div>
         </section>
         <section class="sec"><h3>מצב שקט</h3>
           <div class="seg" data-set="quiet"><button data-v="reading">שקט בזמן הקריאה</button><button data-v="full">מלא כל הזמן</button></div>
@@ -907,11 +908,22 @@ function stopRec(){ if(!REC.on || !REC.rec) return; log("rec_stop"); REC.rec.sto
 function finishRec(){
   REC.on=false; clearInterval(REC.timer); REC.stream.getTracks().forEach(t=>t.stop());
   const blob = new Blob(REC.chunks,{type:REC.mime}), ext = REC.mime.includes("mp4") ? "mp4" : "webm", name = `ori-${REC.id.slice(4,20)}.${ext}`;
-  download(blob, name); REC.saved.push({name, size:blob.size, blob});
+  const logBlob = recLogBlob(REC.started, now(), name), logName = name.replace(/\.\w+$/, ".json");
+  download(blob, name); setTimeout(()=>download(logBlob, logName), 600);
+  REC.saved.push({name, size:blob.size, blob, logName, logBlob});
   store.set("ori.tab.recMeta", null); idbClear(); paintRec(); paintSaved();
   $("endStopRec").hidden=true; if(!$("start").hidden) paintHome();
-  if(!$("end").hidden) $("endNote").textContent = `ההקלטה נשמרה: ${name} (${(blob.size/1e6).toFixed(1)}MB) בתיקיית ההורדות, יחד עם היומן.`;
-  if(S) downloadLog("json");
+  if(!$("end").hidden) $("endNote").textContent = `ההקלטה נשמרה: ${name} (${(blob.size/1e6).toFixed(1)}MB) בתיקיית ההורדות, יחד עם היומן ${logName}.`;
+}
+/* the log that belongs to one recording: every event from every story read while it ran (not only the last story) */
+function recLogBlob(fromMs, toMs, videoName){
+  const all = store.get("ori.tab.sessions",{});
+  if(S) all[S.id] = {id:S.id, started:S.started, events:S.events, stats:S.stats};
+  const t = e => Date.parse(e.iso);
+  const ev = Object.values(all).flatMap(s=>s.events.map(e=>Object.assign({session:s.id},e))).filter(e=>t(e)>=fromMs-1000 && t(e)<=toMs+1000).sort((a,b)=>t(a)-t(b));
+  const books = [...new Set(ev.map(e=>e.book))];
+  return new Blob([JSON.stringify({app:"ori-tablet-v3", recording:videoName, rec_started:new Date(fromMs).toISOString(), rec_stopped:new Date(toMs).toISOString(),
+    sessions:[...new Set(ev.map(e=>e.session))], books, pages:Object.fromEntries(books.map(b=>{ const st=STORIES.find(x=>x.id===b); return [b, st ? st.pages.map(p=>p.words.map(w=>w[0]).join(" ")) : []]; })), events:ev},null,1)],{type:"application/json"});
 }
 function recError(msg){ $("recState").innerHTML = `<span class="err">${msg}</span>`; $("startNote").innerHTML = `<span class="err">${msg}</span>`; paintRec(); if(S) log("rec_error",{msg}); }
 const fmt = s => { s=Math.floor(s); return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); };
@@ -921,7 +933,7 @@ function paintRec(){
   if(REC.on || !$("recState").querySelector(".err")) $("recState").innerHTML = REC.on ? `<span style="display:inline-block;width:14px;height:14px;border-radius:14px;background:var(--rec)"></span> מקליט עכשיו <b dir="ltr">${fmt((now()-REC.started)/1000)}</b>` : "ההקלטה כבויה.";
   $("pRecStart").hidden = REC.on; $("pRecStop").hidden = !REC.on;
 }
-function paintSaved(){ $("savedList").innerHTML = REC.saved.map((r,i)=>`נשמר: ${r.name} (${(r.size/1e6).toFixed(1)}MB) <button class="pbtn" style="display:inline-flex;min-height:40px" data-save="${i}">הורד שוב</button>${navigator.canShare?` <button class="pbtn" style="display:inline-flex;min-height:40px" data-share="${i}">שתף…</button>`:""}`).join("<br>"); }
+function paintSaved(){ $("savedList").innerHTML = REC.saved.map((r,i)=>`נשמר: ${r.name} (${(r.size/1e6).toFixed(1)}MB) <button class="pbtn" style="display:inline-flex;min-height:40px" data-save="${i}">הורד שוב</button>${r.logBlob?` <button class="pbtn" style="display:inline-flex;min-height:40px" data-savelog="${i}">הורד יומן</button>`:""}${navigator.canShare?` <button class="pbtn" style="display:inline-flex;min-height:40px" data-share="${i}">שתף…</button>`:""}`).join("<br>"); }
 function attachPreview(){ const v=$("preview"); if($("pPreview").checked && REC.stream){ v.srcObject=REC.stream; v.hidden=false; v.play().catch(()=>{}); } else { v.srcObject=null; v.hidden=true; } }
 function download(blob, name){ const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 60000); }
 let dbp=null;
@@ -932,8 +944,12 @@ async function idbAll(){ try{ const d=await db(); return await new Promise(r=>{ 
 async function checkRecover(){
   const meta=store.get("ori.tab.recMeta",null); if(!meta) return;
   const parts=await idbAll(); if(!parts.length) return;
-  $("recover").hidden=false;
-  $("recoverBtn").onclick = async ()=>{ const blob=new Blob(parts,{type:meta.mime}); download(blob, `ori-recovered-${meta.id.slice(4,20)}.${meta.mime.includes("mp4")?"mp4":"webm"}`); store.set("ori.tab.recMeta",null); await idbClear(); $("recover").innerHTML="<span>נשמר לתיקיית ההורדות.</span>"; };
+  const name = `ori-recovered-${meta.id.slice(4,20)}.${meta.mime.includes("mp4")?"mp4":"webm"}`, blob = new Blob(parts,{type:meta.mime});
+  const evs = Object.values(store.get("ori.tab.sessions",{})).flatMap(s=>s.events).map(e=>Date.parse(e.iso)).filter(t=>t>=meta.started);
+  const logBlob = recLogBlob(meta.started, evs.length ? Math.max(...evs) : meta.started, name);
+  download(blob, name); setTimeout(()=>download(logBlob, name.replace(/\.\w+$/, ".json")), 600);
+  store.set("ori.tab.recMeta",null); await idbClear();
+  $("recover").hidden=false; $("recover").innerHTML=`<span>הקלטה קודמת שנקטעה נשמרה אוטומטית לתיקיית ההורדות: ${name}</span>`;
 }
 
 /* ---------- log export ---------- */
@@ -961,7 +977,7 @@ $("veil").onclick=e=>{ if(e.target===$("veil")) closeP(); };
 $("scale").oninput=e=>{ settings.scale=+e.target.value; saveSettings(); };
 $("resetFade").onclick=()=>{ reads={}; store.set("ori.t3.letterReads",reads); $("resetFade").textContent="אופס ✓"; };
 $("pRecStart").onclick=startRec; $("pRecStop").onclick=stopRec; $("pPreview").onchange=attachPreview;
-$("savedList").onclick=e=>{ const s=e.target.dataset.save, sh=e.target.dataset.share; if(s!=null){ const r=REC.saved[+s]; download(r.blob,r.name);} if(sh!=null){ const r=REC.saved[+sh]; const f=new File([r.blob],r.name,{type:r.blob.type}); if(navigator.canShare({files:[f]})) navigator.share({files:[f]}).catch(()=>{}); } };
+$("savedList").onclick=e=>{ const s=e.target.dataset.save, sl=e.target.dataset.savelog, sh=e.target.dataset.share; if(s!=null){ const r=REC.saved[+s]; download(r.blob,r.name);} if(sl!=null){ const r=REC.saved[+sl]; download(r.logBlob,r.logName);} if(sh!=null){ const r=REC.saved[+sh]; const f=new File([r.blob],r.name,{type:r.blob.type}); if(navigator.canShare({files:[f]})) navigator.share({files:[f]}).catch(()=>{}); } };
 $("prevPage").onclick=()=>{ $("veil").hidden=true; if(S){ $("end").hidden=true; $("app").hidden=false; gotoPage(S.page-1);} };
 $("skipPage").onclick=()=>{ $("veil").hidden=true; if(S){ log("page_skipped"); gotoPage(S.page+1);} };
 $("restart").onclick=()=>{ $("veil").hidden=true; if(S){ $("end").hidden=true; $("app").hidden=false; gotoPage(0);} };
