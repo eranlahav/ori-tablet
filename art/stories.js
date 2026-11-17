@@ -266,7 +266,7 @@ for (const [sid, st] of Object.entries(STORIES)) { if (onlyStory && onlyStory !=
     for (const stage of ['base', 'reveal']) { const o = pg[stage]; const S = buildFn(o, Hm);
       for (const [name, v0] of Object.entries(variants)) { const v = Object.assign({}, v0, o.view ? o.view[name] : {});
         let svg = S.render(Object.assign({ bg: o.bg ? o.bg(v) : sky(o.sky, v.W, v.H, v.horizon, v.sunX), light: o.light || LIGHT[o.sky] }, v));
-        let extra = ''; if (o.glow) extra += glow(v, o.glow, 'gl'); if (o.bubble) extra += bubble(v, o.bubble);
+        let extra = ''; if (o.overlay) extra += o.overlay(v); if (o.glow) extra += glow(v, o.glow, 'gl'); if (o.glow2) extra += glow(v, o.glow2, 'gl2'); if (o.bubble) extra += bubble(v, o.bubble); if (o.top) extra += o.top(v);
         if (extra) svg = svg.replace('</svg>', extra + '</svg>');
         fs.writeFileSync(path.join(dir, `p${n}-${stage}-${name}.svg`), svg);
       } } } }

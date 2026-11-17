@@ -10,14 +10,14 @@ Alternative if "I" feels wrong after a test night: second person ("בָּאתָ"
 | # | Episode | What happens (Eran's verbs) | New sound | Items to collect |
 |---|---|---|---|---|
 | 1 | הָאִי (live) | arrive, chop, build, survive the night | kamatz/patach | עֵץ, פָּנָס, זָהָב |
-| 2 | הַפַּנְדָּה (live) | mine, find chest + map, meet panda, portal | kamatz/patach | מַכּוֹשׁ, מַפָּה, אֶמֶרַלְד |
+| 2 | הַפַּנְדָּה (live) | mine, find chest + map, meet panda, portal | kamatz/patach | פִּיקְאַקְס, מַפָּה, אֶמֶרַלְד |
 | 3 | הַכַּפְרִי (live) | work the wheat, trade, buy a boat | + hirik | חִטָּה, אֶמֶרַלְד, סִירָה |
-| **4** | **הַמְּעָרָה** (this PR) | sail to a new island, dark cave, torch, mine iron, skeleton fight, find a bow | **+ tsere/segol (e)** | לַפִּיד, בַּרְזֶל, חֵץ, עֶצֶם, קֶשֶׁת |
-| **5** | **הַחֶרֶב** (this PR) | out of the cave, find a village, fire, smelt iron, craft sword, shield, helmet; night falls… cliffhanger | e (practice) | פֶּחָם, בַּרְזֶל, חֶרֶב, מָגֵן, קַסְדָּה |
-| **6** | **הַלַּיְלָה בַּכְּפָר** (this PR) | zombies attack, fight, build an iron golem, win, villagers give a map | **+ holam (o)** | גּוֹלֶם (badge), מַפַּת יַהֲלוֹמִים |
-| 7 | הַיַּהֲלוֹמִים | follow the map, deep mine, lava, diamonds, diamond pickaxe | + shuruk/kubutz (u) | יַהֲלוֹם, מַכּוֹשׁ יַהֲלוֹם |
-| 8 | הַשּׁוּק | trade diamonds with a wandering trader, tame a dog, meet a friend | u (practice) | כֶּלֶב (badge), עֲצָמוֹת |
-| 9 | הַשַּׁעַר הָאָדֹם | collect obsidian, build a portal, enter the fire world | + vocal shva | אוֹבְּסִידְיָאן, צוֹר אֵשׁ |
+| 4 | הַמְּעָרָה (live) | sail to a new island, dark cave, torch, mine iron, skeleton fight, find a bow | **+ tsere/segol (e)** | לַפִּיד, אַיְרוֹן, חֵץ, עֶצֶם, קֶשֶׁת |
+| 5 | הַחֶרֶב (live) | out of the cave, find a village, fire, smelt iron, craft sword, shield, helmet; night falls… cliffhanger | e (practice) | אַיְרוֹן, חֶרֶב, מָגֵן, קַסְדָּה |
+| 6 | הַלַּיְלָה בַּכְּפָר (live) | zombies attack, fight, build an iron golem, win, villagers give a map | **+ holam (o)** | מַפַּת דַּיְמוֹנְדִּים |
+| **7** | **הַדַּיְמוֹנְדִּים** (2026-11-17) | follow the map, dig a deep pit, lava river, build a bridge, diamonds, diamond pickaxe | **+ u (shuruk)**: בּוּם, הוּפָּה, יוּפִּי, מַשֶּׁהוּ | דַּיְמוֹנְד ×5, דַּיְמוֹנְד פִּיקְאַקְס |
+| **8** | **הַסּוֹחֵר וְהַכֶּלֶב** (2026-11-17) | back to the village, trade a diamond with a trader for a מַצִּית (flint and steel), tame a dog with the bone from ep. 4, name him בּוּבּוּ | u (practice) | מַצִּית, בּוּבּוּ הַכֶּלֶב |
+| **9** | **הַפּוֹרְטָל** (2026-11-17) | water on the lava makes obsidian, mine it, build a portal, light it, run in with the dog. Ends on "לְאָן? לְעוֹלַם הָאֵשׁ!" | **+ vocal shva**: שְׁחֹרָה, מְאֹד, לְאָן, לְעוֹלַם | אוֹבְּסִידִיאַן ×10 |
 | 10 | עוֹלַם הָאֵשׁ | fire monsters, fire rods, escape | shva (practice) | מוֹט אֵשׁ |
 | 11 | הַמִּבְצָר | magic eyes lead to a stronghold, find the dark portal | all vowels | עַיִן |
 | 12 | הַדְּרָקוֹן | arrive at the dark island, break the crystals with the bow, fight the dragon | all vowels | — |
@@ -25,14 +25,7 @@ Alternative if "I" feels wrong after a test night: second person ("בָּאתָ"
 
 The room shows every item slot of the whole saga from day one: locked slots are dark silhouettes, so Ori can see what's still waiting (the dragon egg is the last one).
 
-## Words to check with Ori (he decides, swaps are quick)
-Eran's rule: use the words kids actually say. Ori says "אֶמֶרַלְד", so that swap is done. For these I guessed the Hebrew word; ask him what he calls them:
-
-| In the text now | Kid alternative | Reading cost if we swap |
-|---|---|---|
-| כַּפְרִי | וִילֶג'ֶר | ג' (j) has no teacher cue; the ג cue (גִּבּוֹר עָל) teaches g — conflict. Recommend keeping כַּפְרִי unless Ori really never says it. |
-| שֶׁלֶד | סְקֶלֶטוֹן | longer, but no cue conflict |
-| בַּרְזֶל | אַיְירוֹן | fine to swap; e-practice moves elsewhere |
-| מַכּוֹשׁ (item label) | פִּיקָאקְס | label only, not in the text |
-| לַפִּיד | טוֹרְץ' | צ' (ch) has no cue — conflict; keep לַפִּיד |
-| יַהֲלוֹם (ep. 7) | דַּיְימוֹנְד | decide before episode 7 |
+## Ori's words (decided 2026-11-17)
+Ori says these in English, so the text uses them: **סְקֶלֶטוֹן** (skeleton), **אַיְרוֹן** (iron), **פִּיקְאַקְס** (pickaxe), **דַּיְמוֹנְד** (diamond). Also אֶמֶרַלְד, פּוֹרְטָל, אוֹבְּסִידִיאַן.
+Spelling for reading: אַיְרוֹן and דַּיְמוֹנְד use the same "אַיְ" pattern as לַיְלָה, which he already reads. Kept in Hebrew: כַּפְרִי, לַפִּיד (the English words need ג'/צ', which have no cue).
+Guessed, worth checking with Ori: מַצִּית for flint and steel, and the dog's name בּוּבּוּ (he may want to name it himself; it's one word to change).

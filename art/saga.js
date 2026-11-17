@@ -1,5 +1,5 @@
-// Saga episodes 4-6 (cave, sword, night in the village). Same voxel style and engine as stories.js; original art only.
-// Usage: node art/saga.js [s4|s5|s6] [page]  -> writes art/s4/p{n}-{base|reveal}-{wide|tall}.svg
+// Saga episodes 4-9 (cave, sword, night in the village, diamonds, the dog, the portal). Same voxel style and engine as stories.js; original art only.
+// Usage: node art/saga.js [s4..s9] [page]  -> writes art/s4/p{n}-{base|reveal}-{wide|tall}.svg
 const { hash } = require('./voxel.js');
 const T = require('./stories.js');
 const { build, person, house, renderAll, islandH, N, STONE, pick, DARK } = T;
@@ -52,6 +52,9 @@ function hero(S, G, p) { const q = Object.assign({ kind: 'ori' }, p); const hold
   if (hold === 'torch') { B(0.9, 5.1, 13.4, 0.8, 0.8, 3.0, '#7A4E2B'); B(0.7, 4.9, 16.4, 1.2, 1.2, 1.4, '#F2A541', { top: '#FFF2C4', fl: 1.1, fr: 1 }); }
   if (hold === 'pick') { B(0.9, 5.0, 12.4, 0.8, 0.8, 4.4, '#7A4E2B'); B(0.5, 3.0, 16.4, 1.6, 4.8, 1.1, '#9FB3C8', { top: '#C8D6E4' }); }
   if (hold === 'sword') { B(0.5, 4.5, 13.5, 1.6, 2.2, 0.5, '#F2C94C'); B(0.9, 5.2, 14.0, 0.8, 0.8, 6.6, '#C9D2DC', { top: '#E3E9F0', fl: 1.05, fr: 0.92 }); }
+  if (hold === 'dpick') { B(0.9, 5.0, 12.4, 0.8, 0.8, 4.4, '#7A4E2B'); B(0.5, 3.0, 16.4, 1.6, 4.8, 1.1, '#56D6E2', { top: '#C4F6FA' }); }
+  if (hold === 'flint') { B(1.0, 4.8, 13.0, 1.0, 1.6, 1.0, '#8792A0', { top: '#B9C3CF' }); B(1.0, 5.6, 14.0, 1.0, 0.8, 1.0, '#4A4652'); }
+  if (hold === 'bone') { B(1.0, 4.4, 13.2, 0.8, 2.8, 0.8, '#F1ECDD', { top: '#FFFFFF' }); }
   if (hold === 'map') { B(1.6, 4.0, 12.6, 0.4, 4.0, 3.4, '#EADBB0', { decR: [[0.6 * u, 0.8 * u, 1.2 * u, 1.2 * u, '#56D6E2'], [2.2 * u, 2.0 * u, 1.4 * u, 0.4 * u, '#A0703A']] }); }
   if (p.shield) { B(2.3, -1.2, 4.0, 0.6, 3.2, 4.6, '#8A5A2E', { decR: [[1.3 * u, 0, 0.6 * u, 4.6 * u, '#3D6FB0'], [0, 2.0 * u, 3.2 * u, 0.6 * u, '#3D6FB0'], [0, 4.2 * u, 3.2 * u, 0.4 * u, '#B9C3CF']] }); }
   if (p.helmet) { B(-0.95, -0.35, 12.0, 4.1, 5.1, 2.4, '#B9C3CF', { top: '#E3E9F0', decR: [[0, 0, 5.1 * u, 0.5 * u, '#8792A0']] }); }
@@ -173,6 +176,141 @@ const S6 = {
   10: { base: outdoor({ sky: 'morning', houses: V, furnace: 'lit', villagers: VILL6, mobs: [GOLEM], hero: Object.assign({ shield: true, helmet: true }, HERO_V) }),
         reveal: outdoor({ sky: 'morning', houses: V, furnace: 'lit', villagers: VILL6_UP, mobs: [Object.assign({ arms: 'up' }, GOLEM)], hero: Object.assign({ hold: 'map', shield: true, helmet: true }, HERO_V), glow2: [HERO_V.x + 0.8, HERO_V.y + 2, 7.2, 2.4, '#C4F6FA'] }) },
 };
-const SAGA = { s4: { pages: S4, hm: hmSaga }, s5: { pages: S5, hm: hmSaga }, s6: { pages: S6, hm: hmSaga } };
+
+/* ---------- episodes 7-9 (2026-11-17): deep mine with a lava river, diamonds, the trader, the dog, the portal ---------- */
+const { ITEMS: ICONS } = require('./items.js');
+const LAVA = ['#E8732C', '#F2853A', '#F09A3A', '#E06A28'], LAVA_TOP = '#FFB54A', OBS = ['#2A1E3C', '#35264C', '#2E2142'], DI = '#56D6E2', DI2 = '#C4F6FA';
+const RIVER = { y0: 9, y1: 10 }, BRIDGE = { x0: 13, x1: 14 };
+const inRiver = (x, y) => y >= RIVER.y0 && y <= RIVER.y1;
+const OBS_CELLS = (x, y) => inRiver(x, y) && x >= 4 && x <= 7;
+function mobber2(S, G, p) { const { x: ox, y: oy, kind } = p; const z0 = (p.z != null ? p.z : G(ox, oy)); const u = p.scale || (kind === 'dog' ? 0.5 : 0.44); const k = ox + oy + 1.2; let n = 0;
+  const B = (x, y, z, w, d, h, col, o) => S.box(ox + x * u, oy + y * u, z0 + z * u, w * u, d * u, h * u, col, Object.assign({ sort: k + (n++) * 0.001, nojit: true, fl: 0.9, fr: 0.78 }, o || {}));
+  if (kind === 'dog') { const W = '#F1ECE4', W2 = '#D9D2C6', NOSE = '#3A3040', EYE = '#1E1822';
+    const sit = p.pose === 'sit';
+    if (sit) { B(0, 0.2, 0, 2.0, 2.0, 2.2, W2); B(3.4, 0.4, 0, 1.0, 0.8, 2.6, W2); B(3.4, 1.6, 0, 1.0, 0.8, 2.6, W2); B(0, 0, 1.6, 4.2, 2.4, 3.0, W, { top: '#FFFFFF' }); }
+    else { [[0.2, 0.1], [0.2, 1.5], [3.6, 0.1], [3.6, 1.5]].forEach(([x, y]) => B(x, y, 0, 0.8, 0.8, 2.0, W2)); B(0, 0, 2.0, 4.8, 2.4, 2.2, W, { top: '#FFFFFF' }); }
+    const hz = sit ? 4.0 : 3.2;
+    B(-1.0, 0.8, hz + (p.wag ? 1.6 : 0.6), 1.2, 0.8, 0.8, W2); // tail
+    if (p.collar) B(4.0, -0.15, hz + 0.2, 0.6, 2.7, 1.0, '#D8323C');
+    B(4.4, -0.2, hz, 2.6, 2.8, 2.6, W, { decR: [[0.4 * u, 1.4 * u, 0.5 * u, 0.5 * u, EYE], [1.9 * u, 1.4 * u, 0.5 * u, 0.5 * u, EYE]] });
+    B(7.0, 0.5, hz, 1.2, 1.4, 1.2, W2, { decR: [[0.4 * u, 0.6 * u, 0.6 * u, 0.5 * u, NOSE]] });
+    B(4.6, -0.2, hz + 2.6, 0.8, 0.8, 0.9, W2); B(4.6, 1.8, hz + 2.6, 0.8, 0.8, 0.9, W2);
+    if (p.happy) B(7.2, 0.8, hz - 0.5, 0.8, 0.8, 0.6, '#E86A7A');
+    return; }
+  if (kind === 'trader') { const ROBE = '#3D6FB0', ROBE2 = '#2F5A92', TRIM = '#E3C46A', SKIN = '#D9A57A', EYE = '#2A2233';
+    B(-0.1, -0.1, 0, 2.4, 4.8, 1, '#3A3040'); B(0, 0, 1, 2.2, 4.6, 3.2, ROBE);
+    B(0, -0.1, 4, 2.2, 4.6, 5, ROBE, { decR: [[0.9 * u, 0, 2.8 * u, 4.6 * u, ROBE2], [0, 2.1 * u, 0.6 * u, 5 * u, TRIM]] });
+    if (p.give) { B(0.6, 3.6, 6.4, 3.2, 1.6, 1.2, ROBE2); B(3.4, 3.8, 6.2, 1.2, 1.2, 1.4, SKIN); }
+    else B(2.2, 0.4, 6.2, 1.2, 3.8, 1.4, ROBE2);
+    B(-0.7, -0.1, 9, 3.6, 4.6, 4, SKIN, { decR: [[0.8 * u, 1.9 * u, 0.8 * u, 0.9 * u, EYE], [3.0 * u, 1.9 * u, 0.8 * u, 0.9 * u, EYE], [1.6 * u, 0.5 * u, 1.4 * u, 0.4 * u, '#9A5A3C']] });
+    B(3.0, 1.9, 9.6, 1.2, 0.9, 2.2, '#C98A62');
+    B(-1.0, -0.4, 12.6, 4.0, 5.4, 1.2, ROBE, { top: '#4F82C4' }); B(-1.0, -0.4, 9.0, 0.8, 5.4, 3.6, ROBE); B(-0.2, 1.4, 13.8, 2.2, 1.8, 0.8, ROBE2);
+    return; }
+}
+function heroDog(S, G, o) { if (o.dog) mobber2(S, G, Object.assign({ kind: 'dog' }, o.dog)); if (o.hero) hero(S, G, o.hero); }
+function lavaBlocks(S, o) {
+  for (let x = R0 + 1; x <= R1; x++) for (let y = RIVER.y0; y <= RIVER.y1; y++) {
+    const obs = o.obsidian && OBS_CELLS(x, y);
+    if (obs) S.vox(x, y, 0, pick(OBS, hash(x, y, 4)), { top: pick(['#3B2A55', '#33264C'], hash(x, y, 5)), nojit: true });
+    else S.vox(x, y, 0, pick(LAVA, hash(x, y, 2)), { top: hash(x, y, 7) > 0.6 ? '#FFD27A' : LAVA_TOP, fl: 1.05, fr: 0.95, nojit: true });
+    if (o.water && OBS_CELLS(x, y)) S.box(x, y, 1, 1, 1, 0.35, '#3E8FD8', { op: 0.85, nojit: true, top: '#6FB3F0', sort: x + y + 0.9 });
+  }
+  if (o.bubbles) [[13.4, 9.3], [6.4, 10.2], [15.6, 10.0]].forEach(([x, y], i) => S.box(x, y, 1, 0.4, 0.4, 0.4, '#FFD27A', { nojit: true, top: '#FFF2C4', sort: x + y + 1 + i * 0.01 }));
+  if (o.bridge) { for (let y = RIVER.y0 - 0.4; y < RIVER.y1 + 1.3; y += 0.5) S.box(BRIDGE.x0, y, 1, 2, 0.44, 0.4, '#6B4426', { nojit: true, top: y * 2 % 2 ? '#B07A42' : '#C08A4A', sort: BRIDGE.x0 + y + 1.6 });
+    [0, 1.8].forEach(dx => { S.box(BRIDGE.x0 + dx, RIVER.y0 - 0.4, 1.4, 0.2, 3.0, 0.2, '#8A5A2E', { nojit: true, top: '#C08A4A', sort: BRIDGE.x0 + dx + RIVER.y1 + 2.4 });
+      [RIVER.y0 - 0.4, RIVER.y1 + 1.4].forEach(y => S.box(BRIDGE.x0 + dx, y, 1.4, 0.2, 0.2, 0.0, '#8A5A2E')); [RIVER.y0 - 0.4, RIVER.y1 + 1.4].forEach(y => S.box(BRIDGE.x0 + dx, y - 0.2, 1, 0.2, 0.2, 0.6, '#6B4426', { nojit: true, sort: BRIDGE.x0 + dx + y + 1.7 })); }); }
+}
+function deepRoom(o) { return (S) => {
+  for (let x = R0; x <= R1; x++) for (let y = R0; y <= R1; y++) { S.vox(x, y, -1, '#3A3642'); if (!(x > R0 && inRiver(x, y))) S.vox(x, y, 0, pick(['#5E5B66', '#66636E', '#58555F', '#6A6773'], hash(x, y, 11))); }
+  for (let y = R0; y <= R1; y++) for (let z = 1; z <= WALL_H; z++) S.vox(R0, y, z, pick(['#5E5B66', '#66636E', '#58555F', '#6A6773', '#53505B'], hash(R0, y, z + 9)));
+  for (let x = R0 + 1; x <= R1; x++) for (let z = 1; z <= WALL_H; z++) { const oo = {};
+    if (x >= 5 && x <= 7 && z >= 1 && z <= 2 && o.ore) oo.decL = o.ore === 'mined' ? [[0, 0, 1, 1, '#1A1620']] : [[0.15, 0.2, 0.28, 0.28, DI], [0.55, 0.55, 0.3, 0.28, DI], [0.6, 0.12, 0.22, 0.22, DI2]];
+    S.vox(x, R0, z, pick(['#5E5B66', '#66636E', '#58555F', '#6A6773', '#53505B'], hash(x, R0, z + 13)), oo); }
+  lavaBlocks(S, o);
+  torchOnWall(S, R0 + 1, 13, 3);
+  if (o.loot) [[6.2, 4.4], [6.9, 5.0], [5.6, 5.2], [7.4, 4.2], [6.4, 5.8]].forEach(([x, y], i) => S.box(x, y, 1, 0.5, 0.5, 0.45, DI, { nojit: true, top: DI2, sort: x + y + 1 + i * 0.01 }));
+  if (o.pile) [[6, 15, 1], [7, 15, 1], [6, 16, 1], [7, 16, 1], [6, 15, 2], [7, 16, 2]].slice(0, o.pile).forEach(([x, y, z]) => S.vox(x, y, z, pick(OBS, hash(x, y, z)), { top: '#3B2A55' }));
+  if (o.portal) portalFrame(S, 4, 11, 1, o.portal === 'lit');
+  if (o.steam) poof(S, 6, 9.4, 1.2);
+  heroDog(S, () => 1, o);
+}; }
+function portalFrame(S, x, y, z, lit) { for (let j = 0; j < 4; j++) for (let k = 0; k < 5; k++) { const edge = j === 0 || j === 3 || k === 0 || k === 4; if (edge) S.vox(x, y + j, z + k, (j + k) % 2 ? OBS[0] : OBS[1], { sort: x + y + j + 0.2 }); }
+  if (lit) S.box(x + 0.35, y + 1, z + 1, 0.3, 2, 3, '#A24BE0', { op: 0.88, nojit: true, top: '#C27BF0', sideR: '#9A3FD8', sideL: '#B460EA', sort: x + y + 2.1, decR: [[0.3, 0.4, 0.35, 0.35, '#D9A6FA'], [1.2, 1.5, 0.3, 0.3, '#D9A6FA'], [0.6, 2.3, 0.25, 0.25, '#E8C8FF']] }); }
+const deep = (o) => ({ noIsland: true, noClouds: true, sky: 'night', bg: caveBg(false), light: LIT, extra: deepRoom(o), view: CAVE_VIEW,
+  glow: [11, 10, 1.2, 9, '#FF7A2A'], glow2: o.glow2 || null, top: o.top || null });
+// thought bubble with one of the item icons inside (16x16 sprite from items.js)
+function iconBubble(at, id) { return (v) => { const [px, py] = T.P(v, at[0], at[1], at[2]); const s = v.s / 27; const bx = px + 70 * s, by = py - 95 * s, q = 5.2 * s;
+  let g = `<g><circle cx="${(px + 18 * s).toFixed(0)}" cy="${(py - 22 * s).toFixed(0)}" r="${7 * s}" fill="#FFF8EA"/><circle cx="${(px + 38 * s).toFixed(0)}" cy="${(py - 48 * s).toFixed(0)}" r="${11 * s}" fill="#FFF8EA"/>`;
+  g += `<rect x="${(bx - 62 * s).toFixed(0)}" y="${(by - 58 * s).toFixed(0)}" width="${124 * s}" height="${104 * s}" rx="${26 * s}" fill="#FFF8EA" stroke="#E7D9BC" stroke-width="${3 * s}"/>`;
+  const grid = id === 'heart' ? HEART : ICONS[id];
+  grid.forEach((r, y) => r.forEach((c, x) => { if (c) g += `<rect x="${(bx - 8 * q + x * q).toFixed(1)}" y="${(by - 6 * s - 8 * q + y * q).toFixed(1)}" width="${(q + 0.4).toFixed(1)}" height="${(q + 0.4).toFixed(1)}" fill="${c}"/>`; }));
+  return g + '</g>'; }; }
+const HEART = ['................', '................', '...KK.....KK....', '..KRRK...KRRK...', '.KRWRRK.KRRRRK..', '.KRWRRRKRRRRRK..', '.KRRRRRRRRRRRK..', '.KRRRRRRRRRRRK..', '..KRRRRRRRRRK...', '...KRRRRRRRK....', '....KRRRRRK.....', '.....KRRRK......', '......KRK.......', '.......K........', '................', '................']
+  .map(r => [...r].map(ch => ({ K: '#241C2E', R: '#E8404E', W: '#FFB3BA' })[ch] || null));
+function outdoor2(o) { const base = outdoor(o); const inner = base.extra;
+  base.extra = (S, G, H) => { inner(S, G, H);
+    if (o.pit) { const [x, y] = o.pit, z = G(x, y); S.box(x, y, z - 0.98, 1.6, 1.6, 0.99, '#1A1620', { nojit: true, top: '#0E0B12', sort: x + y + 3 }); }
+    if (o.xmark) { const [x, y] = o.xmark, z = G(x, y); for (let i = 0; i < 5; i++) { S.box(x + i * 0.3, y + i * 0.3, z, 0.34, 0.34, 0.06, '#D8323C', { nojit: true, sort: x + y + 3 }); S.box(x + 1.2 - i * 0.3, y + i * 0.3, z, 0.34, 0.34, 0.06, '#D8323C', { nojit: true, sort: x + y + 3 }); } }
+    (o.traders || []).forEach(t => mobber2(S, G, Object.assign({ kind: 'trader' }, t)));
+    if (o.boneAt) { const [x, y] = o.boneAt; S.box(x, y, G(x, y), 1.2, 0.3, 0.3, '#F1ECDD', { nojit: true, top: '#FFFFFF', sort: x + y + 1.4 }); }
+    if (o.dog) mobber2(S, G, Object.assign({ kind: 'dog' }, o.dog));
+    if (o.hero2) hero(S, G, o.hero2);
+  };
+  base.top = o.top || null; base.glow2 = o.glow2 || null; return base; }
+// the fire world: a dark red sky and a small netherrack island with lava
+function fireWorld(o) { return { noIsland: true, noClouds: true, sky: 'night', view: CAVE_VIEW, light: { top: 1, left: 0.8, right: 0.62, tintTop: [255, 120, 80, 0.18], tintSide: [120, 30, 30, 0.2] },
+  bg: (v) => `<rect width="${v.W}" height="${v.H}" fill="#3A0E12"/><rect y="${v.H * 0.3}" width="${v.W}" height="${v.H * 0.4}" fill="#5A1416"/><rect y="${v.H * 0.7}" width="${v.W}" height="${v.H * 0.3}" fill="#7A1E18"/>`,
+  glow: [10, 10, 1, 10, '#FF6A2A'], glow2: [5.5, 13, 3, 3, '#C27BF0'],
+  extra: (S) => { for (let x = 4; x <= 16; x++) for (let y = 4; y <= 16; y++) { const r = Math.hypot(x - 10, y - 10); if (r > 6.6 + hash(x, y, 3) * 1.2) continue;
+      const lava = Math.hypot(x - 13, y - 7) < 2.4; S.vox(x, y, 0, lava ? pick(LAVA, hash(x, y, 2)) : pick(['#7A2A2A', '#8A3232', '#6E2424', '#93383A'], hash(x, y, 8)), lava ? { top: LAVA_TOP, nojit: true } : {}); }
+    [[7, 6, 1], [7, 6, 2], [8, 5, 1], [15, 12, 1]].forEach(([x, y, z]) => S.vox(x, y, z, '#8A3232'));
+    S.vox(8, 5, 2, '#F2C94C', { top: '#FFE58A' });
+    portalFrame(S, 4, 11, 1, true); heroDog(S, () => 1, o); } }; }
+
+const HF = { x: 12.6, y: 14.2 }, HB = { x: 11.8, y: 6.4 }, HP = { x: 8.2, y: 12.4 };
+const DOGF = { x: 14.6, y: 15.4 }, DOGP = { x: 9.6, y: 14.6 };
+const HM = Object.assign({ hold: 'map' }, HERO_V);
+const S7 = {
+  1: { base: outdoor2({ sky: 'morning', houses: V, furnace: 'lit', villagers: VILL6, hero: HM }),
+       reveal: outdoor2({ sky: 'morning', houses: V, furnace: 'lit', villagers: VILL6, hero: HM, xmark: [10.6, 8.4], glow2: [HERO_V.x + 0.8, HERO_V.y + 2, 7.2, 2.4, '#C4F6FA'] }) },
+  2: { base: outdoor2({ hero: Object.assign({ hold: 'pick' }, HERO_M), xmark: [11.4, 9.0] }), reveal: outdoor2({ hero: Object.assign({ hold: 'pick' }, HERO_M), pit: [11.4, 9.0] }) },
+  3: { base: cave({ hero: HERO_C }), reveal: deep({ hero: Object.assign({ hold: 'torch' }, HF) }) },
+  4: { base: deep({ hero: Object.assign({ hold: 'torch' }, HF) }), reveal: deep({ bubbles: true, hero: Object.assign({ arms: 'up' }, HF), glow2: [12, 10, 1, 4, '#FFD27A'] }) },
+  5: { base: deep({ hero: HF }), reveal: deep({ bridge: true, hero: Object.assign({ arms: 'up' }, HF) }) },
+  6: { base: deep({ bridge: true, hero: HF }), reveal: deep({ bridge: true, hero: Object.assign({ arms: 'up' }, HB) }) },
+  7: { base: deep({ bridge: true, hero: HB }), reveal: deep({ bridge: true, ore: 'show', hero: HB, glow2: [6.5, 3.6, 1.6, 2.6, DI] }) },
+  8: { base: deep({ bridge: true, ore: 'show', hero: HB }), reveal: deep({ bridge: true, ore: 'show', hero: Object.assign({ arms: 'up' }, HB), glow2: [6.5, 3.6, 1.6, 4.4, DI] }) },
+  9: { base: deep({ bridge: true, ore: 'show', hero: Object.assign({ hold: 'pick' }, HB) }), reveal: deep({ bridge: true, ore: 'mined', loot: true, hero: Object.assign({ hold: 'pick' }, HB), glow2: [6.6, 5.0, 1, 3, DI] }) },
+  10: { base: deep({ bridge: true, ore: 'mined', hero: HB }), reveal: deep({ bridge: true, ore: 'mined', hero: Object.assign({ hold: 'dpick' }, HB), glow2: [HB.x + 0.6, HB.y + 2.4, 9.4, 2.6, DI] }) },
+};
+const TR = { x: 16.4, y: 12.0 }, HV8 = { x: 12.6, y: 12.6 }, DOG8 = { x: 9.8, y: 14.6 };
+const VIL8 = (o) => outdoor2(Object.assign({ houses: V, villagers: [VILL[0]], furnace: 'lit' }, o));
+const S8 = {
+  1: { base: outdoor2({ hero: Object.assign({ hold: 'dpick' }, HERO_M) }), reveal: VIL8({ hero: Object.assign({ hold: 'dpick' }, HV8) }) },
+  2: { base: VIL8({ hero: HV8 }), reveal: VIL8({ traders: [TR], hero: HV8 }) },
+  3: { base: VIL8({ traders: [TR], hero: HV8 }), reveal: VIL8({ traders: [TR], hero: HV8, top: iconBubble([TR.x, TR.y, 6.2], 'diamond') }) },
+  4: { base: VIL8({ traders: [TR], hero: HV8 }), reveal: VIL8({ traders: [TR], hero: Object.assign({ arms: 'up' }, HV8), glow2: [HV8.x + 1.6, HV8.y + 0.4, 6.6, 1.6, DI] }) },
+  5: { base: VIL8({ traders: [TR], hero: HV8 }), reveal: VIL8({ traders: [Object.assign({ give: true }, TR)], hero: Object.assign({ hold: 'flint' }, HV8), glow2: [HV8.x + 0.6, HV8.y + 2.2, 6.4, 1.8, '#FFE9B0'] }) },
+  6: { base: VIL8({ hero: HV8 }), reveal: VIL8({ hero: HV8, dog: DOG8 }) },
+  7: { base: VIL8({ hero: Object.assign({ hold: 'bone' }, HV8), dog: DOG8 }), reveal: VIL8({ hero: HV8, dog: Object.assign({ pose: 'sit' }, DOG8), boneAt: [11.6, 15.6] }) },
+  8: { base: VIL8({ hero: HV8, dog: Object.assign({ pose: 'sit' }, DOG8) }), reveal: VIL8({ hero: Object.assign({ arms: 'up' }, HV8), dog: Object.assign({ pose: 'sit', collar: true, happy: true, wag: true }, DOG8), top: iconBubble([DOG8.x, DOG8.y, 3.2], 'heart') }) },
+  9: { base: VIL8({ hero: HV8, dog: Object.assign({ collar: true }, DOG8) }), reveal: VIL8({ hero: Object.assign({ arms: 'up' }, HV8), dog: Object.assign({ collar: true, happy: true, wag: true }, DOG8), glow2: [DOG8.x + 1, DOG8.y + 0.6, 2, 2.4, '#FFE9B0'] }) },
+  10: { base: VIL8({ hero: HV8, dog: Object.assign({ collar: true }, DOG8) }), reveal: outdoor2({ hero: Object.assign({ hold: 'dpick' }, HERO_M), dog: { x: 12.6, y: 8.6, collar: true, wag: true, happy: true } }) },
+};
+const HF9 = { x: 14.6, y: 13.8 }, DOGF9 = { x: 16.2, y: 15.2 };
+const DOGC = { collar: true }, HD = (o) => Object.assign({}, HF9, o), DG = (o) => Object.assign({}, DOGC, DOGF9, o);
+const S9 = {
+  1: { base: outdoor2({ hero: Object.assign({ hold: 'dpick' }, HERO_M), dog: { x: 12.6, y: 8.6, collar: true } }), reveal: deep({ hero: HD({ hold: 'torch' }), dog: DG() }) },
+  2: { base: deep({ hero: HF9, dog: DG() }), reveal: deep({ water: true, hero: HD({ arms: 'up' }), dog: DG() }) },
+  3: { base: deep({ water: true, hero: HF9, dog: DG() }), reveal: deep({ obsidian: true, steam: true, hero: HF9, dog: DG({ pose: 'sit' }) }) },
+  4: { base: deep({ obsidian: true, hero: HF9, dog: DG() }), reveal: deep({ obsidian: true, hero: HD({ arms: 'up' }), dog: DG({ wag: true }), glow2: [5.5, 10, 1, 3.4, '#9A4FD8'] }) },
+  5: { base: deep({ obsidian: true, hero: HD({ hold: 'dpick' }), dog: DG() }), reveal: deep({ obsidian: true, pile: 6, hero: HD({ hold: 'dpick' }), dog: DG() }) },
+  6: { base: deep({ obsidian: true, pile: 6, hero: HF9, dog: DG() }), reveal: deep({ obsidian: true, portal: 'frame', hero: HD({ arms: 'up' }), dog: DG() }) },
+  7: { base: deep({ obsidian: true, portal: 'frame', hero: HF9, dog: DG() }), reveal: deep({ obsidian: true, portal: 'frame', hero: HD({ hold: 'flint' }), dog: DG(), glow2: [HF9.x + 0.6, HF9.y + 2.2, 6.4, 1.8, '#FFE9B0'] }) },
+  8: { base: deep({ obsidian: true, portal: 'frame', hero: HD({ hold: 'flint' }), dog: DG() }), reveal: deep({ obsidian: true, portal: 'lit', hero: HD({ arms: 'up' }), dog: DG({ wag: true }), glow2: [4.6, 13, 3, 4.4, '#C27BF0'] }) },
+  9: { base: deep({ obsidian: true, portal: 'lit', hero: HF9, dog: DG(), glow2: [4.6, 13, 3, 4.4, '#C27BF0'] }), reveal: deep({ obsidian: true, portal: 'lit', hero: Object.assign({ arms: 'up' }, HP), dog: Object.assign({}, DOGC, DOGP, { wag: true }), glow2: [4.6, 13, 3, 4.4, '#C27BF0'] }) },
+  10: { base: deep({ obsidian: true, portal: 'lit', hero: HP, dog: Object.assign({}, DOGC, DOGP), glow2: [4.6, 13, 3, 4.4, '#C27BF0'] }), reveal: fireWorld({ hero: Object.assign({ arms: 'up' }, HP), dog: Object.assign({ wag: true }, DOGC, DOGP) }) },
+};
+const SAGA = { s4: { pages: S4, hm: hmSaga }, s5: { pages: S5, hm: hmSaga }, s6: { pages: S6, hm: hmSaga }, s7: { pages: S7, hm: hmSaga }, s8: { pages: S8, hm: hmSaga }, s9: { pages: S9, hm: hmSaga } };
 module.exports = { SAGA };
 if (require.main === module) { renderAll(SAGA, process.argv.slice(2), __dirname); console.log('done'); }
