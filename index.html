@@ -694,6 +694,9 @@ const CUE_SETS = {
   "vowel:o":[{id:"mouth"}, I_("treasure","אוֹצָר"), {id:"face", img:"art/cues/face-o.svg", word:"אוֹ!"}, {id:"mark"}],
   "vowel:u":[{id:"mouth"}, D_("cake","עוּגָה"), {id:"face", img:"art/cues/face-u.svg", word:"אוּוּוּ"}, {id:"mark"}]
 };
+/* vowel memory-aid cards Eran collected (2026-11-17), cut one per sound from four sheets: art/cues/vowels/<sound>--<sheet>.jpg */
+const SHEET_NAME = {"sheet1-kipa":"ילד עם כיפה","sheet2-photos":"תמונות","sheet3-lips":"שפתיים","sheet4-faces":"פרצוף"};
+["a--sheet1-kipa","a--sheet2-photos","a--sheet3-lips","a--sheet4-faces","e--sheet2-photos","e--sheet3-lips-segol","e--sheet3-lips-tsere","e--sheet4-faces","i--sheet1-kipa","i--sheet2-photos","i--sheet3-lips","i--sheet4-faces","o--sheet1-kipa","o--sheet2-photos","o--sheet3-lips","o--sheet4-faces","u--sheet1-kipa","u--sheet2-photos","u--sheet3-lips-kubutz","u--sheet3-lips-shuruk","u--sheet4-faces"].forEach(n=>{ const [v, sh] = n.split("--"); CUE_SETS["vowel:"+v].push({id:"sheet-"+sh, photo:true, img:`art/cues/vowels/${n}.jpg`, label:SHEET_NAME[sh.replace(/-(segol|tsere|kubutz|shuruk)$/,"")]}); });
 const CUE_KEYS = [...LETTERS, ...FINALS, "rafe:ב", "rafe:כ", "rafe:פ", ...["a","i","e","o","u"].map(v=>"vowel:"+v)];
 let cueChoices = {};
 const SOUNDS = {}; /* cue key -> recorded Blob (IndexedDB ori-cue-sounds) */
@@ -711,7 +714,7 @@ const cueLabel = k => { const kind=cueKind(k);
 /* the inside of a cue card for key k with option o */
 function cueInner(k, o){
   const kind = cueKind(k);
-  if(o.custom) return `<img class="ph" src="${o.img}" alt="">`;
+  if(o.custom || o.photo) return `<img class="ph" src="${o.img}" alt="">`;
   if(kind==="vowel"){ const v=k.slice(6), V=VOWEL[v];
     if(o.id==="mouth") return MOUTH[v]+`<span>${V.mark}</span>`;
     if(o.id==="mark") return `<span class="vm">${V.mark}</span>`;
@@ -725,7 +728,7 @@ function cueInner(k, o){
 function cueCard(k, o, cls, extra){
   const kind = cueKind(k), alt = o.word ? `: ${o.word}` : "";
   const hs = extra && extra.includes("data-snd") ? " has-snd" : "";
-  if(kind==="vowel"){ const V=VOWEL[k.slice(6)]; return `<div class="cue vowel${o.custom?" photo":""} ${cls||""}" style="--vc:${V.c};--lc:${V.c}"><span class="stem"></span><div class="card${hs}" ${extra||""} role="img" aria-label="${V.name}${alt}">${cueInner(k,o)}</div></div>`; }
+  if(kind==="vowel"){ const V=VOWEL[k.slice(6)]; return `<div class="cue vowel${o.custom||o.photo?" photo":""} ${cls||""}" style="--vc:${V.c};--lc:${V.c}"><span class="stem"></span><div class="card${hs}" ${extra||""} role="img" aria-label="${V.name}${alt}">${cueInner(k,o)}</div></div>`; }
   if(kind==="rafe") return `<div class="cue rafe${o.rafe?"":" drawn"} ${cls||""}"><span class="stem"></span><div class="card${hs}" ${extra||""} role="img" aria-label="${k.slice(5)} בלי נקודה${alt}">${cueInner(k,o)}</div></div>`;
   return `<div class="cue letter ${cls||""}" style="--vc:${S && S.curVowel ? VOWEL[S.curVowel].c : "transparent"}"><span class="stem"></span><div class="card${hs}" ${extra||""} role="img" aria-label="רמז לאות ${k}${alt}">${cueInner(k,o)}</div></div>`;
 }
@@ -1144,7 +1147,7 @@ function paintCuePick(){
   const what = kind==="vowel" ? `<b style="color:${VOWEL[k.slice(6)].hex}">${VOWEL[k.slice(6)].mark}</b> (${cueLabel(k)})` : kind==="rafe" ? `<b>${k.slice(5)}</b> בלי נקודה` : kind==="final" ? `<b>${k}</b> סופית` : `<b>${k}</b>`;
   $("cpTitle").textContent = cueLabel(k);
   body.innerHTML = `<div class="cpq">אֵיזֶה רֶמֶז הֲכִי עוֹזֵר לְךָ? ${what}</div>
-    <div class="cpopts cues">${cueOptions(k).map(o=>`<button class="cpopt${o===cur?" on":""}" data-opt="${o.id}">${cueCard(k,o,"")}<span>${o.teacher?"הרמז של המורה":o.rafe?"הכרטיס של הצליל":o.id==="mouth"?"צורת הפה":o.id==="mark"?"רק הסימן":o.id==="face"?"פרצוף של הצליל":o.custom?`<span class="cpdel" data-del="${o.dbid}" role="button">🗑 הסר</span>`:""}</span><span class="ok"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5L19.5 7"/></svg></span></button>`).join("")}</div>
+    <div class="cpopts cues">${cueOptions(k).map(o=>`<button class="cpopt${o===cur?" on":""}" data-opt="${o.id}">${cueCard(k,o,"")}<span>${o.teacher?"הרמז של המורה":o.rafe?"הכרטיס של הצליל":o.id==="mouth"?"צורת הפה":o.id==="mark"?"רק הסימן":o.id==="face"?"פרצוף של הצליל":o.photo?o.label:o.custom?`<span class="cpdel" data-del="${o.dbid}" role="button">🗑 הסר</span>`:""}</span><span class="ok"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5L19.5 7"/></svg></span></button>`).join("")}</div>
     <div class="cpload" style="justify-content:center"><label>➕ הוסף תמונה משלך ל${cueMark(k)}<input type="file" id="cpLoadOne" accept="image/*" multiple hidden></label></div>
     <section class="sec cprec"><h3>הַצְּלִיל שֶׁל ${cueMark(k)}</h3>
       <div class="hint" style="font-size:19px;color:var(--ink-on-dark)">${cueTip(k)}</div>
