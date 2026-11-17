@@ -297,6 +297,19 @@ body.quiet .rec.off{display:none}
 .cue.vowel .card .vm{font-size:calc(var(--cs) * .42)}
 .cue.rafe.drawn .card{display:block}
 
+/* tap a cue: play the parent's recording of the sound, or explain the sound */
+.cue .card[data-cue]{cursor:pointer}
+.cue .card.has-snd::after{content:"";position:absolute;top:6px;left:6px;width:22px;height:22px;border-radius:11px;background:#36A54F url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 9v6h3l4 4V5L8 9H5z'/%3E%3Cpath d='M16 9a4 4 0 0 1 0 6'/%3E%3C/svg%3E") center/16px no-repeat;z-index:2}
+.cue .card.playing{animation:cpulse .45s ease 2}
+@keyframes cpulse{50%{transform:scale(1.1)}}
+.ctip{position:absolute;left:50%;top:52px;transform:translateX(-50%);width:max-content;max-width:min(760px,92%);background:#2A2233;color:#FFF8E8;border-radius:22px;padding:14px 22px;font-size:clamp(20px,2.8vh,27px);line-height:1.45;z-index:6;box-shadow:0 10px 30px rgba(0,0,0,.35);display:flex;gap:16px;align-items:center;direction:rtl}
+.ctip b{font-family:var(--word);font-size:1.7em;line-height:1;color:var(--amber);flex-shrink:0}
+.ctip .tw{font-family:var(--word);font-weight:700}
+.ctip small{display:block;font-size:.7em;color:#B9AFC8}
+.cprec{max-width:900px;align-self:center;width:100%}
+.cprec .seg button:disabled{opacity:.4}
+.cprec .seg button.on{background:var(--rec);color:#fff}
+
 /* cue picker: Ori picks the cue that helps him most */
 .cpick{z-index:12;overflow:auto}
 .cpick .starttop h2{margin:0;font-size:30px;flex:1}
@@ -416,6 +429,7 @@ body.quiet .rec.off{display:none}
 
   <div class="main" id="main">
     <div class="paper" id="paper">
+      <div class="ctip" id="cueTip" hidden></div>
       <div class="ptop" id="ptop"></div>
       <div class="banner" id="banner" hidden></div>
       <div class="stage" id="stageEl"></div>
@@ -675,6 +689,7 @@ const CUE_SETS = {
 };
 const CUE_KEYS = [...LETTERS, ...FINALS, "rafe:ב", "rafe:כ", "rafe:פ", ...["a","i","e","o","u"].map(v=>"vowel:"+v)];
 let cueChoices = {};
+const SOUNDS = {}; /* cue key -> recorded Blob (IndexedDB ori-cue-sounds) */
 const cueKind = k => k.startsWith("vowel:") ? "vowel" : k.startsWith("rafe:") ? "rafe" : FINALS.includes(k) ? "final" : "letter";
 const cueChoice = k => (CUE_SETS[k]||[]).find(o=>o.id===cueChoices[k]) || (CUE_SETS[k]||[])[0];
 const letterColor = L => ["#7E95AA","#C9862A","#9C4A1E","#CF8080"][L.charCodeAt(0)%4];
@@ -698,9 +713,10 @@ function cueInner(k, o){
 /* a whole cue (stem + card); extra = attributes for the card */
 function cueCard(k, o, cls, extra){
   const kind = cueKind(k), alt = o.word ? `: ${o.word}` : "";
-  if(kind==="vowel"){ const V=VOWEL[k.slice(6)]; return `<div class="cue vowel ${cls||""}" style="--vc:${V.c};--lc:${V.c}"><span class="stem"></span><div class="card" ${extra||""} role="img" aria-label="${V.name}${alt}">${cueInner(k,o)}</div></div>`; }
-  if(kind==="rafe") return `<div class="cue rafe${o.rafe?"":" drawn"} ${cls||""}"><span class="stem"></span><div class="card" ${extra||""} role="img" aria-label="${k.slice(5)} בלי נקודה${alt}">${cueInner(k,o)}</div></div>`;
-  return `<div class="cue letter ${cls||""}" style="--vc:${S && S.curVowel ? VOWEL[S.curVowel].c : "transparent"}"><span class="stem"></span><div class="card" ${extra||""} role="img" aria-label="רמז לאות ${k}${alt}">${cueInner(k,o)}</div></div>`;
+  const hs = extra && extra.includes("data-snd") ? " has-snd" : "";
+  if(kind==="vowel"){ const V=VOWEL[k.slice(6)]; return `<div class="cue vowel ${cls||""}" style="--vc:${V.c};--lc:${V.c}"><span class="stem"></span><div class="card${hs}" ${extra||""} role="img" aria-label="${V.name}${alt}">${cueInner(k,o)}</div></div>`; }
+  if(kind==="rafe") return `<div class="cue rafe${o.rafe?"":" drawn"} ${cls||""}"><span class="stem"></span><div class="card${hs}" ${extra||""} role="img" aria-label="${k.slice(5)} בלי נקודה${alt}">${cueInner(k,o)}</div></div>`;
+  return `<div class="cue letter ${cls||""}" style="--vc:${S && S.curVowel ? VOWEL[S.curVowel].c : "transparent"}"><span class="stem"></span><div class="card${hs}" ${extra||""} role="img" aria-label="רמז לאות ${k}${alt}">${cueInner(k,o)}</div></div>`;
 }
 const FONTS = {alef:"'Alef'", noto:"'Noto Sans Hebrew'", rubik:"'Rubik'", frank:"'Frank Ruhl Libre'"};
 
@@ -792,7 +808,7 @@ function paintTop(){
 }
 const cueKeyOf = it => it.type==="letter" ? it.letter : it.type==="rafe" ? "rafe:"+it.letter : "vowel:"+it.v;
 function cueHTML(it, small){
-  const k = cueKeyOf(it), tap = `data-cue="${k}"`;
+  const k = cueKeyOf(it), tap = `data-cue="${k}"${SOUNDS[k] ? ` data-snd="1"` : ""}`;
   if(it.type!=="letter") return cueCard(k, cueChoice(k), "", tap);
   const n = reads[it.letter]||0, fade = settings.cues==="fade" && !small;
   const state = fade ? (n>=6 ? "chip" : n>=3 ? "faded" : "") : "";
@@ -841,7 +857,7 @@ function stars(){
 function reward(){ chime(); stars(); }
 
 /* ---------- flow ---------- */
-function startStep(){ S.misses=0; S.t0=now(); banner(null); paint(); log("step_shown"); }
+function startStep(){ S.misses=0; S.t0=now(); banner(null); hideTip(); paint(); log("step_shown"); }
 function wordDone(){ PROG.words++; PROG.seen[wordKey(curWord()[0])]=1; saveProg();
   const isReveal = S.wi===curPage().reveal;
   if(isReveal && !S.revealed){ S.revealed=true; log("reveal_shown",{reveal_word:strip(curWord()[0])});
@@ -1002,10 +1018,76 @@ $("photoIn").onchange=e=>{ const file=e.target.files&&e.target.files[0]; if(!fil
 $("homeBtn").onclick=openHome; $("endHome").onclick=openHome; $("homeGear").onclick=openP;
 setInterval(()=>{ if(!$("start").hidden && REC.on) $("homeRecTime").textContent = fmt((now()-REC.started)/1000); }, 1000);
 
+/* ---------- hearing a cue (2026-11-17): tap a cue while reading → the parent's recording of the sound plays.
+   No recording yet → a short explanation of the sound shows instead. Recordings are made in the cue picker and stay on this tablet. ---------- */
+const SOUND_NOTE = {
+  "א":"א לא משמיעה צליל משלה: שומעים רק את הניקוד שלה.", "ע":"ע לא משמיעה צליל משלה (כמו א): שומעים רק את הניקוד שלה.",
+  "ה":"ה נשמעת כמו נשיפה קלה: הההה. בסוף מילה היא בדרך כלל שקטה.",
+  "ח":"ח נשמעת מהגרון, כמו גירוד קטן: חחחח. כ בלי נקודה נשמעת אותו דבר.",
+  "ב":"בּ עם נקודה: השפתיים נסגרות ונפתחות בבת אחת: בּ!",
+  "כ":"כּ עם נקודה: צליל קצר מאחורה בפה: כּ! (בלי נקודה היא נשמעת ח.)",
+  "פ":"פּ עם נקודה: השפתיים נסגרות ונפתחות עם נשיפה: פּ! (בלי נקודה היא נשמעת f.)",
+  "נ":"נ: הלשון נוגעת למעלה מאחורי השיניים והאוויר יוצא מהאף: ננננ.",
+  "מ":"מ: השפתיים סגורות והאוויר יוצא מהאף: מממ.",
+  "ס":"ס: שריקה דקה בין השיניים: ססס.", "צ":"צ: הלשון נוגעת ואז שורקת: צ! (לא כמו ס.)", "ש":"שׁ: כמו להגיד לתינוק להיות בשקט: ששש.",
+  "ך":"ך היא כ בסוף מילה. היא נשמעת ח, מהגרון (לא כּ).", "ם":"ם היא מ בסוף מילה. נשמעת כמו מ: מממ.",
+  "ן":"ן היא נ בסוף מילה. נשמעת בדיוק כמו נ: ננננ.", "ף":"ף היא פ בסוף מילה. נשמעת f: השיניים העליונות על השפה התחתונה.",
+  "ץ":"ץ היא צ בסוף מילה. נשמעת כמו צ.",
+  "rafe:ב":"ב בלי נקודה נשמעת v (כמו ו): השיניים העליונות על השפה התחתונה.", "rafe:כ":"כ בלי נקודה נשמעת ח, מהגרון: חחח.",
+  "rafe:פ":"פ בלי נקודה נשמעת f: השיניים העליונות על השפה התחתונה, ונושפים.",
+  "vowel:a":"קמץ ופתח (אָ אַ): פותחים את הפה גדול: אַ.", "vowel:i":"חיריק (אִ): חיוך רחב: אִי.", "vowel:e":"צירה וסגול (אֵ אֶ): הפה חצי פתוח: אֶ.",
+  "vowel:o":"חולם (אוֹ): השפתיים עגולות: אוֹ.", "vowel:u":"שורוק וקובוץ (אוּ): השפתיים קטנות וקדימה: אוּ."
+};
+function cueTip(k){
+  const o=cueChoice(k), kind=cueKind(k), w=o.word, note=SOUND_NOTE[k]||"";
+  let like = "";
+  if(w && o.id==="face") like = `כמו <span class="tw">${w}</span>`;
+  else if(w && kind==="final") like = `כמו בסוף של <span class="tw">${w}</span>`;
+  else if(w && kind==="rafe") like = `כמו ב<span class="tw">${w}</span>`;
+  else if(w) like = `כמו בהתחלה של <span class="tw">${w}</span>`;
+  if(!note && kind==="letter") return `${k} נשמעת ${like}.`;
+  return note + (like ? ` ${like}.` : "");
+}
+const cueMark = k => cueKind(k)==="vowel" ? VOWEL[k.slice(6)].mark : cueKind(k)==="rafe" ? k.slice(5) : k;
+let tipTimer=null, curAudio=null;
+function hideTip(){ $("cueTip").hidden=true; clearTimeout(tipTimer); }
+function playSound(k){ const b=SOUNDS[k]; if(!b) return false; try{ if(curAudio){ curAudio.pause(); URL.revokeObjectURL(curAudio.src); }
+  curAudio=new Audio(URL.createObjectURL(b)); curAudio.play().catch(()=>{}); }catch(e){ return false; } return true; }
+function tapCue(card){
+  const k=card.dataset.cue; if(!k) return; const played=playSound(k);
+  card.classList.remove("playing"); void card.offsetWidth; card.classList.add("playing");
+  log("cue_tapped",{key:k, option:cueChoice(k).id, sound:played});
+  if(played){ hideTip(); return; }
+  const t=$("cueTip"); t.innerHTML=`<b>${cueMark(k)}</b><div>${cueTip(k)}<small>אין עדיין הקלטה של הצליל. אבא יכול להקליט אותו בבחירת רמזים.</small></div>`; t.hidden=false;
+  clearTimeout(tipTimer); tipTimer=setTimeout(hideTip, 9000);
+}
+/* sound store */
+let sdbp=null;
+function sdb(){ if(sdbp) return sdbp; sdbp=new Promise((res,rej)=>{ const r=indexedDB.open("ori-cue-sounds",1); r.onupgradeneeded=()=>r.result.createObjectStore("s"); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); return sdbp; }
+async function loadSounds(){ try{ const d=await sdb(); await new Promise(r=>{ const st=d.transaction("s").objectStore("s"), q=st.openCursor(); q.onsuccess=()=>{ const c=q.result; if(c){ SOUNDS[c.key]=c.value; c.continue(); } else r(); }; q.onerror=r; }); }catch(e){} }
+async function saveSound(k, blob){ if(blob) SOUNDS[k]=blob; else delete SOUNDS[k];
+  try{ const d=await sdb(); await new Promise(r=>{ const t=d.transaction("s","readwrite"), st=t.objectStore("s"); blob ? st.put(blob,k) : st.delete(k); t.oncomplete=r; t.onerror=r; }); }catch(e){} }
+const SREC = {rec:null, own:null, timer:null};
+async function recordSound(k){
+  if(SREC.rec){ SREC.rec.stop(); return; }
+  let stream;
+  try{ stream = REC.on && REC.stream ? new MediaStream(REC.stream.getAudioTracks()) : await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true, autoGainControl:true}}); }
+  catch(e){ $("cpRecInfo").textContent="אין גישה למיקרופון. צריך לאשר מיקרופון לאתר בהגדרות Chrome."; return; }
+  SREC.own = REC.on ? null : stream;
+  const mime = ["audio/webm;codecs=opus","audio/mp4","audio/webm"].find(m=>{ try{ return MediaRecorder.isTypeSupported(m); }catch(e){ return false; } });
+  const chunks=[]; const rec = new MediaRecorder(stream, mime?{mimeType:mime}:{}); SREC.rec=rec;
+  rec.ondataavailable=e=>{ if(e.data && e.data.size) chunks.push(e.data); };
+  rec.onstop=async()=>{ clearTimeout(SREC.timer); SREC.rec=null; if(SREC.own) SREC.own.getTracks().forEach(t=>t.stop()); SREC.own=null;
+    const blob=new Blob(chunks,{type:rec.mimeType||mime||"audio/webm"}); if(blob.size>800){ await saveSound(k, blob); if(S) log("cue_sound_recorded",{key:k}); playSound(k); }
+    if(cpKey===k) paintCuePick(); };
+  rec.start(); SREC.timer=setTimeout(()=>{ if(rec.state==="recording") rec.stop(); }, 3000);
+  const b=$("cpRec"); if(b){ b.classList.add("on"); b.textContent="⏹ עצור (מקליט…)"; }
+}
+
 /* ---------- cue picker: a grid of every letter / final / soft letter / vowel, then up to 4 big options for one of them ---------- */
 let cpKey = null;
 function openCuePick(k){ $("cuePick").hidden=false; cpKey = k||null; paintCuePick(); if(S) log("cue_picker_open"); }
-function closeCuePick(){ $("cuePick").hidden=true; if(!$("room").hidden) paintRoom(); }
+function closeCuePick(){ if(SREC.rec) SREC.rec.stop(); $("cuePick").hidden=true; if(!$("room").hidden) paintRoom(); }
 function paintCuePick(){
   const body=$("cpBody");
   $("cpBackLbl").textContent = cpKey ? "כל האותיות" : "סגור";
@@ -1025,7 +1107,11 @@ function paintCuePick(){
   $("cpTitle").textContent = cueLabel(k);
   body.innerHTML = `<div class="cpq">אֵיזֶה רֶמֶז הֲכִי עוֹזֵר לְךָ? ${what}</div>
     <div class="cpopts cues">${CUE_SETS[k].map(o=>`<button class="cpopt${o===cur?" on":""}" data-opt="${o.id}">${cueCard(k,o,"")}<span>${o.teacher?"הרמז של המורה":o.rafe?"הכרטיס של הצליל":o.id==="mouth"?"צורת הפה":o.id==="mark"?"רק הסימן":o.id==="face"?"פרצוף של הצליל":""}</span><span class="ok"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5L19.5 7"/></svg></span></button>`).join("")}</div>
-    <div id="cpExtra"></div>
+    <section class="sec cprec"><h3>הַצְּלִיל שֶׁל ${cueMark(k)}</h3>
+      <div class="hint" style="font-size:19px;color:var(--ink-on-dark)">${cueTip(k)}</div>
+      <div class="seg"><button id="cpRec">🎙 הקלט את הצליל (עד 3 שניות)</button><button id="cpPlay" ${SOUNDS[k]?"":"disabled"}>▶ השמע</button><button id="cpDel" ${SOUNDS[k]?"":"disabled"}>מחק הקלטה</button></div>
+      <div class="hint" id="cpRecInfo">${SOUNDS[k] ? "יש הקלטה. בזמן הקריאה, לחיצה על הרמז משמיעה אותה." : "אין עדיין הקלטה. מקליטים פעם אחת רק את הצליל (למשל \"בּ\" או \"אַ\", לא את שם האות), ואז לחיצה על הרמז בזמן הקריאה משמיעה אותו. ההקלטה נשמרת רק בטאבלט הזה."}</div>
+    </section>
     <div class="cpnav"><button class="kb kb-v" data-nav="-1" ${i<=0?"disabled":""}>→ ${i>0?cueLabel(CUE_KEYS[i-1]):""}</button><button class="kb kb-g" data-nav="1" ${i>=CUE_KEYS.length-1?"disabled":""}>${i<CUE_KEYS.length-1?cueLabel(CUE_KEYS[i+1]):""} ←</button></div>`;
 }
 $("cpBody").addEventListener("click",e=>{
@@ -1033,6 +1119,12 @@ $("cpBody").addEventListener("click",e=>{
   const o=e.target.closest("[data-opt]"); if(o && cpKey){ cueChoices[cpKey]=o.dataset.opt; store.set("ori.t3.cueChoice",cueChoices); if(S) log("cue_chosen",{key:cpKey, option:o.dataset.opt}); paintCuePick(); return; }
   const n=e.target.closest("[data-nav]"); if(n && cpKey){ const i=CUE_KEYS.indexOf(cpKey)+(+n.dataset.nav); if(CUE_KEYS[i]){ cpKey=CUE_KEYS[i]; paintCuePick(); } }
 });
+$("cpBody").addEventListener("click",e=>{ if(!cpKey) return;
+  if(e.target.id==="cpRec") recordSound(cpKey);
+  if(e.target.id==="cpPlay") playSound(cpKey);
+  if(e.target.id==="cpDel"){ saveSound(cpKey, null).then(paintCuePick); }
+});
+$("cueTip").onclick=hideTip;
 $("cpBack").onclick=()=>{ if(cpKey){ cpKey=null; paintCuePick(); } else closeCuePick(); };
 $("pickCues").onclick=()=>openCuePick();
 
@@ -1139,7 +1231,7 @@ $("cpLog").onclick=()=>{ const ev=S?S.events:allEvents(); navigator.clipboard.wr
 $("fsBtn").onclick=toggleFs;
 $("quietBtn").onclick=()=>{ quietOverride = !isQuiet(); log("quiet_mode",{on:quietOverride, source:"moon"}); if(S.phase==="pageEnd") pageEnd(); else paint(); };
 $("markBtn").onclick=()=>{ log("parent_marker"); const b=$("markBtn"); b.style.color="var(--amber)"; setTimeout(()=>b.style.color="",500); };
-$("stageEl").addEventListener("click",e=>{ const c=e.target.closest("[data-open]"); if(!c) return; const L=c.dataset.open; c.outerHTML=`<div class="card" data-cue="${L}">${cueInner(L, cueChoice(L))}</div>`; log("cue_opened",{letter:L}); log("hint_shown",{letter:L, why:"tap"}); });
+$("stageEl").addEventListener("click",e=>{ const q=e.target.closest("[data-cue]"); if(q) return tapCue(q); const c=e.target.closest("[data-open]"); if(!c) return; const L=c.dataset.open; c.outerHTML=`<div class="card${SOUNDS[L]?" has-snd":""}" data-cue="${L}">${cueInner(L, cueChoice(L))}</div>`; log("cue_opened",{letter:L}); log("hint_shown",{letter:L, why:"tap"}); });
 $("bOk").onclick=onOk; $("bAgain").onclick=onAgain; $("bWhole").onclick=onWhole;
 $("bSentAgain").onclick=()=>{ S.misses++; log("mark",{outcome:"sentence_again", ms_on_step:now()-S.t0}); };
 $("bNext").onclick=()=>{ log("mark",{outcome:"sentence_correct", ms_on_step:now()-S.t0}); reward(); const first=!bookDone()[S.page+1]; bookDone()[S.page+1]=true; saveProg();
@@ -1151,7 +1243,7 @@ $("endLog").onclick=()=>downloadLog("json");
 $("endAgain").onclick=()=>{ S.ended=false; $("end").hidden=true; $("app").hidden=false; gotoPage(0); };
 window.addEventListener("beforeunload",e=>{ if(REC.on){ e.preventDefault(); e.returnValue=""; } });
 paintHome();
-applySettings(); checkRecover(); preload(1);
+applySettings(); checkRecover(); preload(1); loadSounds();
 /* install as an app (home-screen icon, opens full screen without the address bar) */
 const standalone = matchMedia("(display-mode: fullscreen)").matches || matchMedia("(display-mode: standalone)").matches;
 let installEvt=null;
