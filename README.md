@@ -8,3 +8,5 @@ Parent panel → "בחירת רמזים": for every letter, final letter (ך ם 
 (teacher's cue is the default). Saved in localStorage `ori.t3.cueChoice`. Cue pictures: `node art/cues.js` writes `art/cues/*.svg`.
 Tapping a cue while reading plays the parent's recording of that sound (recorded in the same picker, kept in IndexedDB `ori-cue-sounds`
 on that tablet only); without a recording it shows a short explanation of the sound.
+Extra cue pictures can be loaded on the tablet (cue picker → "טען תמונות רמזים מהטאבלט"); the file name prefix picks the cue
+(`a-- e-- i-- o-- u--` for vowel sounds, `ב--` etc. for letters, `rafe-ב--` for soft letters). Stored in IndexedDB `ori-cue-images`, never uploaded.

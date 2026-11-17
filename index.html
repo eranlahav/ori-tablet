@@ -310,6 +310,13 @@ body.quiet .rec.off{display:none}
 .cprec .seg button:disabled{opacity:.4}
 .cprec .seg button.on{background:var(--rec);color:#fff}
 
+.cue .card img.ph{width:100%;height:100%;object-fit:contain;image-rendering:auto;mix-blend-mode:normal}
+.cue.vowel.photo .card{border-radius:20px;overflow:hidden;background:#fff}
+.cue.vowel.photo .card img.ph{width:100%;height:100%}
+.cpdel{display:inline-block;margin-top:2px;padding:6px 14px;border-radius:12px;background:var(--line);font-size:16px}
+.cpload{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.cpload label{min-height:56px;padding:0 20px;border-radius:16px;background:var(--line);color:var(--ink-on-dark);font-size:19px;font-weight:800;display:flex;align-items:center;gap:8px;cursor:pointer}
+
 /* cue picker: Ori picks the cue that helps him most */
 .cpick{z-index:12;overflow:auto}
 .cpick .starttop h2{margin:0;font-size:30px;flex:1}
@@ -691,7 +698,10 @@ const CUE_KEYS = [...LETTERS, ...FINALS, "rafe:ב", "rafe:כ", "rafe:פ", ...["a
 let cueChoices = {};
 const SOUNDS = {}; /* cue key -> recorded Blob (IndexedDB ori-cue-sounds) */
 const cueKind = k => k.startsWith("vowel:") ? "vowel" : k.startsWith("rafe:") ? "rafe" : FINALS.includes(k) ? "final" : "letter";
-const cueChoice = k => (CUE_SETS[k]||[]).find(o=>o.id===cueChoices[k]) || (CUE_SETS[k]||[])[0];
+/* pictures the parent loaded on this tablet (IndexedDB ori-cue-images, never uploaded): extra options after the built-in ones */
+const CUSTOM = {};
+const cueOptions = k => (CUE_SETS[k]||[]).concat(CUSTOM[k]||[]);
+const cueChoice = k => cueOptions(k).find(o=>o.id===cueChoices[k]) || cueOptions(k)[0];
 const letterColor = L => ["#7E95AA","#C9862A","#9C4A1E","#CF8080"][L.charCodeAt(0)%4];
 /* underline the letter the cue is about: for finals and soft ב/כ/פ it is not the first letter of the word */
 function markLetter(word, L){ let done=false; return word.replace(/([א-ת])([֑-ׇ]*)/g,(m,ch,mk)=>{ if(done || ch!==L || mk.includes("ּ")) return m; done=true; return `<span class="hl">${m}</span>`; }); }
@@ -701,6 +711,7 @@ const cueLabel = k => { const kind=cueKind(k);
 /* the inside of a cue card for key k with option o */
 function cueInner(k, o){
   const kind = cueKind(k);
+  if(o.custom) return `<img class="ph" src="${o.img}" alt="">`;
   if(kind==="vowel"){ const v=k.slice(6), V=VOWEL[v];
     if(o.id==="mouth") return MOUTH[v]+`<span>${V.mark}</span>`;
     if(o.id==="mark") return `<span class="vm">${V.mark}</span>`;
@@ -714,7 +725,7 @@ function cueInner(k, o){
 function cueCard(k, o, cls, extra){
   const kind = cueKind(k), alt = o.word ? `: ${o.word}` : "";
   const hs = extra && extra.includes("data-snd") ? " has-snd" : "";
-  if(kind==="vowel"){ const V=VOWEL[k.slice(6)]; return `<div class="cue vowel ${cls||""}" style="--vc:${V.c};--lc:${V.c}"><span class="stem"></span><div class="card${hs}" ${extra||""} role="img" aria-label="${V.name}${alt}">${cueInner(k,o)}</div></div>`; }
+  if(kind==="vowel"){ const V=VOWEL[k.slice(6)]; return `<div class="cue vowel${o.custom?" photo":""} ${cls||""}" style="--vc:${V.c};--lc:${V.c}"><span class="stem"></span><div class="card${hs}" ${extra||""} role="img" aria-label="${V.name}${alt}">${cueInner(k,o)}</div></div>`; }
   if(kind==="rafe") return `<div class="cue rafe${o.rafe?"":" drawn"} ${cls||""}"><span class="stem"></span><div class="card${hs}" ${extra||""} role="img" aria-label="${k.slice(5)} בלי נקודה${alt}">${cueInner(k,o)}</div></div>`;
   return `<div class="cue letter ${cls||""}" style="--vc:${S && S.curVowel ? VOWEL[S.curVowel].c : "transparent"}"><span class="stem"></span><div class="card${hs}" ${extra||""} role="img" aria-label="רמז לאות ${k}${alt}">${cueInner(k,o)}</div></div>`;
 }
@@ -1084,6 +1095,31 @@ async function recordSound(k){
   const b=$("cpRec"); if(b){ b.classList.add("on"); b.textContent="⏹ עצור (מקליט…)"; }
 }
 
+/* ---------- cue pictures loaded on this tablet ---------- */
+let idbp=null;
+function idb(){ if(idbp) return idbp; idbp=new Promise((res,rej)=>{ const r=indexedDB.open("ori-cue-images",1); r.onupgradeneeded=()=>r.result.createObjectStore("i",{autoIncrement:true}); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); return idbp; }
+function addCustom(dbid, rec){ (CUSTOM[rec.key] = CUSTOM[rec.key]||[]).push({id:"img-"+dbid, dbid, custom:true, img:URL.createObjectURL(rec.blob), name:rec.name}); }
+async function loadImages(){ try{ const d=await idb(); await new Promise(r=>{ const q=d.transaction("i").objectStore("i").openCursor(); q.onsuccess=()=>{ const c=q.result; if(c){ addCustom(c.key, c.value); c.continue(); } else r(); }; q.onerror=r; }); }catch(e){} }
+/* which cue a file belongs to, from its name: a-- e-- i-- o-- u-- (vowels), a Hebrew letter (ב--, ן--), rafe-ב-- */
+function keyFromName(name){
+  const n = name.normalize("NFC").trim();
+  const m = n.match(/^(shva|[aeiou])--/i); if(m) return m[1].toLowerCase()==="shva" ? null : "vowel:"+m[1].toLowerCase();
+  const r = n.match(/^rafe[-_ ]?([בכפ])/); if(r) return "rafe:"+r[1];
+  const L = n.match(/^([א-ת])(?:--|[-_ .])/); if(L && CUE_SETS[L[1]]) return L[1];
+  return null;
+}
+async function importImages(files, forceKey){
+  const d=await idb(); let ok=0, skipped=[];
+  for(const file of files){ const key = forceKey || keyFromName(file.name); if(!key){ skipped.push(file.name); continue; }
+    const rec={key, name:file.name, blob:file};
+    const id = await new Promise(res=>{ const t=d.transaction("i","readwrite"), q=t.objectStore("i").add(rec); q.onsuccess=()=>res(q.result); q.onerror=()=>res(null); });
+    if(id!=null){ addCustom(id, rec); ok++; } }
+  if(S) log("cue_images_loaded",{count:ok, skipped:skipped.length});
+  return {ok, skipped};
+}
+async function removeImage(dbid){ const d=await idb(); await new Promise(r=>{ const t=d.transaction("i","readwrite"); t.objectStore("i").delete(+dbid); t.oncomplete=r; t.onerror=r; });
+  for(const k in CUSTOM){ CUSTOM[k]=CUSTOM[k].filter(o=>{ if(o.dbid==dbid){ URL.revokeObjectURL(o.img); if(cueChoices[k]===o.id){ delete cueChoices[k]; store.set("ori.t3.cueChoice",cueChoices); } return false; } return true; }); } }
+
 /* ---------- cue picker: a grid of every letter / final / soft letter / vowel, then up to 4 big options for one of them ---------- */
 let cpKey = null;
 function openCuePick(k){ $("cuePick").hidden=false; cpKey = k||null; paintCuePick(); if(S) log("cue_picker_open"); }
@@ -1098,7 +1134,9 @@ function paintCuePick(){
         : o.rafe ? `<span class="vm" style="color:#B2524A">${k.slice(5)}</span>` : `<img src="${o.img}" alt="" style="${o.teacher?"image-rendering:auto;width:84%;height:84%":""}">`;
       return `<button class="cptile" data-key="${k}" aria-label="${cueLabel(k)}">${kind==="vowel"||o.rafe?"":`<b>${kind==="rafe"?k.slice(5):k}</b>`}${pic}${kind==="letter"&&o.teacher?"":`<small>${kind==="vowel"?cueLabel(k):kind==="rafe"?cueLabel(k):o.word||""}</small>`}</button>`; };
     const grp = (h, keys) => `<section class="cpgrp"><h3>${h}</h3><div class="cpgrid">${keys.map(tile).join("")}</div></section>`;
-    body.innerHTML = `<div class="hint" style="font-size:19px;color:var(--dim-on-dark)">לוחצים על אות, ואורי בוחר את הרמז שהכי עוזר לו לזכור אותה. הבחירה נשמרת ומופיעה בזמן הקריאה.</div>`
+    body.innerHTML = `<div class="hint" style="font-size:19px;color:var(--dim-on-dark)">לוחצים על אות, ואורי בוחר את הרמז שהכי עוזר לו לזכור אותה. הבחירה נשמרת ומופיעה בזמן הקריאה.</div>
+      <div class="cpload"><label>📥 טען תמונות רמזים מהטאבלט<input type="file" id="cpLoadAll" accept="image/*" multiple hidden></label>
+        <span class="hint" id="cpLoadInfo" style="font-size:17px;color:var(--dim-on-dark)">אפשר לבחור הרבה קבצים בבת אחת. שם הקובץ קובע לאן התמונה הולכת: a-- e-- i-- o-- u-- לצלילים, או האות עצמה (למשל ב--) לאותיות. התמונות נשמרות רק בטאבלט הזה.</span></div>`
       + grp("אוֹתִיּוֹת", LETTERS) + grp("אוֹתִיּוֹת סוֹפִיּוֹת", FINALS) + grp("ב כ פ בְּלִי נְקֻדָּה", ["rafe:ב","rafe:כ","rafe:פ"]) + grp("צְלִילֵי הַנִּקּוּד", CUE_KEYS.filter(k=>k.startsWith("vowel:")));
     return;
   }
@@ -1106,7 +1144,8 @@ function paintCuePick(){
   const what = kind==="vowel" ? `<b style="color:${VOWEL[k.slice(6)].hex}">${VOWEL[k.slice(6)].mark}</b> (${cueLabel(k)})` : kind==="rafe" ? `<b>${k.slice(5)}</b> בלי נקודה` : kind==="final" ? `<b>${k}</b> סופית` : `<b>${k}</b>`;
   $("cpTitle").textContent = cueLabel(k);
   body.innerHTML = `<div class="cpq">אֵיזֶה רֶמֶז הֲכִי עוֹזֵר לְךָ? ${what}</div>
-    <div class="cpopts cues">${CUE_SETS[k].map(o=>`<button class="cpopt${o===cur?" on":""}" data-opt="${o.id}">${cueCard(k,o,"")}<span>${o.teacher?"הרמז של המורה":o.rafe?"הכרטיס של הצליל":o.id==="mouth"?"צורת הפה":o.id==="mark"?"רק הסימן":o.id==="face"?"פרצוף של הצליל":""}</span><span class="ok"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5L19.5 7"/></svg></span></button>`).join("")}</div>
+    <div class="cpopts cues">${cueOptions(k).map(o=>`<button class="cpopt${o===cur?" on":""}" data-opt="${o.id}">${cueCard(k,o,"")}<span>${o.teacher?"הרמז של המורה":o.rafe?"הכרטיס של הצליל":o.id==="mouth"?"צורת הפה":o.id==="mark"?"רק הסימן":o.id==="face"?"פרצוף של הצליל":o.custom?`<span class="cpdel" data-del="${o.dbid}" role="button">🗑 הסר</span>`:""}</span><span class="ok"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5L19.5 7"/></svg></span></button>`).join("")}</div>
+    <div class="cpload" style="justify-content:center"><label>➕ הוסף תמונה משלך ל${cueMark(k)}<input type="file" id="cpLoadOne" accept="image/*" multiple hidden></label></div>
     <section class="sec cprec"><h3>הַצְּלִיל שֶׁל ${cueMark(k)}</h3>
       <div class="hint" style="font-size:19px;color:var(--ink-on-dark)">${cueTip(k)}</div>
       <div class="seg"><button id="cpRec">🎙 הקלט את הצליל (עד 3 שניות)</button><button id="cpPlay" ${SOUNDS[k]?"":"disabled"}>▶ השמע</button><button id="cpDel" ${SOUNDS[k]?"":"disabled"}>מחק הקלטה</button></div>
@@ -1119,6 +1158,14 @@ $("cpBody").addEventListener("click",e=>{
   const o=e.target.closest("[data-opt]"); if(o && cpKey){ cueChoices[cpKey]=o.dataset.opt; store.set("ori.t3.cueChoice",cueChoices); if(S) log("cue_chosen",{key:cpKey, option:o.dataset.opt}); paintCuePick(); return; }
   const n=e.target.closest("[data-nav]"); if(n && cpKey){ const i=CUE_KEYS.indexOf(cpKey)+(+n.dataset.nav); if(CUE_KEYS[i]){ cpKey=CUE_KEYS[i]; paintCuePick(); } }
 });
+$("cpBody").addEventListener("change",async e=>{
+  if(e.target.id!=="cpLoadAll" && e.target.id!=="cpLoadOne") return;
+  const files=[...e.target.files]; if(!files.length) return;
+  const r = await importImages(files, e.target.id==="cpLoadOne" ? cpKey : null);
+  paintCuePick();
+  if(e.target.id==="cpLoadAll") $("cpLoadInfo").textContent = `נטענו ${r.ok} תמונות.` + (r.skipped.length ? ` ${r.skipped.length} לא זוהו לפי השם: ${r.skipped.slice(0,6).join(", ")}${r.skipped.length>6?"…":""}` : "");
+});
+$("cpBody").addEventListener("click",e=>{ const dl=e.target.closest("[data-del]"); if(dl){ e.stopImmediatePropagation(); e.preventDefault(); removeImage(dl.dataset.del).then(paintCuePick); } }, true);
 $("cpBody").addEventListener("click",e=>{ if(!cpKey) return;
   if(e.target.id==="cpRec") recordSound(cpKey);
   if(e.target.id==="cpPlay") playSound(cpKey);
@@ -1243,7 +1290,7 @@ $("endLog").onclick=()=>downloadLog("json");
 $("endAgain").onclick=()=>{ S.ended=false; $("end").hidden=true; $("app").hidden=false; gotoPage(0); };
 window.addEventListener("beforeunload",e=>{ if(REC.on){ e.preventDefault(); e.returnValue=""; } });
 paintHome();
-applySettings(); checkRecover(); preload(1); loadSounds();
+applySettings(); checkRecover(); preload(1); loadSounds(); loadImages();
 /* install as an app (home-screen icon, opens full screen without the address bar) */
 const standalone = matchMedia("(display-mode: fullscreen)").matches || matchMedia("(display-mode: standalone)").matches;
 let installEvt=null;
