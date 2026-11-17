@@ -763,6 +763,9 @@ const CUE_SETS = {
 /* vowel memory-aid cards Eran collected (2026-11-17), cut one per sound from four sheets: art/cues/vowels/<sound>--<sheet>.jpg */
 const SHEET_NAME = {"sheet1-kipa":"ילד עם כיפה","sheet2-photos":"תמונות","sheet3-lips":"שפתיים","sheet4-faces":"פרצוף"};
 ["a--sheet1-kipa","a--sheet2-photos","a--sheet3-lips","a--sheet4-faces","e--sheet2-photos","e--sheet3-lips-segol","e--sheet3-lips-tsere","e--sheet4-faces","i--sheet1-kipa","i--sheet2-photos","i--sheet3-lips","i--sheet4-faces","o--sheet1-kipa","o--sheet2-photos","o--sheet3-lips","o--sheet4-faces","u--sheet1-kipa","u--sheet2-photos","u--sheet3-lips-kubutz","u--sheet3-lips-shuruk","u--sheet4-faces"].forEach(n=>{ const [v, sh] = n.split("--"); CUE_SETS["vowel:"+v].push({id:"sheet-"+sh, photo:true, img:`art/cues/vowels/${n}.jpg`, label:SHEET_NAME[sh.replace(/-(segol|tsere|kubutz|shuruk)$/,"")]}); });
+/* letter picture cards Eran sent (2026-11-17, 54 cards in a PDF), cut one per card: art/cues/letters/<letter>-<n>.jpg.
+   Not used: שִׂמְלָה and שַׂקִּית (sin, sounds s) as cues for ש (shin). */
+[["א", "alef-1", "אִמָּא"], ["א", "alef-2", "אַרְיֵה"], ["ב", "bet-1", "בַּיִת"], ["ב", "bet-2", "בַּרְוָז"], ["ג", "gimel-1", "גֶּזֶר"], ["ג", "gimel-2", "גָּמָל"], ["ד", "dalet-1", "דָּג"], ["ד", "dalet-2", "דֶּלֶת"], ["ה", "he-1", "הֶגֶה"], ["ה", "he-2", "הַר"], ["ו", "vav-1", "וָו"], ["ו", "vav-2", "וֶרֶד"], ["ז", "zayin-1", "זְאֵב"], ["ז", "zayin-2", "זַיִת"], ["ח", "het-1", "חַלּוֹן"], ["ח", "het-2", "חָתוּל"], ["ט", "tet-1", "טַבַּעַת"], ["ט", "tet-2", "טֶלֶפוֹן"], ["י", "yod-1", "יָד"], ["י", "yod-2", "יָרֵחַ"], ["ך", "final-kaf-1", "נָסִיךְ"], ["ך", "final-kaf-2", "שְׂרוֹךְ"], ["כ", "kaf-1", "כַּדּוּר"], ["כ", "kaf-2", "כֶּלֶב"], ["ל", "lamed-1", "לִימוֹן"], ["ל", "lamed-2", "לֵיצָן"], ["ם", "final-mem-1", "גֶּשֶׁם"], ["ם", "final-mem-2", "יָם"], ["מ", "mem-1", "מַיִם"], ["מ", "mem-2", "מֶלֶךְ"], ["ן", "final-nun-1", "עָנָן"], ["ן", "final-nun-2", "שֵׁן"], ["נ", "nun-1", "נַעַל"], ["נ", "nun-2", "נֵר"], ["ס", "samekh-1", "סוּס"], ["ס", "samekh-2", "סֵפֶר"], ["ע", "ayin-1", "עוּגָה"], ["ע", "ayin-2", "עַיִן"], ["ף", "final-pe-1", "אַף"], ["ף", "final-pe-2", "מַדָּף"], ["פ", "pe-1", "פֶּה"], ["פ", "pe-2", "פִּיל"], ["ץ", "final-tsadi-1", "עֵץ"], ["ץ", "final-tsadi-2", "קוֹץ"], ["צ", "tsadi-1", "צָב"], ["צ", "tsadi-2", "צַלַּחַת"], ["ק", "qof-1", "קוֹף"], ["ק", "qof-2", "קַטָּר"], ["ר", "resh-1", "רֹאשׁ"], ["ר", "resh-2", "רַכֶּבֶת"], ["ש", "shin-1", "שֶׁמֶשׁ"], ["ש", "shin-2", "שֵׁן"], ["ת", "tav-1", "תִּינוֹק"], ["ת", "tav-2", "תַּפּוּחַ"]].forEach(([L, f, word])=>CUE_SETS[L].push({id:"card-"+f, photo:true, img:`art/cues/letters/${f}.jpg`, word, label:"כרטיס תמונה"}));
 const CUE_KEYS = [...LETTERS, ...FINALS, "rafe:ב", "rafe:כ", "rafe:פ", ...["a","i","e","o","u"].map(v=>"vowel:"+v)];
 let cueChoices = {};
 const SOUNDS = {}; /* cue key -> recorded Blob (IndexedDB ori-cue-sounds) */
@@ -1087,7 +1090,7 @@ function paintRoom(){
     + `<section class="shelf"><div class="sh"><h3>בַּהֶמְשֵׁךְ… עַד הַדְּרָקוֹן</h3></div><div class="inv">${ITEMS.filter(it=>it.future).map(it=>slot(it,null)).join("")}</div></section>`;
   $("roomLetters").innerHTML = order.map(L=>{ const n=reads[L]||0, got=n>=3;
     const o = cueChoice(L);
-    return got ? `<div class="lt got"><img src="${o.img}" alt="" style="${o.teacher?"":"width:70%;height:70%;image-rendering:pixelated"}"><b>${L}</b></div>` : `<div class="lt"><b>${L}</b><i style="width:${Math.min(100,Math.round(n/3*100))}%"></i></div>`; }).join("");
+    return got ? `<div class="lt got"><img src="${o.img}" alt="" style="${o.teacher||o.photo?"":"width:70%;height:70%;image-rendering:pixelated"}"><b>${L}</b></div>` : `<div class="lt"><b>${L}</b><i style="width:${Math.min(100,Math.round(n/3*100))}%"></i></div>`; }).join("");
 }
 $("roomBooks").addEventListener("click",e=>{ const t=e.target.closest("[data-go]"); if(!t) return; const [b,p]=t.dataset.go.split(":").map(Number); openBook(b,p); });
 $("roomNext").addEventListener("click",e=>{ const t=e.target.closest("[data-go]"); if(!t) return; const [b,p]=t.dataset.go.split(":").map(Number); openBook(b,p); });
@@ -1200,8 +1203,8 @@ function paintCuePick(){
     $("cpTitle").textContent = "בּוֹחֲרִים רְמָזִים";
     const tile = k => { const o=cueChoice(k), kind=cueKind(k);
       const pic = kind==="vowel" ? (o.img ? `<img src="${o.img}" alt="">` : `<span class="vm" style="color:${VOWEL[k.slice(6)].hex}">${VOWEL[k.slice(6)].mark}</span>`)
-        : o.rafe ? `<span class="vm" style="color:#B2524A">${k.slice(5)}</span>` : `<img src="${o.img}" alt="" style="${o.teacher?"image-rendering:auto;width:84%;height:84%":""}">`;
-      return `<button class="cptile" data-key="${k}" aria-label="${cueLabel(k)}">${kind==="vowel"||o.rafe?"":`<b>${kind==="rafe"?k.slice(5):k}</b>`}${pic}${kind==="letter"&&o.teacher?"":`<small>${kind==="vowel"?cueLabel(k):kind==="rafe"?cueLabel(k):o.word||""}</small>`}</button>`; };
+        : o.rafe ? `<span class="vm" style="color:#B2524A">${k.slice(5)}</span>` : `<img src="${o.img}" alt="" style="${o.teacher||o.photo?"image-rendering:auto;width:84%;height:84%":""}">`;
+      return `<button class="cptile" data-key="${k}" aria-label="${cueLabel(k)}">${kind==="vowel"||o.rafe?"":`<b>${kind==="rafe"?k.slice(5):k}</b>`}${pic}${kind==="letter"&&(o.teacher||o.photo)?"":`<small>${kind==="vowel"?cueLabel(k):kind==="rafe"?cueLabel(k):o.word||""}</small>`}</button>`; };
     const grp = (h, keys) => `<section class="cpgrp"><h3>${h}</h3><div class="cpgrid">${keys.map(tile).join("")}</div></section>`;
     body.innerHTML = `<div class="hint" style="font-size:19px;color:var(--dim-on-dark)">לוחצים על אות, ואורי בוחר את הרמז שהכי עוזר לו לזכור אותה. הבחירה נשמרת ומופיעה בזמן הקריאה.</div>
       <div class="cpload"><label>📥 טען תמונות רמזים מהטאבלט<input type="file" id="cpLoadAll" accept="image/*" multiple hidden></label>
