@@ -3,10 +3,15 @@
 Tablet reading page (one sentence per page, letter+nikud units, parent marks ✓/✗).
 Recording (front camera + audio) is started only by the parent and stays on the device (downloaded file); nothing is uploaded.
 
-## Cues
-Parent panel → "בחירת רמזים": for every letter, final letter (ך ם ן ף ץ), ב/כ/פ without a dagesh and vowel sound, Ori picks one of up to 4 cues
-(teacher's cue is the default). Saved in localStorage `ori.t3.cueChoice`. Cue pictures: `node art/cues.js` writes `art/cues/*.svg`.
-Tapping a cue while reading plays the parent's recording of that sound (recorded in the same picker, kept in IndexedDB `ori-cue-sounds`
-on that tablet only); without a recording it shows a short explanation of the sound.
-Extra cue pictures can be loaded on the tablet (cue picker → "טען תמונות רמזים מהטאבלט"); the file name prefix picks the cue
-(`a-- e-- i-- o-- u--` for vowel sounds, `ב--` etc. for letters, `rafe-ב--` for soft letters). Stored in IndexedDB `ori-cue-images`, never uploaded.
+## Stable and beta
+
+- **Stable**: the app at the root, https://eranlahav.github.io/ori-tablet/
+- **Beta**: a full copy of the app in `beta/`, https://eranlahav.github.io/ori-tablet/beta/
+- New work goes into `beta/` first. Stable changes only when beta is promoted.
+- The parent settings panel (both versions) has a "גרסת האפליקציה" switch. The choice is saved in
+  `localStorage["ori.channel"]` and the home-screen app opens in the chosen version.
+  Escape hatch: open the address with `?stable` (or `?beta`).
+- Both versions share the same saved data (localStorage `ori.t3.*`, `ori.tab.*`, IndexedDB), so beta
+  must keep the data format readable by stable: only add keys or fields, never rename or reshape them.
+- **Promote beta to stable**: `tools/promote-beta.sh`, then commit and open a PR. The page works out
+  which version it is from its folder, so the copy needs no edits.

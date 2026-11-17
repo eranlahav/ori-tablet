@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<script>
+/* Stable / beta. Both copies carry this same code; the folder decides which one this page is.
+   The choice lives in localStorage "ori.channel" and is applied on every launch, so the installed
+   home-screen app (which always opens the stable address) moves to beta when beta is chosen.
+   Escape hatch: open the address with ?stable (or ?beta) to force a version. */
+(function(){
+  var isBeta = /\/beta\/(index\.html)?$/.test(location.pathname);
+  var here = window.ORI_CHANNEL = isBeta ? "beta" : "stable";
+  document.documentElement.classList.add("ch-" + here);
+  try{
+    var q = location.search;
+    if(/[?&]stable\b/.test(q)) localStorage.setItem("ori.channel", "stable");
+    else if(/[?&]beta\b/.test(q)) localStorage.setItem("ori.channel", "beta");
+    var want = localStorage.getItem("ori.channel") === "beta" ? "beta" : "stable";
+    if(want !== here){ window.ORI_LEAVING = true; location.replace(want === "beta" ? "beta/" : "../"); }
+  }catch(e){}
+})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#221C30">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<title>אורי והאי של הקוביות</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alef:wght@400;700&family=Frank+Ruhl+Libre:wght@500;700&family=Noto+Sans+Hebrew:wght@400;600;800&family=Rubik:wght@500;700&display=swap">
+<style>
+:root{
+  --night:#221C30; --surface:#322A45; --surface2:#3D3454; --line:#4A4063; --ink-on-dark:#F4EAD6; --dim-on-dark:#B9AFC8;
+  --paper:#F3EAD7; --ink:#2A2233; --dim-on-paper:#6B6072; --faint-word:#C9BDA8; --cue-card:#FFFDF7; --cue-ring:#E4D8BF; --amber:#F2A541; --rec:#E5483B;
+  --v-a:#C8321F; --v-i:#1F5FD0; --v-e:#1E7F45; --v-o:#C96A0A; --v-u:#7A35B5;
+  --quiet-btn:#2A2339; --quiet-line:#453B5C; --quiet-text:#CFC5DE;
+  --ui:'Noto Sans Hebrew','Arial Hebrew',Arial,sans-serif;
+  --word:'Alef','Noto Sans Hebrew',Arial,sans-serif;
+  --scale:1;
+  color-scheme:dark;
+}
+body.sepia{ --paper:#E6D6B4; --cue-card:#F5EBD3; --faint-word:#B8A684; --night:#2A2218; --surface:#3A2F22; --surface2:#463928; --line:#57472F; }
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:var(--night);color:var(--ink-on-dark);font-family:var(--ui);overflow:hidden}
+button{font-family:inherit;cursor:pointer;touch-action:manipulation;border:none}
+[hidden]{display:none!important}
+svg{flex-shrink:0}
+
+/* chunky buttons (from the design tokens) */
+.kb{position:relative;border:none;cursor:pointer;transition:transform .08s ease,box-shadow .08s ease;text-shadow:0 2px 0 rgba(0,0,0,.22)}
+.kb:active{transform:translateY(7px)}
+.kb-g{background:linear-gradient(#36A54F,#27853D);box-shadow:0 9px 0 #195C2A,0 16px 20px rgba(0,0,0,.4),inset 0 3px 0 rgba(255,255,255,.45);color:#fff}
+.kb-g:active{box-shadow:0 2px 0 #195C2A,0 4px 8px rgba(0,0,0,.4),inset 0 3px 0 rgba(255,255,255,.45)}
+.kb-o{background:linear-gradient(#FFB04E,#F08A24);box-shadow:0 9px 0 #A4530D,0 16px 20px rgba(0,0,0,.4),inset 0 3px 0 rgba(255,255,255,.55);text-shadow:0 2px 0 rgba(255,255,255,.3);color:#3A1C00}
+.kb-o:active{box-shadow:0 2px 0 #A4530D,0 4px 8px rgba(0,0,0,.4),inset 0 3px 0 rgba(255,255,255,.55)}
+.kb-b{background:linear-gradient(#4C8DE8,#356FCB);box-shadow:0 9px 0 #1F4A94,0 16px 20px rgba(0,0,0,.4),inset 0 3px 0 rgba(255,255,255,.45);color:#fff}
+.kb-b:active{box-shadow:0 2px 0 #1F4A94,0 4px 8px rgba(0,0,0,.4),inset 0 3px 0 rgba(255,255,255,.45)}
+.kb-r{background:linear-gradient(#D9503F,#B93A2E);box-shadow:0 9px 0 #7A2018,0 16px 20px rgba(0,0,0,.4),inset 0 3px 0 rgba(255,255,255,.4);color:#fff}
+.kb-r:active{box-shadow:0 2px 0 #7A2018,0 4px 8px rgba(0,0,0,.4),inset 0 3px 0 rgba(255,255,255,.4)}
+.kb-c{background:linear-gradient(#FFF8E8,#F0E3C8);box-shadow:0 9px 0 #B9A478,0 16px 20px rgba(0,0,0,.4),inset 0 3px 0 rgba(255,255,255,.9);text-shadow:none;color:var(--ink)}
+.kb-c:active{box-shadow:0 2px 0 #B9A478,0 4px 8px rgba(0,0,0,.4),inset 0 3px 0 rgba(255,255,255,.9)}
+.kb-v{background:linear-gradient(#5B4E7E,#473C65);box-shadow:0 7px 0 #2A2240,0 12px 16px rgba(0,0,0,.35),inset 0 2px 0 rgba(255,255,255,.22);color:var(--ink-on-dark)}
+.kb-v:active{box-shadow:0 1px 0 #2A2240,0 3px 6px rgba(0,0,0,.35),inset 0 2px 0 rgba(255,255,255,.22)}
+.bob{animation:bob 2.6s ease-in-out infinite}.bob:active{animation:none}
+@keyframes bob{50%{transform:translateY(-5px)}}
+.glow{animation:glow 2.6s ease-in-out infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(242,165,65,0)}50%{box-shadow:0 0 70px 14px rgba(242,165,65,.38)}}
+.star{position:absolute;left:50%;top:40%;margin:-22px 0 0 -22px;pointer-events:none;animation:pop .95s ease-out forwards;z-index:3}
+@keyframes pop{0%{transform:translate(0,0) scale(.2) rotate(0deg);opacity:0}15%{opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(1.15) rotate(220deg);opacity:0}}
+.bee{position:absolute;width:15px;height:10px;border-radius:3px;background:linear-gradient(90deg,#F2C94C 0 30%,#2A2233 30% 50%,#F2C94C 50% 72%,#2A2233 72%);box-shadow:3px -6px 0 -1px rgba(255,255,255,.85);pointer-events:none}
+.bee1{animation:fly1 7s ease-in-out infinite}.bee2{animation:fly2 9s ease-in-out infinite}.bee3{animation:fly3 6s ease-in-out infinite}
+@keyframes fly1{0%,100%{transform:translate(0,0)}25%{transform:translate(46px,-24px)}50%{transform:translate(90px,6px)}75%{transform:translate(38px,26px)}}
+@keyframes fly2{0%,100%{transform:translate(0,0)}30%{transform:translate(-52px,-18px)}60%{transform:translate(-20px,-46px)}80%{transform:translate(24px,-20px)}}
+@keyframes fly3{0%,100%{transform:translate(0,0)}20%{transform:translate(22px,14px)}55%{transform:translate(-34px,22px)}80%{transform:translate(-12px,-16px)}}
+@media (prefers-reduced-motion: reduce){.bob,.glow,.bee1,.bee2,.bee3,.star{animation:none!important}.star{display:none}.reveal{transition:none!important}}
+
+/* shell */
+.app{position:fixed;inset:0;display:flex;flex-direction:column;gap:16px;padding:max(18px,env(safe-area-inset-top)) 22px max(14px,env(safe-area-inset-bottom))}
+.top{display:flex;align-items:center;gap:12px;height:56px;flex-shrink:0}
+.ib{width:56px;height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rec{height:56px;padding:0 18px;border-radius:18px;color:#FFD9D4;font-size:20px;font-weight:800;display:flex;align-items:center;gap:10px}
+.rec i{width:16px;height:16px;border-radius:16px;background:var(--rec);display:inline-block}
+.rec.off{color:var(--dim-on-dark)} .rec.off i{background:#6B6080}
+.rec .t{direction:ltr;font-variant-numeric:tabular-nums}
+.prog{flex-grow:1;display:flex;align-items:center;justify-content:center;gap:16px;min-width:0}
+.dots{display:flex;gap:8px}
+.dots span{width:22px;height:22px;border-radius:6px;background:var(--line);display:block}
+.dots .done{background:#6FA85A}
+.dots .now{background:var(--amber);box-shadow:0 0 0 4px #5A4526}
+.prog b{font-size:20px;font-weight:600;color:var(--dim-on-dark)}
+
+.main{flex:1 1 0;min-height:0;display:flex;gap:20px}
+.paper{flex:1 1 0;min-width:0;min-height:0;background:var(--paper);color:var(--ink);border-radius:28px;padding:20px 28px;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden}
+.art{position:relative;width:31%;border-radius:28px;overflow:hidden;flex-shrink:0;background:#1F1A30}
+.art picture,.art img{position:absolute;inset:0;width:100%;height:100%;display:block}
+.art img{object-fit:cover;object-position:50% 44%}
+.art .reveal{opacity:0;transition:opacity .9s ease}
+.art .reveal.on{opacity:1;animation:pulse .9s ease}
+@keyframes pulse{0%{transform:scale(1)}55%{transform:scale(1.04)}100%{transform:scale(1)}}
+
+.ptop{display:flex;align-items:center;gap:12px;height:28px;flex-shrink:0}
+.wdots{display:flex;gap:6px}
+.wdots span{width:14px;height:14px;border-radius:4px;background:#D9CBB0;display:block}
+.wdots .done{background:var(--ink)}
+.wdots .now{background:var(--amber);box-shadow:0 0 0 3px #F6D9A6}
+.ptop .lbl{font-size:20px;font-weight:600;color:var(--dim-on-paper)}
+.ptop .now-word{margin-inline-start:auto;font-size:22px;font-weight:600;color:var(--dim-on-paper)}
+.banner{display:flex;align-items:center;justify-content:center;gap:12px;background:#F7DDB0;border-radius:16px;padding:8px 18px;font-size:clamp(20px,2.6vmin,28px);font-weight:600}
+.banner b{font-family:var(--word);font-size:1.35em;font-weight:700}
+
+.stage{flex-grow:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;min-height:0}
+.wordrow{display:flex;align-items:baseline;justify-content:center;gap:.06em;direction:rtl}
+.unitbox{display:flex;align-items:baseline;justify-content:center;padding:0 30px;border-radius:48px;background:rgba(255,253,247,.55)}
+.u{position:relative;display:inline-block;font-family:var(--word);line-height:1.3;font-weight:700;letter-spacing:.03em;white-space:nowrap}
+.u .ov{position:absolute;top:0;right:0;color:var(--ink)}
+.u.big{font-size:calc(min(26vh,17vw) * var(--scale))}
+.u.side{font-size:calc(min(9vh,6vw) * var(--scale));color:var(--faint-word)}
+.u.whole{font-size:calc(min(22vh,13vw) * var(--scale))}
+
+.cues{display:flex;justify-content:center;align-items:flex-start;gap:22px;margin-top:4px}
+.cue{display:flex;flex-direction:column;align-items:center;transition:opacity .3s, transform .3s}
+.cue .stem{width:3px;height:14px;background:#D9CBB0;display:block}
+.cue .card{position:relative;isolation:isolate;width:var(--cs);height:var(--cs);border-radius:20px;background:var(--cue-card);box-shadow:0 0 0 2px var(--cue-ring);overflow:hidden}
+.cue .card img{width:100%;height:100%;object-fit:contain;display:block;mix-blend-mode:multiply}
+.cue.vowel .card{border-radius:999px;box-shadow:0 0 0 4px var(--vc);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.cue.vowel .card svg{width:58%;height:58%}
+.cue.vowel .card span{font-family:var(--word);font-size:calc(var(--cs) * .17);line-height:1;font-weight:700;color:var(--vc)}
+.cue.vowel .stem{background:var(--vc)}
+.cues{--cs:min(19vh,13vw)}
+.cues.small{--cs:min(11.5vh,7.5vw);gap:14px}
+.cues.small .cue{opacity:.75}
+.cue.faded{transform:scale(.78);opacity:.7}
+.cue.chip .card{width:calc(var(--cs) * .42);height:calc(var(--cs) * .42);border-radius:14px;display:grid;place-items:center;font-family:var(--word);font-size:calc(var(--cs) * .22);font-weight:700;color:var(--dim-on-paper);cursor:pointer}
+.tint .cue.letter .card{box-shadow:0 0 0 3px var(--vc)}
+
+.sentence{font-family:var(--word);font-weight:700;font-size:calc(min(14vh,8.4vw) * var(--scale));line-height:1.35;text-align:center;max-width:95%}
+.sentence-lbl{font-size:24px;color:var(--dim-on-paper);font-weight:600;font-family:var(--word)}
+
+.bar{display:grid;grid-template-columns:2fr 1.4fr 1.2fr;gap:14px;height:clamp(84px,12.2vh,112px);flex-shrink:0;margin-bottom:8px}
+.bar.two{grid-template-columns:1.66fr 1fr}
+.bar button{width:100%;height:100%;border-radius:26px;font-size:clamp(26px,4.4vh,40px);font-weight:800;display:flex;align-items:center;justify-content:center;gap:14px;padding:0 16px;min-width:0}
+.bar .ic{width:60px;height:60px;border-radius:30px;background:rgba(255,255,255,.24);box-shadow:inset 0 -3px 0 rgba(0,0,0,.16);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.bar .kb-o .ic{background:rgba(0,0,0,.14)}
+.bar .kb-o{font-size:clamp(22px,3.7vh,32px)}
+.bar .kb-b{font-size:clamp(20px,3vh,26px)}
+.bar .sub{display:flex;flex-direction:column;align-items:flex-start;gap:2px;line-height:1.15}
+.bar .sub small{font-size:17px;font-weight:600;opacity:.9}
+
+/* quiet mode */
+body.quiet .art,body.quiet .bee{display:none}
+body.quiet .glow,body.quiet .bob{animation:none}
+body.quiet .unitbox{background:transparent}
+body.quiet .bar button,body.quiet .top .kb-v{background:var(--quiet-btn);box-shadow:inset 0 0 0 2px var(--quiet-line);color:var(--quiet-text);text-shadow:none}
+body.quiet .bar button:active,body.quiet .top .kb-v:active{transform:none}
+body.quiet .bar .ic{background:none;box-shadow:none}
+body.quiet #bOk .ic{color:#6FCB86} body.quiet #bAgain .ic{color:var(--amber)} body.quiet #bWhole .ic{color:#7FAEF2}
+body.quiet #quietBtn{box-shadow:inset 0 0 0 2px var(--amber);color:var(--amber)}
+body.quiet .rec{background:none!important;box-shadow:none!important;padding:0 6px}
+body.quiet .rec span{display:none}
+body.quiet .rec.off{display:none}
+.flash{position:absolute;inset:0;z-index:4;border-radius:28px;overflow:hidden;opacity:0;transition:opacity .4s;pointer-events:none}
+.flash.on{opacity:1;pointer-events:auto}
+.flash img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* portrait */
+@media (orientation:portrait){
+  .main{flex-direction:column-reverse;gap:16px}
+  .art{width:100%;height:23vh}
+  .art img{object-position:50% 50%}
+  .u.big{font-size:calc(min(19vh,27vw) * var(--scale))}
+  .u.whole{font-size:calc(min(14vh,19vw) * var(--scale))}
+  .u.side{font-size:calc(min(6vh,8.5vw) * var(--scale))}
+  .cues{--cs:min(13vh,20vw)}
+  .cues.small{--cs:min(8.5vh,12.5vw)}
+  .bar{grid-template-columns:1.25fr 1fr;grid-template-rows:1fr .75fr;height:auto;row-gap:22px}
+  .bar>*{height:clamp(84px,9vh,112px)}
+  .bar>#wWhole{grid-column:1/3;height:clamp(70px,7vh,90px)}
+  .bar.two{grid-template-columns:1.5fr 1fr;grid-template-rows:1fr}
+  .sentence{font-size:calc(min(9vh,12vw) * var(--scale))}
+  .prog b{display:none}
+  .end-wrap,.start-wrap{flex-direction:column!important}
+  .end-wrap .art,.start-wrap .art{width:100%!important;height:34vh!important}
+}
+
+/* screens */
+.screen{position:fixed;inset:0;z-index:5;background:var(--night);display:flex;flex-direction:column;padding:max(18px,env(safe-area-inset-top)) 22px max(18px,env(safe-area-inset-bottom));gap:16px}
+.starttop{display:flex;gap:12px;align-items:center;flex-shrink:0}
+.starttop button{height:56px;padding:0 18px;border-radius:18px;font-size:19px;font-weight:800;display:flex;align-items:center;gap:10px}
+.start-wrap,.end-wrap{flex:1;min-height:0;display:flex;gap:40px}
+.start-wrap .art,.end-wrap .art{width:41%;height:100%;order:2}
+.main.pe .art{width:40%}
+@media (orientation:portrait){.main.pe .art{width:100%;height:40vh}}
+.start-side{flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px;min-width:0}
+.kicker{color:var(--amber);font-size:20px;font-weight:800}
+.title{font-family:var(--word);font-weight:700;font-size:clamp(46px,10vh,92px);line-height:1.1;margin:0;color:var(--ink-on-dark)}
+.lead{font-size:clamp(20px,3vh,26px);color:var(--dim-on-dark);margin:0;line-height:1.5}
+.bigbtn{width:100%;min-height:clamp(80px,12vh,104px);border-radius:26px;font-size:clamp(26px,4vh,34px);font-weight:800;display:flex;align-items:center;justify-content:center;gap:16px}
+.bigbtn.second{min-height:clamp(70px,10vh,84px);font-size:clamp(22px,3.4vh,28px)}
+.note{font-size:18px;color:var(--dim-on-dark);margin:0}
+.recover{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--surface);border-radius:20px;padding:12px 12px 12px 20px;font-size:19px}
+.recover button{background:var(--surface2);color:var(--ink-on-dark);border-radius:16px;height:56px;padding:0 20px;font-size:19px;font-weight:800;display:flex;align-items:center;gap:10px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border-radius:24px;padding:18px 10px;text-align:center}
+.stats b{display:block;font-size:clamp(30px,5.4vh,46px);font-weight:800;line-height:1.1}
+.stats span{font-size:19px;color:var(--dim-on-dark)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pagesq{display:flex;gap:12px;justify-content:flex-start}
+.pagesq span{width:34px;height:34px;border-radius:8px;background:#6FA85A;display:block}
+
+
+/* home */
+.home{overflow-y:auto;overflow-x:hidden}
+.home .start-wrap{flex:none;height:auto;min-height:min(62vh,600px)}
+.home .start-wrap .art{height:auto;min-height:min(62vh,600px)}
+.home .start-side{gap:14px}
+.home .title{font-size:clamp(34px,6.4vh,62px)}
+.home .ach{display:none}
+.left{font-size:clamp(20px,3vh,26px);color:var(--ink-on-dark);font-weight:600}
+.left b{color:var(--amber)}
+.ach{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.ach div{background:var(--surface);border-radius:18px;padding:10px 6px;text-align:center}
+.ach b{display:block;font-size:clamp(26px,4.4vh,38px);font-weight:800;line-height:1.15}
+.ach span{font-size:16px;color:var(--dim-on-dark)}
+.coll-h{margin:6px 0 0;font-family:var(--word);font-size:30px;color:var(--ink-on-dark)}
+.coll-h small{font-family:var(--ui);font-size:18px;color:var(--dim-on-dark);font-weight:600}
+.tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;padding-bottom:20px}
+@media (orientation:portrait){.tiles{grid-template-columns:repeat(3,1fr)} .home .start-wrap{height:auto} .home .start-wrap .art{height:30vh!important}}
+.tile{position:relative;background:var(--surface);border-radius:20px;padding:8px;display:flex;flex-direction:column;gap:6px;color:var(--ink-on-dark);text-align:center;box-shadow:0 6px 0 #1A1526}
+.tile:active{transform:translateY(4px);box-shadow:0 2px 0 #1A1526}
+.tile img{width:100%;aspect-ratio:11/7;object-fit:cover;border-radius:14px;display:block}
+.tile.locked img{filter:grayscale(.85) brightness(.55)}
+.tile .nm{font-family:var(--word);font-size:24px;font-weight:700}
+.tile .num{position:absolute;top:14px;right:14px;background:rgba(20,16,30,.75);border-radius:10px;padding:2px 9px;font-size:16px;font-weight:800}
+.tile .ok{position:absolute;top:14px;left:14px;width:30px;height:30px;border-radius:30px;background:#36A54F;display:grid;place-items:center}
+.tile.cur{box-shadow:0 0 0 4px var(--amber),0 6px 0 #1A1526}
+.tile .q{position:absolute;inset:8px 8px auto 8px;aspect-ratio:11/7;display:grid;place-items:center;font-size:44px;font-weight:800;color:rgba(255,255,255,.55)}
+
+/* home: room button + story cards */
+.roombtn{height:76px!important;padding:0 22px 0 10px!important;font-size:26px!important;font-family:var(--word);gap:12px!important}
+.roombtn small{font-size:17px;font-weight:700;opacity:.85}
+.av{width:56px;height:56px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:rgba(255,255,255,.18);flex-shrink:0;box-shadow:0 0 0 3px rgba(255,255,255,.7)}
+.av img{width:100%;height:100%;object-fit:cover;display:block}
+.books{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.book{position:relative;background:var(--surface);border-radius:18px;padding:6px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--ink-on-dark);box-shadow:0 5px 0 #1A1526}
+.book img{width:100%;aspect-ratio:2/1;object-fit:cover;border-radius:12px;display:block}
+.book .bt{font-family:var(--word);font-size:24px;font-weight:700;line-height:1.1}
+.book .bp{position:absolute;top:10px;left:10px;background:rgba(20,16,30,.8);border-radius:10px;padding:1px 8px;font-size:16px;font-weight:800}
+.book.on{box-shadow:0 0 0 4px var(--amber),0 5px 0 #1A1526}
+/* room */
+.room{overflow-y:auto;overflow-x:hidden}
+.hero{display:flex;gap:28px;align-items:center;flex-shrink:0}
+.photo{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer}
+.av.big{width:clamp(130px,22vh,190px);height:clamp(130px,22vh,190px);box-shadow:0 0 0 6px var(--amber),0 10px 24px rgba(0,0,0,.45);background:var(--surface2);color:var(--dim-on-dark)}
+.photo .pl{font-size:18px;font-weight:800;color:var(--amber)}
+.hero-side{flex:1;display:flex;flex-direction:column;gap:14px;min-width:0}
+.rstats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.rstats div{background:var(--surface);border-radius:18px;padding:10px 6px;text-align:center}
+.rstats b{display:block;font-size:clamp(30px,5vh,44px);font-weight:800;line-height:1.1;color:var(--amber)}
+.rstats b small{font-size:.55em;color:var(--dim-on-dark)}
+.rstats span{font-size:17px;color:var(--dim-on-dark)}
+.next{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--surface);border-radius:20px;padding:12px 18px;font-size:22px;flex-shrink:0}
+.next b{color:var(--amber)}
+.next button{margin-inline-start:auto;height:60px;padding:0 24px;border-radius:18px;font-size:22px;font-weight:800}
+.shelf{flex-shrink:0;display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
+.sh{display:flex;align-items:center;gap:14px}
+.sh h3{margin:0;font-family:var(--word);font-size:30px;color:var(--ink-on-dark)}
+.sh .cnt{font-size:20px;font-weight:800;color:var(--dim-on-dark)}
+.bar2{flex:1;height:14px;border-radius:14px;background:var(--surface);overflow:hidden}
+.bar2 i{display:block;height:100%;background:linear-gradient(90deg,#F2A541,#FFD27A);border-radius:14px}
+.slots{display:grid;grid-template-columns:repeat(10,1fr);gap:10px}
+/* item inventory: one slot per item, block-game style */
+.inv{display:flex;flex-wrap:wrap;gap:12px}
+.islot{position:relative;width:118px;height:132px;border-radius:6px;background:#8B8B8B;border:4px solid;border-color:#373737 #FFFFFF #FFFFFF #373737;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px 4px 4px;color:#1E1822}
+.islot img{width:76px;height:76px;image-rendering:pixelated;display:block}
+.islot .nm{font-family:var(--word);font-size:21px;font-weight:700;line-height:1.1;text-align:center}
+.islot .cnt{position:absolute;top:58px;left:10px;font-size:24px;font-weight:900;color:#fff;text-shadow:2px 2px 0 #3F3F3F}
+.islot:not(.got){background:#5E5A66;border-color:#2A2730 #8C8896 #8C8896 #2A2730;color:#CFC8DA}
+.islot:not(.got) img{opacity:.85}
+.islot .q{position:absolute;top:30px;font-size:34px;font-weight:900;color:#E9E2F5;text-shadow:2px 2px 0 #1E1822}
+.islot.got{box-shadow:0 0 16px rgba(242,201,76,.45)}
+.itoast{position:absolute;top:18px;left:50%;transform:translate(-50%,-160%);display:flex;align-items:center;gap:16px;background:#212121;border:4px solid #5A5A5A;border-radius:10px;padding:10px 22px 10px 16px;color:#fff;z-index:30;pointer-events:none;transition:transform .35s ease;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.itoast.on{transform:translate(-50%,0)}
+.itoast img{width:64px;height:64px;image-rendering:pixelated}
+.itoast small{display:block;font-size:18px;color:#F2C94C;font-weight:800}
+.itoast b{font-family:var(--word);font-size:32px}
+@media (orientation:portrait){.slots{grid-template-columns:repeat(5,1fr)} .rstats{grid-template-columns:repeat(2,1fr)} .hero{flex-direction:column}}
+.slot{position:relative;aspect-ratio:3/4;border-radius:16px;background:repeating-linear-gradient(45deg,#2B2440 0 10px,#302848 10px 20px);border:3px dashed #5A4E7A;color:#8A7FA6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:4px;overflow:hidden}
+.slot .lock{opacity:.9}
+.slot .nm{font-family:var(--word);font-size:22px;font-weight:700}
+.slot.got{background:var(--surface2);border:3px solid var(--amber);color:var(--ink-on-dark);justify-content:flex-start;box-shadow:0 0 18px rgba(242,165,65,.35)}
+.slot.got img{width:100%;flex:1;min-height:0;object-fit:cover;border-radius:10px;display:block}
+.slot.got .nm{font-size:clamp(16px,2.4vh,22px);white-space:nowrap}
+.letters{display:grid;grid-template-columns:repeat(11,1fr);gap:10px;padding-bottom:24px}
+@media (orientation:portrait){.letters{grid-template-columns:repeat(6,1fr)}}
+.lt{position:relative;aspect-ratio:1;border-radius:16px;background:#2B2440;border:3px dashed #5A4E7A;display:grid;place-items:center;overflow:hidden}
+.lt b{font-family:var(--word);font-size:clamp(28px,5vh,44px);color:#6E6390}
+.lt i{position:absolute;bottom:0;right:0;height:6px;background:var(--amber)}
+.lt.got{background:#FFFDF7;border:3px solid #36A54F}
+.lt.got img{width:100%;height:100%;object-fit:contain}
+.lt.got b{position:absolute;top:2px;right:6px;font-size:20px;color:#36A54F}
+.cue.rafe .card{display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 0 0 4px #B2524A}
+.cue.rafe .card svg{width:72%;height:auto}
+.cue.rafe .card span{font-family:var(--word);font-size:calc(var(--cs) * .17);font-weight:700;color:#B2524A;direction:rtl}
+.cue.rafe .card .rl{font-family:var(--word);font-size:calc(var(--cs) * .5);color:#B2524A}
+
+/* drawn cue cards (Ori's own choices): letter + picture + word, like the teacher's cards */
+.dc{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr auto;align-items:center;justify-items:center;padding:6% 6% 4%;direction:rtl}
+.dc .dl{font-family:var(--word);font-weight:700;font-size:calc(var(--cs) * .5);line-height:1;color:var(--lc)}
+.cue .card .dc img,.dc img{width:92%;height:auto;max-height:100%;object-fit:contain;image-rendering:pixelated;mix-blend-mode:normal}
+.dc .dw{grid-column:1 / 3;font-family:var(--word);font-weight:700;font-size:calc(var(--cs) * .15);line-height:1.1;color:#6B3A1F;white-space:nowrap}
+.dc .dw .hl,.cue.vowel .card .hl{color:var(--lc,#B2524A);text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:4px}
+.cue.vowel .card img{width:52%;height:auto;image-rendering:pixelated;mix-blend-mode:normal}
+.cue.vowel .card .vm{font-size:calc(var(--cs) * .42)}
+.cue.rafe.drawn .card{display:block}
+
+/* tap a cue: play the parent's recording of the sound, or explain the sound */
+.cue .card[data-cue]{cursor:pointer}
+.cue .card.has-snd::after{content:"";position:absolute;top:6px;left:6px;width:22px;height:22px;border-radius:11px;background:#36A54F url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 9v6h3l4 4V5L8 9H5z'/%3E%3Cpath d='M16 9a4 4 0 0 1 0 6'/%3E%3C/svg%3E") center/16px no-repeat;z-index:2}
+.cue .card.playing{animation:cpulse .45s ease 2}
+@keyframes cpulse{50%{transform:scale(1.1)}}
+.ctip{position:absolute;left:50%;top:52px;transform:translateX(-50%);width:max-content;max-width:min(760px,92%);background:#2A2233;color:#FFF8E8;border-radius:22px;padding:14px 22px;font-size:clamp(20px,2.8vh,27px);line-height:1.45;z-index:6;box-shadow:0 10px 30px rgba(0,0,0,.35);display:flex;gap:16px;align-items:center;direction:rtl}
+.ctip b{font-family:var(--word);font-size:1.7em;line-height:1;color:var(--amber);flex-shrink:0}
+.ctip .tw{font-family:var(--word);font-weight:700}
+.ctip small{display:block;font-size:.7em;color:#B9AFC8}
+.cprec{max-width:900px;align-self:center;width:100%}
+.cprec .seg button:disabled{opacity:.4}
+.cprec .seg button.on{background:var(--rec);color:#fff}
+
+.cue .card img.ph{width:100%;height:100%;object-fit:contain;image-rendering:auto;mix-blend-mode:normal}
+.cue.vowel.photo .card{border-radius:20px;overflow:hidden;background:#fff}
+.cue.vowel.photo .card img.ph{width:100%;height:100%}
+.cpdel{display:inline-block;margin-top:2px;padding:6px 14px;border-radius:12px;background:var(--line);font-size:16px}
+.cpload{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.cpload label{min-height:56px;padding:0 20px;border-radius:16px;background:var(--line);color:var(--ink-on-dark);font-size:19px;font-weight:800;display:flex;align-items:center;gap:8px;cursor:pointer}
+
+/* cue picker: Ori picks the cue that helps him most */
+.cpick{z-index:12;overflow:auto}
+.cpick .starttop h2{margin:0;font-size:30px;flex:1}
+.cpgrp h3{margin:10px 0 10px;color:var(--amber);font-size:22px}
+.cpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:12px}
+.cptile{position:relative;aspect-ratio:1;border-radius:18px;background:#FFFDF7;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:0 5px 0 #1A1526;overflow:hidden;padding:6px}
+.cptile b{position:absolute;top:2px;right:8px;font-family:var(--word);font-size:30px;color:var(--ink)}
+.cptile img{width:66%;height:66%;object-fit:contain;image-rendering:pixelated}
+.cptile .vm{font-family:var(--word);font-size:44px;font-weight:700}
+.cptile small{font-family:var(--word);font-size:16px;color:#6B3A1F;font-weight:700}
+.cpq{font-size:clamp(24px,3.6vh,34px);font-weight:800;text-align:center}
+.cpq b{font-family:var(--word);color:var(--amber);font-size:1.3em}
+.cpopts{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;--cs:min(30vh,19vw)}
+@media (orientation:portrait){.cpopts{grid-template-columns:repeat(2,1fr);--cs:min(24vh,36vw)}}
+.cpopt{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px 8px 14px;border-radius:24px;background:var(--surface);color:var(--ink-on-dark);font-size:18px;font-weight:800}
+.cpopt .cue .stem{display:none}
+.cpopt.on{background:var(--surface2);box-shadow:0 0 0 5px var(--amber),0 0 24px rgba(242,165,65,.45)}
+.cpopt .ok{position:absolute;top:8px;left:8px;width:44px;height:44px;border-radius:22px;background:#36A54F;display:none;place-items:center}
+.cpopt.on .ok{display:grid}
+.cpnav{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.cpnav button{min-height:64px;padding:0 26px;border-radius:20px;font-size:22px;font-weight:800}
+
+/* parent panel */
+.veil{position:fixed;inset:0;z-index:10;background:rgba(15,12,24,.55);display:flex;justify-content:flex-start}
+.panel{width:min(820px,100%);height:100%;background:var(--night);overflow:auto;padding:24px;display:flex;flex-direction:column;gap:16px;box-shadow:-20px 0 40px rgba(0,0,0,.4)}
+.phead{display:flex;justify-content:space-between;align-items:center}
+.phead h2{margin:0;font-size:32px}
+.pcols{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+@media (orientation:portrait){.pcols{grid-template-columns:1fr}}
+.pcol{display:flex;flex-direction:column;gap:16px}
+.sec{background:var(--surface);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.sec h3{margin:0;color:var(--amber);font-size:22px}
+.seg{display:flex;gap:10px;flex-wrap:wrap}
+.seg button,.pbtn{flex:1 1 0;min-height:56px;padding:8px 12px;border-radius:14px;background:var(--line);color:var(--ink-on-dark);font-size:19px;font-weight:800;line-height:1.25;display:flex;align-items:center;justify-content:center;gap:8px}
+.seg button[aria-pressed=true]{background:var(--amber);color:#2A1A05}
+.sec .hint{font-size:17px;color:var(--dim-on-dark);line-height:1.45}
+.sec label{display:flex;align-items:center;gap:12px;font-size:19px;min-height:44px}
+.sec input[type=checkbox]{width:26px;height:26px;accent-color:var(--amber)}
+.sec input[type=range]{flex:1;accent-color:var(--amber)}
+.sec video{width:100%;border-radius:12px;background:#000;transform:scaleX(-1)}
+.err{color:#FF9D8F}
+.key{display:flex;flex-wrap:wrap;gap:8px 18px}
+.key span{display:flex;align-items:center;gap:6px;font-size:22px;font-weight:600;font-family:var(--word)}
+.key i{width:18px;height:18px;border-radius:18px;display:inline-block}
+.fontpick button{font-size:22px}
+html.ch-beta body::after{content:"בטא";position:fixed;top:6px;left:6px;z-index:99;pointer-events:none;padding:2px 10px;border-radius:10px;background:#F5B841;color:#2A1A05;font:800 14px/1.5 system-ui,sans-serif;opacity:.85}
+</style>
+</head>
+<body class="quiet">
+
+<!-- START -->
+<section class="screen home" id="start">
+  <div class="starttop" id="startTop">
+    <button class="kb kb-g roombtn" id="roomBtn"><span class="av" id="homeAvatar"></span><span>הַחֶדֶר שֶׁלִּי</span><small>אוֹצָרוֹת</small></button>
+    <span style="margin-inline-end:auto"></span>
+    <span class="rec" id="homeRec" hidden><i></i><span>מקליט</span><span class="t" id="homeRecTime"></span></span>
+    <button class="kb kb-v" id="installBtn"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M12 7v8M9 12l3 3 3-3"/></svg>הוסף למסך הבית</button>
+    <button class="kb kb-v" id="startFs"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>מסך מלא</span></button>
+    <button class="kb kb-v ib" id="homeGear" aria-label="פאנל הורה"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button>
+  </div>
+  <span class="note" id="installHint" hidden></span>
+  <div class="start-wrap">
+    <div class="art" id="startArt"></div>
+    <div class="start-side">
+      <div class="books" id="books"></div>
+      <h1 class="title" id="bookTitle"></h1>
+      <div class="left" id="leftLine"></div>
+      <div class="ach" id="ach"></div>
+      <div id="resumeBox" hidden>
+        <button class="kb kb-g bigbtn bob" id="resumeBtn"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H5M11 6l-6 6 6 6"/></svg><span id="resumeLbl">המשך לקרוא</span></button>
+      </div>
+      <div id="newBox" style="display:flex;flex-direction:column;gap:14px">
+        <button class="kb kb-c bigbtn" id="startRec"><i style="width:24px;height:24px;border-radius:24px;background:var(--rec);display:inline-block"></i><span id="startRecLbl">התחל עם הקלטה</span></button>
+        <button class="kb kb-v bigbtn second" id="startNoRec">התחל בלי הקלטה</button>
+        <p class="note" id="startNote">ההקלטה (מצלמה קדמית וקול) נשמרת רק בטאבלט, בתיקיית ההורדות.</p>
+      </div>
+      <div class="recover" id="recover" hidden><span>נמצאה הקלטה קודמת שלא נשמרה.</span><button id="recoverBtn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>שמור אותה</button></div>
+    </div>
+  </div>
+  <h2 class="coll-h">הָאוֹסֶף שֶׁל אוֹרִי <small id="collCount"></small></h2>
+  <div class="tiles" id="tiles"></div>
+</section>
+
+<!-- ORI'S ROOM -->
+<section class="screen room" id="room" hidden>
+  <div class="starttop">
+    <button class="kb kb-v" id="roomHome"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>מסך הבית</button>
+  </div>
+  <div class="hero">
+    <label class="photo"><span class="av big" id="roomAvatar"></span><span class="pl" id="photoLbl">הוסף תמונה</span><input type="file" id="photoIn" accept="image/*" hidden></label>
+    <div class="hero-side">
+      <h1 class="title">הַחֶדֶר שֶׁל אוֹרִי</h1>
+      <div class="rstats" id="roomStats"></div>
+    </div>
+  </div>
+  <div class="next" id="roomNext"></div>
+  <div id="roomBooks"></div>
+  <section class="shelf"><div class="sh"><h3>הָאוֹתִיּוֹת שֶׁל אוֹרִי</h3><span class="cnt">כל אות נפתחת אחרי 3 קריאות נכונות</span></div><div class="letters" id="roomLetters"></div></section>
+</section>
+
+<!-- CUE PICKER (parent panel → בחירת רמזים) -->
+<section class="screen cpick" id="cuePick" hidden>
+  <div class="starttop"><button class="kb kb-v" id="cpBack"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg><span id="cpBackLbl">סגור</span></button><h2 id="cpTitle">בּוֹחֲרִים רְמָזִים</h2></div>
+  <div id="cpBody" style="display:flex;flex-direction:column;gap:18px"></div>
+</section>
+
+<!-- READING -->
+<div class="app" id="app" hidden>
+  <div class="top">
+    <button class="kb kb-v ib" id="homeBtn" aria-label="מסך הבית"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></button>
+    <button class="kb kb-v ib" id="gear" aria-label="פאנל הורה"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button>
+    <button class="kb kb-v rec off" id="recBadge" aria-label="מצב הקלטה, פתיחת פאנל הורה"><i></i><span id="recTxt">לא מקליט</span><span class="t" id="recTime"></span></button>
+    <div class="prog"><div class="dots" id="dots"></div><b id="pageLbl"></b></div>
+    <button class="kb kb-v ib" id="quietBtn" aria-label="מצב שקט"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+    <button class="kb kb-v ib" id="markBtn" aria-label="סימון רגע בהקלטה"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21V4"/><path d="M6 4h11l-2.5 4L17 12H6"/></svg></button>
+    <button class="kb kb-v ib" id="fsBtn" aria-label="מסך מלא"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+  </div>
+
+  <div class="main" id="main">
+    <div class="paper" id="paper">
+      <div class="ctip" id="cueTip" hidden></div>
+      <div class="ptop" id="ptop"></div>
+      <div class="banner" id="banner" hidden></div>
+      <div class="stage" id="stageEl"></div>
+      <div class="flash" id="flash"></div>
+      <div class="itoast" id="itemToast" aria-live="polite"></div>
+    </div>
+    <div class="art" id="art"></div>
+  </div>
+
+  <div class="bar" id="bar">
+    <div id="wOk"><button class="kb kb-g bob" id="bOk"><span class="ic"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5L19.5 7"/></svg></span><span>נכון</span></button></div>
+    <div id="wAgain"><button class="kb kb-o" id="bAgain"><span class="ic"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4v5h5"/></svg></span><span>עוד פעם</span></button></div>
+    <div id="wWhole"><button class="kb kb-b" id="bWhole"><span class="ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5l-8 7 8 7z"/><path d="M6 5v14"/></svg></span><span class="sub"><span>כל המילה</span><small>קרא נכון ברצף</small></span></button></div>
+  </div>
+  <div class="bar two" id="barEnd" hidden>
+    <div><button class="kb kb-g" id="bNext"><span class="ic"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H5M11 6l-6 6 6 6"/></svg></span><span id="nextLbl" style="font-family:var(--word)">לַדַּף הַבָּא</span></button></div>
+    <div><button class="kb kb-o" id="bSentAgain"><span class="ic"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4v5h5"/></svg></span><span>עוד פעם</span></button></div>
+  </div>
+</div>
+
+<!-- STORY END -->
+<section class="screen" id="end" hidden>
+  <div class="end-wrap">
+    <div class="art" id="endArt"></div>
+    <div class="start-side">
+      <h1 class="title">כָּל הַכָּבוֹד, אוֹרִי!</h1>
+      <div class="pagesq"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="stats"><div><b id="stMin">0</b><span>דקות</span></div><div><b id="stOk">0</b><span>נכון</span></div><div><b id="stAgain">0</b><span>עוד פעם</span></div><div><b id="stModel">0</b><span>אבא אמר</span></div></div>
+      <button class="kb kb-r bigbtn" id="endStopRec" hidden><i style="width:18px;height:18px;border-radius:3px;background:#fff;display:inline-block"></i>עצור ושמור הקלטה</button>
+      <div class="row2">
+        <button class="kb kb-v bigbtn second" id="endLog"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>הורד יומן סשן</button>
+        <button class="kb kb-g bigbtn second" id="endRoom"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h16v10H4z"/><path d="M4 10l2-5h12l2 5M12 10v10"/></svg>החדר שלי</button>
+        <button class="kb kb-v bigbtn second" id="endHome"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>מסך הבית</button>
+        <button class="kb kb-b bigbtn second" id="endAgain"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4v5h5"/></svg>קרא שוב</button>
+      </div>
+      <p class="note" id="endNote"></p>
+    </div>
+  </div>
+</section>
+
+<!-- PARENT PANEL -->
+<div class="veil" id="veil" hidden>
+  <div class="panel" role="dialog" aria-label="פאנל הורה">
+    <div class="phead"><h2>פאנל הורה</h2><button class="kb kb-v" id="closeP" style="height:56px;padding:0 20px;border-radius:18px;font-size:20px;font-weight:800;display:flex;align-items:center;gap:10px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>סגור</button></div>
+    <div class="pcols">
+      <div class="pcol">
+        <section class="sec"><h3>הקלטה</h3>
+          <div id="recState" style="font-size:19px"></div>
+          <button class="pbtn" id="pRecStart"><i style="width:16px;height:16px;border-radius:16px;background:var(--rec);display:inline-block"></i>התחל הקלטה</button>
+          <button class="pbtn" id="pRecStop"><i style="width:14px;height:14px;border-radius:2px;background:#fff;display:inline-block"></i>עצור ושמור</button>
+          <label><input type="checkbox" id="pPreview"> תצוגה מקדימה של המצלמה (רק כאן)</label>
+          <video id="preview" muted playsinline hidden></video>
+          <div id="savedList" class="hint"></div>
+          <div class="hint">בעצירה נשמרים אוטומטית שני קבצים: הווידאו והיומן (json). אם Chrome שואל על הורדת כמה קבצים, לבחור "אפשר" פעם אחת.</div>
+        </section>
+        <section class="sec"><h3>מצב שקט</h3>
+          <div class="seg" data-set="quiet"><button data-v="reading">שקט בזמן הקריאה</button><button data-v="full">מלא כל הזמן</button></div>
+          <div class="hint">במצב שקט אין תמונה בזמן הפענוח. התמונה מופיעה כפרס כשמילת המפתח של הדף נקראת, ובסוף הדף.</div>
+        </section>
+        <section class="sec"><h3>דפים</h3>
+          <div class="seg"><button id="prevPage">→ דף קודם</button><button id="skipPage">דף הבא ←</button><button id="restart">התחל מחדש</button></div>
+        </section>
+        <section class="sec"><h3>נתונים</h3>
+          <div class="seg"><button id="dlJson">⬇ יומן JSON</button><button id="dlCsv">⬇ יומן CSV</button><button id="cpLog">העתק יומן</button></div>
+          <div class="hint" id="logInfo"></div>
+        </section>
+        <section class="sec"><h3>גרסת האפליקציה</h3>
+          <div class="seg" id="chSeg"><button data-ch="stable">יציבה</button><button data-ch="beta">בטא (חדשה, לניסוי)</button></div>
+          <div class="hint" id="chInfo">ההתקדמות וההגדרות של אורי משותפות לשתי הגרסאות. הבחירה נשמרת, והאייקון במסך הבית נפתח בגרסה שנבחרה.</div>
+        </section>
+      </div>
+      <div class="pcol">
+        <section class="sec"><h3>איך מתקדמים</h3>
+          <div class="seg" data-set="mode"><button data-v="units">יחידה אחרי יחידה</button><button data-v="word">מילה קודם, יחידות אחרי טעות</button></div>
+          <label>"אבא אומר" אחרי <span class="seg" data-set="modelAfter" style="flex:1"><button data-v="2">2 טעויות</button><button data-v="3">3 טעויות</button></span></label>
+        </section>
+        <section class="sec"><h3>רמזים</h3>
+          <button class="pbtn" id="pickCues" style="flex:none;background:var(--amber);color:#2A1A05">בחירת רמזים: אורי בוחר רמז לכל אות ולכל ניקוד</button>
+          <div class="hint">לכל אות (גם אותיות סופיות, וגם ב כ פ בלי נקודה) ולכל צליל ניקוד יש עד 4 רמזים. הרמז של המורה הוא ברירת המחדל. מה שאורי בוחר נשמר ומופיע בזמן הקריאה.</div>
+          <div class="seg" data-set="cues"><button data-v="always">תמיד גלויים</button><button data-v="fade">דוהים אחרי 3 קריאות נכונות</button></div>
+          <div class="hint">רמז לכל אות ביחידה, צמוד לאות שלו. במצב דהייה: אחרי 3 קריאות נכונות של אות הרמז קטן, ואחרי 6 הוא הופך לכפתור קטן שנפתח בלחיצה.</div>
+          <button class="pbtn" id="resetFade" style="flex:none">איפוס ספירת הקריאות</button>
+        </section>
+        <section class="sec"><h3>תצוגה</h3>
+          <label>גודל טקסט <input type="range" id="scale" min="0.75" max="1.25" step="0.05"></label>
+          <div class="seg" data-set="theme"><button data-v="dark">לילה חם</button><button data-v="sepia">ספיה</button></div>
+          <div style="font-size:19px;font-weight:700">צבע לפי צליל הניקוד</div>
+          <div class="seg" data-set="color"><button data-v="nikud">רק הניקוד צבוע</button><button data-v="tint">כל היחידה צבועה</button><button data-v="off">בלי צבע</button></div>
+          <div class="key"><span><i style="background:#E8604E"></i>אַ אָ</span><span><i style="background:#5B93F5"></i>אִ</span><span><i style="background:#4FB877"></i>אֵ אֶ</span><span><i style="background:#F0A04A"></i>אוֹ</span><span><i style="background:#B07AE6"></i>אוּ אֻ</span></div>
+          <div style="font-size:19px;font-weight:700">פונט למילה</div>
+          <div class="seg fontpick" data-set="font"><button data-v="alef" style="font-family:Alef">אַלֶף</button><button data-v="noto" style="font-family:'Noto Sans Hebrew'">נוֹטוֹ</button><button data-v="rubik" style="font-family:Rubik">רוּבִּיק</button><button data-v="frank" style="font-family:'Frank Ruhl Libre'">פְרַנְק</button></div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ---------- story (approved 2026-11-15). Every ב/כ/פ has a dagesh; no final ך/ף.
+   words: [display text, units]; reveal = index of the word that reveals the page's hidden element ---------- */
+const PAGES_ISLAND = [
+  {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["בָּא",["בָּא"]],["לָאִי.",["לָ","אִי"]]]},
+  {reveal:3, words:[["עַל",["עַל"]],["הָאִי",["הָ","אִי"]],["יֵשׁ",["יֵשׁ"]],["עֵצִים.",["עֵ","צִים"]]]},
+  {item:"log", reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["לָקַח",["לָ","קַח"]],["עֵץ.",["עֵץ"]]]},
+  {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["בָּנָה",["בָּ","נָה"]],["בַּיִת",["בַּ","יִת"]],["קָטָן.",["קָ","טָן"]]]},
+  {reveal:1, words:[["בָּא",["בָּא"]],["לַיְלָה",["לַיְ","לָה"]],["קַר.",["קַר"]]]},
+  {reveal:0, words:[["זוֹמְבִּי",["זוֹמְ","בִּי"]],["בָּא",["בָּא"]],["לַבַּיִת!",["לַ","בַּ","יִת"]]]},
+  {reveal:3, words:[["אוֹרִי",["אוֹ","רִי"]],["קָם.",["קָם"]],["אוֹרִי",["אוֹ","רִי"]],["חָזָק!",["חָ","זָק"]]]},
+  {item:"lantern", reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["לָקַח",["לָ","קַח"]],["פָּנָס.",["פָּ","נָס"]]]},
+  {reveal:1, words:[["הַזּוֹמְבִּי",["הַ","זּוֹמְ","בִּי"]],["בָּרַח!",["בָּ","רַח"]]]},
+  {item:"treasure", reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["מָצָא",["מָ","צָא"]],["אוֹצָר!",["אוֹ","צָר"]]]}
+];
+/* story 2 (2026-11-15): kamatz/patach only (plus the name אוֹרִי). Every ב/כ/פ has a dagesh, no sin, no final ך/ף. */
+const PAGES_PANDA = [
+  {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["בָּא",["בָּא"]],["לָהָר.",["לָ","הָר"]]]},
+  {item:"pickaxe", reveal:1, words:[["אוֹרִי",["אוֹ","רִי"]],["כָּרָה,",["כָּ","רָה"]],["כָּרָה,",["כָּ","רָה"]],["כָּרָה!",["כָּ","רָה"]]]},
+  {item:"chest", reveal:2, words:[["שָׁם",["שָׁם"]],["עָמַד",["עָ","מַד"]],["אַרְגָּז.",["אַרְ","גָּז"]]]},
+  {item:"map", reveal:1, words:[["בָּאַרְגָּז",["בָּ","אַרְ","גָּז"]],["מַפָּה!",["מַ","פָּה"]]]},
+  {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["רָץ",["רָץ"]],["לַיַּעַר.",["לַ","יַּ","עַר"]]]},
+  {reveal:2, words:[["שָׁם",["שָׁם"]],["יָשַׁן",["יָ","שַׁן"]],["פַּנְדָּה.",["פַּנְ","דָּה"]]]},
+  {reveal:3, words:[["הַפַּנְדָּה",["הַ","פַּנְ","דָּה"]],["קָם.",["קָם"]],["הַפַּנְדָּה",["הַ","פַּנְ","דָּה"]],["צָחַק!",["צָ","חַק"]]]},
+  {item:["emerald",3], reveal:3, words:[["הַפַּנְדָּה",["הַ","פַּנְ","דָּה"]],["כָּרָה,",["כָּ","רָה"]],["אוֹרִי",["אוֹ","רִי"]],["כָּרָה.",["כָּ","רָה"]]]},
+  {reveal:2, words:[["שָׁם",["שָׁם"]],["עָמַד",["עָ","מַד"]],["שַׁעַר!",["שַׁ","עַר"]]]},
+  {reveal:3, words:[["אוֹרִי",["אוֹ","רִי"]],["בָּא.",["בָּא"]],["גַּם",["גַּם"]],["הַפַּנְדָּה",["הַ","פַּנְ","דָּה"]],["בָּא!",["בָּא"]]]}
+];
+/* story 3 (2026-11-15): kamatz/patach + hirik (+ segol in אֶמֶרַלְד, the word kids actually say). One planned exception: the פ in כַּפְרִי has no dagesh (sounds f);
+   it gets an f-mouth card instead of the teacher's פֶּה cue. */
+const PAGES_VILLAGER = [
+  {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["רָאָה",["רָ","אָה"]],["בַּיִת",["בַּ","יִת"]],["קָטָן.",["קָ","טָן"]]]},
+  {reveal:2, words:[["בַּבַּיִת",["בַּ","בַּ","יִת"]],["גָּר",["גָּר"]],["כַּפְרִי.",["כַּפְ","רִי"]]]},
+  {reveal:2, words:[["הַכַּפְרִי",["הַ","כַּפְ","רִי"]],["רָצָה",["רָ","צָה"]],["חִטָּה.",["חִ","טָּה"]]]},
+  {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["רָץ",["רָץ"]],["לַגַּן.",["לַ","גַּן"]]]},
+  {item:["wheat",5], reveal:3, words:[["אוֹרִי",["אוֹ","רִי"]],["לָקַח",["לָ","קַח"]],["חִטָּה",["חִ","טָּה"]],["רַבָּה.",["רַ","בָּה"]]]},
+  {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["נָתַן",["נָ","תַן"]],["לַכַּפְרִי",["לַ","כַּפְ","רִי"]],["חִטָּה.",["חִ","טָּה"]]]},
+  {item:"emerald", reveal:2, words:[["הַכַּפְרִי",["הַ","כַּפְ","רִי"]],["נָתַן",["נָ","תַן"]],["אֶמֶרַלְד!",["אֶ","מֶ","רַלְד"]]]},
+  {item:["emerald",5], reveal:1, words:[["כַּמָּה",["כַּ","מָּה"]],["אֶמֶרַלְדִּים?",["אֶ","מֶ","רַלְ","דִּים"]],["רַבִּים!",["רַ","בִּים"]]]},
+  {item:"boat", reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["קָנָה",["קָ","נָה"]],["סִירָה.",["סִי","רָה"]]]},
+  {reveal:2, words:[["אוֹרִי",["אוֹ","רִי"]],["שָׁט",["שָׁט"]],["בַּסִּירָה!",["בַּ","סִּי","רָה"]]]}
+];
+/* saga episode 4 (2026-11-15): first person ("I"), adds tsere/segol (e). Every ב/כ/פ has a dagesh. */
+const PAGES_CAVE = [
+  {reveal:3, words:[["בָּאתִי",["בָּא","תִי"]],["אֶל",["אֶל"]],["אִי",["אִי"]],["חָדָשׁ.",["חָ","דָשׁ"]]]},
+  {reveal:3, words:[["עַל",["עַל"]],["הָאִי",["הָ","אִי"]],["יֵשׁ",["יֵשׁ"]],["מְעָרָה.",["מְ","עָ","רָה"]]]},
+  {reveal:0, words:[["בַּמְּעָרָה",["בַּ","מְּ","עָ","רָה"]],["אֵין",["אֵין"]],["אוֹר.",["אוֹר"]]]},
+  {reveal:1, item:"torch", words:[["לָקַחְתִּי",["לָ","קַחְ","תִּי"]],["לַפִּיד.",["לַ","פִּיד"]]]},
+  {reveal:3, words:[["עַל",["עַל"]],["הַקִּיר",["הַ","קִּיר"]],["יֵשׁ",["יֵשׁ"]],["אַיְרוֹן!",["אַיְ","רוֹן"]]]},
+  {reveal:2, item:["iron",3], words:[["כָּרִיתִי",["כָּ","רִי","תִי"]],["אֶת",["אֶת"]],["הָאַיְרוֹן.",["הָ","אַיְ","רוֹן"]]]},
+  {reveal:2, words:[["פִּתְאוֹם",["פִּתְ","אוֹם"]],["בָּא",["בָּא"]],["סְקֶלֶטוֹן!",["סְ","קֶ","לֶ","טוֹן"]]]},
+  {reveal:2, item:"arrow", words:[["הַסְּקֶלֶטוֹן",["הַ","סְּ","קֶ","לֶ","טוֹן"]],["יָרָה",["יָ","רָה"]],["חֵץ!",["חֵץ"]]]},
+  {reveal:0, item:"bone", words:[["הִכֵּיתִי",["הִ","כֵּי","תִי"]],["אֶת",["אֶת"]],["הַסְּקֶלֶטוֹן!",["הַ","סְּ","קֶ","לֶ","טוֹן"]]]},
+  {reveal:1, item:"bow", words:[["מָצָאתִי",["מָ","צָא","תִי"]],["קֶשֶׁת!",["קֶ","שֶׁת"]]]}
+];
+/* saga episode 5: e practice. Soft פ in כְּפָר (f card, as in כַּפְרִי) and soft ב in חֶרֶב (same teeth-on-lip card, v). */
+const PAGES_SWORD = [
+  {reveal:1, words:[["יָצָאתִי",["יָ","צָא","תִי"]],["מֵהַמְּעָרָה.",["מֵ","הַ","מְּ","עָ","רָה"]]]},
+  {reveal:1, words:[["רָאִיתִי",["רָ","אִי","תִי"]],["כְּפָר",["כְּ","פָר"]],["קָטָן.",["קָ","טָן"]]]},
+  {reveal:1, words:[["הִדְלַקְתִּי",["הִדְ","לַקְ","תִּי"]],["אֵשׁ.",["אֵשׁ"]]]},
+  {reveal:1, words:[["הָאַיְרוֹן",["הָ","אַיְ","רוֹן"]],["בָּאֵשׁ.",["בָּ","אֵשׁ"]]]},
+  {reveal:3, item:["iron",3], words:[["הָאַיְרוֹן",["הָ","אַיְ","רוֹן"]],["חַם,",["חַם"]],["חַם,",["חַם"]],["חַם!",["חַם"]]]},
+  {reveal:1, item:"sword", words:[["בָּנִיתִי",["בָּ","נִי","תִי"]],["חֶרֶב!",["חֶ","רֶב"]]]},
+  {reveal:1, item:"shield", words:[["בָּנִיתִי",["בָּ","נִי","תִי"]],["מָגֵן!",["מָ","גֵן"]]]},
+  {reveal:1, item:"helmet", words:[["בָּנִיתִי",["בָּ","נִי","תִי"]],["קַסְדָּה!",["קַסְ","דָּה"]]]},
+  {reveal:1, words:[["בָּא",["בָּא"]],["לַיְלָה",["לַיְ","לָה"]],["קַר.",["קַר"]]]},
+  {reveal:2, words:[["מִי",["מִי"]],["בָּא",["בָּא"]],["לַכְּפָר?",["לַ","כְּ","פָר"]]]}
+];
+/* saga episode 6: adds holam (o). */
+const PAGES_NIGHT = [
+  {reveal:0, words:[["זוֹמְבִּים",["זוֹמְ","בִּים"]],["בָּאִים",["בָּ","אִים"]],["לַכְּפָר!",["לַ","כְּ","פָר"]]]},
+  {reveal:1, words:[["הַכַּפְרִים",["הַ","כַּפְ","רִים"]],["פּוֹחֲדִים.",["פּוֹ","חֲ","דִים"]]]},
+  {reveal:2, words:[["אֲנִי",["אֲ","נִי"]],["לֹא",["לֹא"]],["פּוֹחֵד!",["פּוֹ","חֵד"]]]},
+  {reveal:2, words:[["יֵשׁ",["יֵשׁ"]],["לִי",["לִי"]],["חֶרֶב.",["חֶ","רֶב"]],["יֵשׁ",["יֵשׁ"]],["לִי",["לִי"]],["מָגֵן.",["מָ","גֵן"]]]},
+  {reveal:0, words:[["הִכֵּיתִי",["הִ","כֵּי","תִי"]],["זוֹמְבִּי",["זוֹמְ","בִּי"]],["אֶחָד!",["אֶ","חָד"]]]},
+  {reveal:0, words:[["עוֹד",["עוֹד"]],["זוֹמְבִּי!",["זוֹמְ","בִּי"]],["עוֹד",["עוֹד"]],["אֶחָד!",["אֶ","חָד"]]]},
+  {reveal:1, words:[["הַזּוֹמְבִּים",["הַ","זּוֹמְ","בִּים"]],["רַבִּים",["רַ","בִּים"]],["מִדַּי!",["מִ","דַּי"]]]},
+  {reveal:2, words:[["בָּנִיתִי",["בָּ","נִי","תִי"]],["אַיְרוֹן",["אַיְ","רוֹן"]],["גּוֹלֶם!",["גּוֹ","לֶם"]]]},
+  {reveal:1, words:[["הַגּוֹלֶם",["הַ","גּוֹ","לֶם"]],["חָזָק",["חָ","זָק"]],["מְאֹד!",["מְ","אֹד"]]]},
+  {reveal:2, item:"dmap", words:[["בַּבֹּקֶר",["בַּ","בֹּ","קֶר"]],["קִבַּלְתִּי",["קִ","בַּלְ","תִּי"]],["מַפָּה!",["מַ","פָּה"]]]}
+];
+/* saga episode 7 (2026-11-17): adds u (shuruk). Ori says these in English: דַּיְמוֹנְד, פִּיקְאַקְס. Soft ב in לָבָה gets the v card. */
+const PAGES_DIAMONDS = [
+  {reveal:2, words:[["יָצָאתִי",["יָ","צָא","תִי"]],["עִם",["עִם"]],["הַמַּפָּה.",["הַ","מַּ","פָּה"]]]},
+  {reveal:1, words:[["כָּרִיתִי",["כָּ","רִי","תִי"]],["בּוֹר",["בּוֹר"]],["עָמֹק.",["עָ","מֹק"]]]},
+  {reveal:0, words:[["בּוּם!",["בּוּם"]],["בּוּם!",["בּוּם"]],["מָה",["מָה"]],["זֶה?",["זֶה"]]]},
+  {reveal:1, words:[["זוֹ",["זוֹ"]],["לָבָה!",["לָ","בָה"]],["הִיא",["הִיא"]],["חַמָּה!",["חַ","מָּה"]]]},
+  {reveal:1, words:[["בָּנִיתִי",["בָּ","נִי","תִי"]],["גֶּשֶׁר",["גֶּ","שֶׁר"]],["קָטָן.",["קָ","טָן"]]]},
+  {reveal:3, words:[["רַצְתִּי",["רַצְ","תִּי"]],["עַל",["עַל"]],["הַגֶּשֶׁר.",["הַ","גֶּ","שֶׁר"]],["הוּפָּה!",["הוּ","פָּה"]]]},
+  {reveal:3, words:[["מָה",["מָה"]],["זֶה?",["זֶה"]],["מַשֶּׁהוּ",["מַ","שֶּׁ","הוּ"]],["כָּחֹל!",["כָּ","חֹל"]]]},
+  {reveal:1, words:[["זֶה",["זֶה"]],["דַּיְמוֹנְד!",["דַּיְ","מוֹנְד"]],["יוּפִּי!",["יוּ","פִּי"]]]},
+  {reveal:2, item:["diamond",5], words:[["כָּרִיתִי",["כָּ","רִי","תִי"]],["הַרְבֵּה",["הַרְ","בֵּה"]],["דַּיְמוֹנְדִּים!",["דַּיְ","מוֹנְ","דִּים"]]]},
+  {reveal:1, item:"dpick", words:[["בָּנִיתִי",["בָּ","נִי","תִי"]],["דַּיְמוֹנְד",["דַּיְ","מוֹנְד"]],["פִּיקְאַקְס!",["פִּיקְ","אַקְס"]]]}
+];
+/* saga episode 8: u practice. The bone comes from the skeleton in episode 4. Soft ב in כֶּלֶב (v card). */
+const PAGES_DOG = [
+  {reveal:1, words:[["חָזַרְתִּי",["חָ","זַרְ","תִּי"]],["לַכְּפָר.",["לַ","כְּ","פָר"]]]},
+  {reveal:2, words:[["בַּכְּפָר",["בַּ","כְּ","פָר"]],["עָמַד",["עָ","מַד"]],["סוֹחֵר.",["סוֹ","חֵר"]]]},
+  {reveal:2, words:[["הַסּוֹחֵר",["הַ","סּוֹ","חֵר"]],["רָצָה",["רָ","צָה"]],["דַּיְמוֹנְד.",["דַּיְ","מוֹנְד"]]]},
+  {reveal:2, words:[["נָתַתִּי",["נָ","תַ","תִּי"]],["לוֹ",["לוֹ"]],["דַּיְמוֹנְד",["דַּיְ","מוֹנְד"]],["אֶחָד.",["אֶ","חָד"]]]},
+  {reveal:3, item:"flint", words:[["הוּא",["הוּא"]],["נָתַן",["נָ","תַן"]],["לִי",["לִי"]],["מַצִּית!",["מַ","צִּית"]]]},
+  {reveal:2, words:[["פִּתְאוֹם",["פִּתְ","אוֹם"]],["בָּא",["בָּא"]],["כֶּלֶב!",["כֶּ","לֶב"]]]},
+  {reveal:2, words:[["נָתַתִּי",["נָ","תַ","תִּי"]],["לוֹ",["לוֹ"]],["עֶצֶם.",["עֶ","צֶם"]]]},
+  {reveal:2, item:"dog", words:[["הוּא",["הוּא"]],["הַכֶּלֶב",["הַ","כֶּ","לֶב"]],["שֶׁלִּי!",["שֶׁ","לִּי"]]]},
+  {reveal:2, words:[["קָרָאתִי",["קָ","רָא","תִי"]],["לוֹ",["לוֹ"]],["בּוּבּוּ.",["בּוּ","בּוּ"]]]},
+  {reveal:2, words:[["בּוּבּוּ",["בּוּ","בּוּ"]],["בָּא",["בָּא"]],["אִתִּי!",["אִ","תִּי"]]]}
+];
+/* saga episode 9: adds the vocal shva (שְׁחֹרָה, מְאֹד, לְאָן). Ends on the way to the fire world (episode 10). */
+const PAGES_PORTAL = [
+  {reveal:1, words:[["יָרַדְתִּי",["יָ","רַדְ","תִּי"]],["לַלָּבָה.",["לַ","לָּ","בָה"]]]},
+  {reveal:1, words:[["זָרַקְתִּי",["זָ","רַקְ","תִּי"]],["מַיִם",["מַ","יִם"]],["עַל",["עַל"]],["הַלָּבָה.",["הַ","לָּ","בָה"]]]},
+  {reveal:2, words:[["פִּתְאוֹם",["פִּתְ","אוֹם"]],["הִיא",["הִיא"]],["שְׁחֹרָה!",["שְׁ","חֹ","רָה"]]]},
+  {reveal:1, words:[["זֶה",["זֶה"]],["אוֹבְּסִידִיאַן!",["אוֹבְּ","סִי","דִי","אַן"]]]},
+  {reveal:2, item:["obsidian",10], words:[["כָּרִיתִי",["כָּ","רִי","תִי"]],["הַרְבֵּה",["הַרְ","בֵּה"]],["אוֹבְּסִידִיאַן.",["אוֹבְּ","סִי","דִי","אַן"]]]},
+  {reveal:1, words:[["בָּנִיתִי",["בָּ","נִי","תִי"]],["פּוֹרְטָל",["פּוֹרְ","טָל"]],["גָּדוֹל",["גָּ","דוֹל"]],["מְאֹד!",["מְ","אֹד"]]]},
+  {reveal:2, words:[["לָקַחְתִּי",["לָ","קַחְ","תִּי"]],["אֶת",["אֶת"]],["הַמַּצִּית.",["הַ","מַּ","צִּית"]]]},
+  {reveal:1, words:[["הַפּוֹרְטָל",["הַ","פּוֹרְ","טָל"]],["נִדְלַק!",["נִדְ","לַק"]],["הוּא",["הוּא"]],["סָגֹל!",["סָ","גֹל"]]]},
+  {reveal:3, words:[["בּוּבּוּ",["בּוּ","בּוּ"]],["וַאֲנִי",["וַ","אֲ","נִי"]],["רָצִים",["רָ","צִים"]],["לַפּוֹרְטָל!",["לַ","פּוֹרְ","טָל"]]]},
+  {reveal:2, words:[["לְאָן?",["לְ","אָן"]],["לְעוֹלַם",["לְ","עוֹ","לַם"]],["הָאֵשׁ!",["הָ","אֵשׁ"]]]}
+];
+/* collectible items: one slot each in the room; a page that gives an item says item:"id" or item:["id",count].
+   future:true = waits for a later episode (shown as a silhouette, so there is something to look forward to). */
+const ITEMS = [
+  {id:"log", name:"עֵץ"}, {id:"lantern", name:"פָּנָס"}, {id:"treasure", name:"אוֹצָר"},
+  {id:"pickaxe", name:"פִּיקְאַקְס"}, {id:"chest", name:"אַרְגָּז"}, {id:"map", name:"מַפָּה"}, {id:"emerald", name:"אֶמֶרַלְד"},
+  {id:"wheat", name:"חִטָּה"}, {id:"boat", name:"סִירָה"},
+  {id:"torch", name:"לַפִּיד"}, {id:"iron", name:"אַיְרוֹן"}, {id:"arrow", name:"חֵץ"}, {id:"bone", name:"עֶצֶם"}, {id:"bow", name:"קֶשֶׁת"},
+  {id:"sword", name:"חֶרֶב"}, {id:"shield", name:"מָגֵן"}, {id:"helmet", name:"קַסְדָּה"}, {id:"dmap", name:"מַפַּת דַּיְמוֹנְדִּים"},
+  {id:"diamond", name:"דַּיְמוֹנְד"}, {id:"dpick", name:"דַּיְמוֹנְד פִּיקְאַקְס"}, {id:"flint", name:"מַצִּית"}, {id:"dog", name:"בּוּבּוּ הַכֶּלֶב"},
+  {id:"obsidian", name:"אוֹבְּסִידִיאַן"},
+  {id:"firerod", name:"מוֹט אֵשׁ", future:true}, {id:"eye", name:"עַיִן", future:true}, {id:"egg", name:"בֵּיצַת דְּרָקוֹן", future:true}
+];
+const ITEM = Object.fromEntries(ITEMS.map(i=>[i.id,i]));
+const pageItem = p => !p.item ? null : Array.isArray(p.item) ? {id:p.item[0], n:p.item[1]} : {id:p.item, n:1};
+const STORIES = [
+  {id:"island", title:"אוֹרִי וְהָאִי שֶׁל הַקֻּבִּיּוֹת", short:"הָאִי", art:"art/", day:[1,2,3,4,10], cover:10, pages:PAGES_ISLAND},
+  {id:"panda", title:"אוֹרִי וְהַפַּנְדָּה", short:"הַפַּנְדָּה", art:"art/s2/", day:[1,2,3,4,5,6,7,8], cover:7, pages:PAGES_PANDA},
+  {id:"villager", title:"אוֹרִי וְהַכַּפְרִי", short:"הַכַּפְרִי", art:"art/s3/", day:[1,2,3,4,5,6,7,8,9], cover:8, pages:PAGES_VILLAGER},
+  {id:"cave", title:"פֶּרֶק 4: הַמְּעָרָה", short:"הַמְּעָרָה", art:"art/s4/", day:[], cover:7, pages:PAGES_CAVE},
+  {id:"sword", title:"פֶּרֶק 5: הַחֶרֶב", short:"הַחֶרֶב", art:"art/s5/", day:[2,3,4,5,6,7,8], cover:8, pages:PAGES_SWORD},
+  {id:"night", title:"פֶּרֶק 6: הַלַּיְלָה בַּכְּפָר", short:"הַלַּיְלָה", art:"art/s6/", day:[], cover:8, pages:PAGES_NIGHT},
+  {id:"diamonds", title:"פֶּרֶק 7: הַדַּיְמוֹנְדִּים", short:"הַדַּיְמוֹנְדִּים", art:"art/s7/", day:[2], cover:8, pages:PAGES_DIAMONDS},
+  {id:"dog", title:"פֶּרֶק 8: הַסּוֹחֵר וְהַכֶּלֶב", short:"הַכֶּלֶב", art:"art/s8/", day:[1,2,3,4,5,6,7,8,9,10], cover:8, pages:PAGES_DOG},
+  {id:"portal", title:"פֶּרֶק 9: הַפּוֹרְטָל", short:"הַפּוֹרְטָל", art:"art/s9/", day:[1], cover:8, pages:PAGES_PORTAL}
+];
+let BOOK = 0, PAGES = PAGES_ISLAND;
+function setBook(b){ BOOK = Math.max(0, Math.min(STORIES.length-1, b|0)); PAGES = STORIES[BOOK].pages; /* a story this version lacks (beta has more) keeps its saved choice */ if(BOOK===(b|0)) try{ localStorage.setItem("ori.t3.book", String(BOOK)); }catch(e){} }
+const CUE_WORD = {alef:"אַרְנָב",bet:"בֶּרֶז",gimel:"גִּבּוֹר עָל",dalet:"דַּחְלִיל",he:"הֶגֶה",vav:"וָפֶל",zayin:"זָנָב",het:"חֶדֶר",tet:"טֶלֶפוֹן",yod:"יוֹיוֹ",kaf:"כַּדּוּר",lamed:"לָשׁוֹן לְמַעְלָה",mem:"מְשֻׁלָּשׁ",nun:"נוּרָה",samekh:"סַל",ayin:"עַיִן",pe:"פֶּה",tsadi:"צָב",qof:"קוּקוּ",resh:"רֶגֶל",shin:"שִׁנַּיִם",tav:"תַּנִּין"};
+const VOWEL = {a:{c:"var(--v-a)",hex:"#C8321F",mark:"אַ",name:"פה פתוח"}, i:{c:"var(--v-i)",hex:"#1F5FD0",mark:"אִ",name:"חיוך רחב"}, e:{c:"var(--v-e)",hex:"#1E7F45",mark:"אֵ",name:"פה חצי פתוח"}, o:{c:"var(--v-o)",hex:"#C96A0A",mark:"אוֹ",name:"שפתיים עגולות"}, u:{c:"var(--v-u)",hex:"#7A35B5",mark:"אוּ",name:"שפתיים מכווצות"}};
+const MOUTH = {
+ a:'<svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="52" rx="36" ry="33" fill="#C8321F"/><ellipse cx="50" cy="53" rx="25" ry="22" fill="#3A1420"/><rect x="33" y="32" width="34" height="9" rx="3" fill="#FFFFFF"/><ellipse cx="50" cy="69" rx="15" ry="6.5" fill="#E88A8A"/></svg>',
+ e:'<svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="52" rx="38" ry="22" fill="#1E7F45"/><ellipse cx="50" cy="53" rx="27" ry="11" fill="#3A1420"/><rect x="32" y="43" width="36" height="6" rx="2" fill="#FFFFFF"/></svg>',
+ i:'<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M6 46 Q50 26 94 46 Q50 84 6 46Z" fill="#1F5FD0"/><path d="M19 47 Q50 37 81 47 Q50 68 19 47Z" fill="#FFFFFF"/><path d="M19 47 H81" stroke="#3A1420" stroke-width="2.5"/></svg>',
+ o:'<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="52" r="30" fill="#C96A0A"/><circle cx="50" cy="52" r="15" fill="#3A1420"/></svg>',
+ u:'<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="52" r="20" fill="#7A35B5"/><circle cx="50" cy="52" r="6.5" fill="#3A1420"/><path d="M24 38 L31 44 M76 38 L69 44 M24 66 L31 60 M76 66 L69 60" stroke="#7A35B5" stroke-width="4" stroke-linecap="round"/></svg>'};
+/* f / v: upper teeth on the lower lip (for פ and ב without a dagesh) */
+const RAFE_MOUTH = '<svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="50" rx="38" ry="24" fill="#D9786A"/><rect x="24" y="34" width="52" height="15" rx="4" fill="#FFFFFF"/><path d="M14 54 Q50 76 86 54 Q50 64 14 54Z" fill="#B2524A"/><path d="M28 50 H72" stroke="#3A1420" stroke-width="3"/></svg>';
+/* ---------- cue choices (2026-11-17) ----------
+   Every letter, every final letter, soft ב/כ/פ and every vowel sound has up to 4 cues, and Ori picks the one that helps him most
+   (parent panel → בחירת רמזים). The first option is the default: the teacher's cue where she has one.
+   Pictures in art/cues/ are original pixel drawings (node art/cues.js); art/items/ are the collectible item icons. */
+const T_ = f => ({id:"teacher", teacher:true, img:`cues/${f}.png`, word:CUE_WORD[f]});
+const D_ = (id, word) => ({id, img:`art/cues/${id}.svg`, word});
+const I_ = (id, word) => ({id:"item-"+id, img:`art/items/${id}.svg`, word});
+const LETTERS = ["א","ב","ג","ד","ה","ו","ז","ח","ט","י","כ","ל","מ","נ","ס","ע","פ","צ","ק","ר","ש","ת"];
+const FINALS = ["ך","ם","ן","ף","ץ"];
+const CUE_SETS = {
+  "א":[T_("alef"), I_("emerald","אֶמֶרַלְד"), I_("iron","אַיְרוֹן"), D_("fire","אֵשׁ")],
+  "ב":[T_("bet"), D_("house","בַּיִת"), D_("banana","בָּנָנָה"), D_("balloon","בַּלּוֹן")],
+  "ג":[T_("gimel"), D_("carrot","גֶּזֶר"), D_("icecream","גְּלִידָה"), D_("guitar","גִּיטָרָה")],
+  "ד":[T_("dalet"), I_("diamond","דַּיְמוֹנְד"), D_("fish","דָּג"), D_("door","דֶּלֶת")],
+  "ה":[T_("he"), D_("mountain","הַר"), D_("burger","הַמְבּוּרְגֶּר"), D_("hippo","הִיפּוֹפּוֹטָם")],
+  "ו":[T_("vav"), D_("rose","וֶרֶד"), D_("curtain","וִילוֹן")],
+  "ז":[T_("zayin"), D_("zombie","זוֹמְבִּי"), D_("gold","זָהָב"), D_("fly","זְבוּב")],
+  "ח":[T_("het"), I_("sword","חֶרֶב"), D_("cat","חֲתוּל"), I_("wheat","חִטָּה")],
+  "ט":[T_("tet"), D_("rocket","טִיל"), D_("drop","טִיפָּה"), D_("ring","טַבַּעַת")],
+  "י":[T_("yod"), D_("hand","יָד"), D_("moon","יָרֵחַ"), D_("schoolbag","יַלְקוּט")],
+  "כ":[T_("kaf"), D_("star","כּוֹכָב"), D_("crown","כֶּתֶר"), D_("dog","כֶּלֶב")],
+  "ל":[T_("lamed"), I_("torch","לַפִּיד"), D_("heart","לֵב"), D_("lemon","לִימוֹן")],
+  "מ":[T_("mem"), I_("map","מַפָּה"), I_("shield","מָגֵן"), D_("key","מַפְתֵּחַ")],
+  "נ":[T_("nun"), D_("snake","נָחָשׁ"), D_("candle","נֵר"), D_("ant","נְמָלָה")],
+  "ס":[T_("samekh"), D_("skull","סְקֶלֶטוֹן"), I_("boat","סִירָה"), D_("candy","סֻכָּרִיָּה")],
+  "ע":[T_("ayin"), I_("log","עֵץ"), I_("bone","עֶצֶם"), D_("cake","עוּגָה")],
+  "פ":[T_("pe"), I_("pickaxe","פִּיקָאקְס"), I_("lantern","פָּנָס"), D_("pizza","פִּיצָה")],
+  "צ":[T_("tsadi"), D_("bird","צִפּוֹר"), D_("frog","צְפַרְדֵּעַ"), D_("plate","צַלַּחַת")],
+  "ק":[T_("qof"), I_("bow","קֶשֶׁת"), I_("helmet","קַסְדָּה"), D_("monkey","קוֹף")],
+  "ר":[T_("resh"), D_("robot","רוֹבּוֹט"), D_("pomegranate","רִמּוֹן"), D_("train","רַכֶּבֶת")],
+  "ש":[T_("shin"), D_("sun","שֶׁמֶשׁ"), D_("clock","שָׁעוֹן"), D_("chocolate","שׁוֹקוֹלָד")],
+  "ת":[T_("tav"), D_("apple","תַּפּוּחַ"), D_("strawberry","תּוּת"), D_("drum","תּוֹף")],
+  /* final letters: own cues, the word ENDS with the letter (ך sounds ח and ף sounds f, never like כּ / פּ) */
+  "ך":[D_("crown","מֶלֶךְ"), D_("road","דֶּרֶךְ"), D_("moon","חֹשֶׁךְ")],
+  "ם":[D_("sea","יָם"), D_("rain","גֶּשֶׁם"), D_("drop","מַיִם"), D_("fire","חַם")],
+  "ן":[I_("shield","מָגֵן"), D_("balloon","בַּלּוֹן"), D_("lemon","לִימוֹן"), D_("clock","שָׁעוֹן")],
+  "ף":[D_("monkey","קוֹף"), D_("spoon","כַּף"), D_("chicken","עוֹף"), D_("beach","חוֹף")],
+  "ץ":[I_("log","עֵץ"), I_("arrow","חֵץ"), D_("juice","מִיץ"), D_("sun","קַיִץ")],
+  /* ב כ פ without a dagesh (v, ח, f): the first option is the existing sound card */
+  "rafe:ב":[{id:"sound", rafe:true}, I_("sword","חֶרֶב"), D_("star","כּוֹכָב"), D_("gold","זָהָב")],
+  "rafe:כ":[{id:"sound", rafe:true}, D_("car","מְכוֹנִית"), D_("pants","מִכְנָסַיִם")],
+  "rafe:פ":[{id:"sound", rafe:true}, D_("glasses","מִשְׁקָפַיִם"), D_("book","סֵפֶר"), D_("phone","טֶלֶפוֹן")],
+  /* vowel sounds: mouth shape (default), a word that starts with the sound, a face making the sound, or just the mark */
+  "vowel:a":[{id:"mouth"}, I_("chest","אַרְגָּז"), {id:"face", img:"art/cues/face-a.svg", word:"אָאָא"}, {id:"mark"}],
+  "vowel:i":[{id:"mouth"}, D_("island","אִי"), {id:"face", img:"art/cues/face-i.svg", word:"אִיייי"}, {id:"mark"}],
+  "vowel:e":[{id:"mouth"}, I_("emerald","אֶמֶרַלְד"), {id:"face", img:"art/cues/face-e.svg", word:"אֶה?"}, {id:"mark"}],
+  "vowel:o":[{id:"mouth"}, I_("treasure","אוֹצָר"), {id:"face", img:"art/cues/face-o.svg", word:"אוֹ!"}, {id:"mark"}],
+  "vowel:u":[{id:"mouth"}, D_("cake","עוּגָה"), {id:"face", img:"art/cues/face-u.svg", word:"אוּוּוּ"}, {id:"mark"}]
+};
+/* vowel memory-aid cards Eran collected (2026-11-17), cut one per sound from four sheets: art/cues/vowels/<sound>--<sheet>.jpg */
+const SHEET_NAME = {"sheet1-kipa":"ילד עם כיפה","sheet2-photos":"תמונות","sheet3-lips":"שפתיים","sheet4-faces":"פרצוף"};
+["a--sheet1-kipa","a--sheet2-photos","a--sheet3-lips","a--sheet4-faces","e--sheet2-photos","e--sheet3-lips-segol","e--sheet3-lips-tsere","e--sheet4-faces","i--sheet1-kipa","i--sheet2-photos","i--sheet3-lips","i--sheet4-faces","o--sheet1-kipa","o--sheet2-photos","o--sheet3-lips","o--sheet4-faces","u--sheet1-kipa","u--sheet2-photos","u--sheet3-lips-kubutz","u--sheet3-lips-shuruk","u--sheet4-faces"].forEach(n=>{ const [v, sh] = n.split("--"); CUE_SETS["vowel:"+v].push({id:"sheet-"+sh, photo:true, img:`art/cues/vowels/${n}.jpg`, label:SHEET_NAME[sh.replace(/-(segol|tsere|kubutz|shuruk)$/,"")]}); });
+const CUE_KEYS = [...LETTERS, ...FINALS, "rafe:ב", "rafe:כ", "rafe:פ", ...["a","i","e","o","u"].map(v=>"vowel:"+v)];
+let cueChoices = {};
+const SOUNDS = {}; /* cue key -> recorded Blob (IndexedDB ori-cue-sounds) */
+const cueKind = k => k.startsWith("vowel:") ? "vowel" : k.startsWith("rafe:") ? "rafe" : FINALS.includes(k) ? "final" : "letter";
+/* pictures the parent loaded on this tablet (IndexedDB ori-cue-images, never uploaded): extra options after the built-in ones */
+const CUSTOM = {};
+const cueOptions = k => (CUE_SETS[k]||[]).concat(CUSTOM[k]||[]);
+const cueChoice = k => cueOptions(k).find(o=>o.id===cueChoices[k]) || cueOptions(k)[0];
+const letterColor = L => ["#7E95AA","#C9862A","#9C4A1E","#CF8080"][L.charCodeAt(0)%4];
+/* underline the letter the cue is about: for finals and soft ב/כ/פ it is not the first letter of the word */
+function markLetter(word, L){ let done=false; return word.replace(/([א-ת])([֑-ׇ]*)/g,(m,ch,mk)=>{ if(done || ch!==L || mk.includes("ּ")) return m; done=true; return `<span class="hl">${m}</span>`; }); }
+const cueLabel = k => { const kind=cueKind(k);
+  if(kind==="vowel"){ const v=k.slice(6); return {a:"קמץ / פתח",i:"חיריק",e:"צירה / סגול",o:"חולם",u:"שורוק / קובוץ"}[v]; }
+  if(kind==="rafe") return `${k.slice(5)} בלי נקודה`; if(kind==="final") return `${k} סופית`; return k; };
+/* the inside of a cue card for key k with option o */
+function cueInner(k, o){
+  const kind = cueKind(k);
+  if(o.custom || o.photo) return `<img class="ph" src="${o.img}" alt="">`;
+  if(kind==="vowel"){ const v=k.slice(6), V=VOWEL[v];
+    if(o.id==="mouth") return MOUTH[v]+`<span>${V.mark}</span>`;
+    if(o.id==="mark") return `<span class="vm">${V.mark}</span>`;
+    return `<img src="${o.img}" alt=""><span>${o.word}</span>`; }
+  if(o.rafe){ const L=k.slice(5), snd={"פ":"f","ב":"v","כ":"ח"}[L]; return (L==="כ" ? `<b class="rl">ח</b>` : RAFE_MOUTH) + `<span>${L} = ${snd}</span>`; }
+  if(o.teacher) return `<img src="${o.img}" alt="">`;
+  const L = kind==="rafe" ? k.slice(5) : k;
+  return `<div class="dc" style="--lc:${letterColor(L)}"><b class="dl">${L}</b><img src="${o.img}" alt=""><span class="dw">${kind==="letter" ? o.word : markLetter(o.word, L)}</span></div>`;
+}
+/* a whole cue (stem + card); extra = attributes for the card */
+function cueCard(k, o, cls, extra){
+  const kind = cueKind(k), alt = o.word ? `: ${o.word}` : "";
+  const hs = extra && extra.includes("data-snd") ? " has-snd" : "";
+  if(kind==="vowel"){ const V=VOWEL[k.slice(6)]; return `<div class="cue vowel${o.custom||o.photo?" photo":""} ${cls||""}" style="--vc:${V.c};--lc:${V.c}"><span class="stem"></span><div class="card${hs}" ${extra||""} role="img" aria-label="${V.name}${alt}">${cueInner(k,o)}</div></div>`; }
+  if(kind==="rafe") return `<div class="cue rafe${o.rafe?"":" drawn"} ${cls||""}"><span class="stem"></span><div class="card${hs}" ${extra||""} role="img" aria-label="${k.slice(5)} בלי נקודה${alt}">${cueInner(k,o)}</div></div>`;
+  return `<div class="cue letter ${cls||""}" style="--vc:${S && S.curVowel ? VOWEL[S.curVowel].c : "transparent"}"><span class="stem"></span><div class="card${hs}" ${extra||""} role="img" aria-label="רמז לאות ${k}${alt}">${cueInner(k,o)}</div></div>`;
+}
+const FONTS = {alef:"'Alef'", noto:"'Noto Sans Hebrew'", rubik:"'Rubik'", frank:"'Frank Ruhl Libre'"};
+
+/* ---------- Hebrew unit analysis ---------- */
+setBook(+(localStorage.getItem("ori.t3.book")||0));
+const isLetter = ch => ch >= "א" && ch <= "ת";
+const strip = s => s.replace(/[.!,?]/g,"");
+const bare = s => s.replace(/[֑-ׇ]/g,"");
+const VOWEL_OF = {"ַ":"a","ָ":"a","ֲ":"a","ֳ":"a","ִ":"i","ֵ":"e","ֶ":"e","ֱ":"e","ֹ":"o","ֺ":"o","ֻ":"u"};
+function letters(unit){ const out=[]; for(const ch of strip(unit)){ if(isLetter(ch)) out.push({ch, marks:""}); else if(out.length) out[out.length-1].marks+=ch; } return out; }
+function analyze(unit){
+  const L = letters(unit); let vowel=null, vowelAt=-1;
+  L.forEach((l,i)=>{
+    l.v = null;
+    for(const m of l.marks) if(VOWEL_OF[m]) l.v = VOWEL_OF[m];
+    const prev = L[i-1];
+    if(l.ch==="ו" && /[ֹֺ]/.test(l.marks) && i>0){ l.carrier=true; l.v=null; if(!vowel){vowel="o"; vowelAt=i-1;} return; }
+    if(l.ch==="ו" && l.marks.includes("ּ") && !l.v && i>0 && prev && !prev.v){ l.carrier=true; l.shuruk=true; if(!vowel){vowel="u"; vowelAt=i-1;} return; }
+    if(l.ch==="י" && !l.marks && prev && (prev.v==="i"||prev.v==="e")){ l.carrier=true; return; }
+    if((l.ch==="א"||l.ch==="ה") && !l.marks && i===L.length-1 && i>0){ l.silent=true; return; }
+    if(l.v && !vowel){ vowel=l.v; vowelAt=i; }
+  });
+  return {letters:L, vowel, vowelAt};
+}
+/* text with vowel marks removed (keeps dagesh, shva, shin/sin dot); the shuruk dot is removed so it shows in colour */
+function overlayText(unit){ const A=analyze(unit); return A.letters.map(l=>{ let m=l.marks.replace(/[ֱ-ֻ]/g,""); if(l.shuruk) m=m.replace("ּ",""); return l.ch+m; }).join(""); }
+function unitHTML(unit, cls, colorMode){
+  const A = analyze(unit), t = strip(unit), vc = A.vowel ? VOWEL[A.vowel].c : "var(--ink)";
+  if(colorMode==="off" || !A.vowel) return `<span class="u ${cls}" style="color:var(--ink)">${t}</span>`;
+  if(colorMode==="tint") return `<span class="u ${cls}" style="color:${vc}">${t}</span>`;
+  return `<span class="u ${cls}" style="color:${vc}"><span>${t}</span><span class="ov" aria-hidden="true">${overlayText(unit)}</span></span>`;
+}
+function cueItems(unit){
+  const A = analyze(unit), items=[];
+  A.letters.forEach((l,i)=>{
+    if(!l.carrier && !l.silent && "בכפ".includes(l.ch) && !l.marks.includes("ּ")) items.push({type:"rafe", letter:l.ch});
+    else if(!l.carrier && !l.silent && CUE_SETS[l.ch]) items.push({type:"letter", letter:l.ch});
+    if(i===A.vowelAt && A.vowel) items.push({type:"vowel", v:A.vowel});
+  });
+  return items;
+}
+
+/* ---------- art ---------- */
+function artHTML(n, revealed, bees){
+  const A = STORIES[BOOK].art;
+  const pic = st => `<picture><source media="(orientation: portrait)" srcset="${A}p${n}-${st}-wide.svg"><img src="${A}p${n}-${st}-tall.svg" alt=""></picture>`;
+  const day = STORIES[BOOK].day.includes(n);
+  return `<div style="position:absolute;inset:0">${pic("base")}</div><div class="reveal${revealed?" on":""}" style="position:absolute;inset:0">${pic("reveal")}</div>` +
+    (bees && day ? `<span class="bee bee1" style="left:40%;top:63%"></span><span class="bee bee2" style="left:58%;top:66%"></span><span class="bee bee3" style="left:47%;top:71%"></span>` : "");
+}
+
+/* ---------- storage + settings ---------- */
+const $ = id => document.getElementById(id);
+const store = { get(k,d){ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){return d;} }, set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} } };
+const settings = Object.assign({mode:"units", modelAfter:"2", cues:"always", quiet:"reading", color:"tint", font:"alef", scale:1, theme:"dark"}, store.get("ori.t3.settings",{}));
+let reads = store.get("ori.t3.letterReads",{});
+cueChoices = store.get("ori.t3.cueChoice",{});
+function saveSettings(){ store.set("ori.t3.settings", settings); applySettings(); }
+function applySettings(){
+  const r=document.documentElement.style; r.setProperty("--scale", settings.scale); r.setProperty("--word", FONTS[settings.font]+",'Noto Sans Hebrew',Arial,sans-serif");
+  document.body.classList.toggle("sepia", settings.theme==="sepia");
+  document.body.classList.toggle("tint", settings.color==="tint");
+  applyQuiet();
+}
+let quietOverride = null; /* moon button flips quiet for this session */
+function isQuiet(){ return quietOverride!=null ? quietOverride : settings.quiet==="reading"; }
+function applyQuiet(){ const reading = S && !$("app").hidden && S.phase!=="pageEnd"; document.body.classList.toggle("quiet", isQuiet() && !!reading); }
+
+/* ---------- session + log ---------- */
+let S = null;
+const now = () => Date.now();
+function newSession(){ S = {id:new Date().toISOString().replace(/[:.]/g,"-"), started:now(), page:0, wi:0, ui:0, phase:"units", misses:0, t0:0, wordFirst:false, revealed:false, stats:{correct:0, again:0, models:0}, events:[]}; }
+function log(type, extra){
+  if(!S) return;
+  const p = PAGES[S.page], w = p && p.words[S.wi];
+  const e = Object.assign({type, book:STORIES[BOOK].id, iso:new Date().toISOString(), t_session_s:+((now()-S.started)/1000).toFixed(2), t_video_s: REC.on ? +((now()-REC.started)/1000).toFixed(2) : null,
+    page:S.page+1, word: w ? strip(w[0]) : null, word_index:S.wi+1, step: S.phase==="blend" ? "word" : S.phase==="pageEnd" ? "sentence" : "unit",
+    unit: w ? (S.phase==="blend" ? strip(w[0]) : strip(w[1][S.ui]||"")) : null, unit_index: S.phase==="units" ? S.ui+1 : null, try:S.misses+1, mode:settings.mode, quiet:isQuiet(), color:settings.color, font:settings.font}, extra||{});
+  S.events.push(e); persist();
+}
+function persist(){ const all=store.get("ori.tab.sessions",{}); all[S.id]={id:S.id, started:S.started, events:S.events, stats:S.stats}; store.set("ori.tab.sessions",all); }
+
+/* ---------- painting ---------- */
+const curPage = () => PAGES[S.page];
+const curWord = () => curPage().words[S.wi];
+function paintTop(){
+  $("dots").innerHTML = PAGES.map((_,i)=>`<span class="${i<S.page?"done":i===S.page?"now":""}"></span>`).join("");
+  $("pageLbl").textContent = `דף ${S.page+1} מתוך ${PAGES.length}`;
+}
+const cueKeyOf = it => it.type==="letter" ? it.letter : it.type==="rafe" ? "rafe:"+it.letter : "vowel:"+it.v;
+function cueHTML(it, small){
+  const k = cueKeyOf(it), tap = `data-cue="${k}"${SOUNDS[k] ? ` data-snd="1"` : ""}`;
+  if(it.type!=="letter") return cueCard(k, cueChoice(k), "", tap);
+  const n = reads[it.letter]||0, fade = settings.cues==="fade" && !small;
+  const state = fade ? (n>=6 ? "chip" : n>=3 ? "faded" : "") : "";
+  const vc = S && S.curVowel ? VOWEL[S.curVowel].c : "transparent";
+  if(state==="chip") return `<div class="cue letter chip" style="--vc:${vc}"><span class="stem"></span><div class="card" data-open="${it.letter}" role="button" aria-label="פתח רמז לאות ${it.letter}">${it.letter}</div></div>`;
+  return cueCard(k, cueChoice(k), state, tap);
+}
+function paint(){
+  paintTop();
+  const p = curPage(), w = curWord(), blend = S.phase==="blend";
+  $("ptop").innerHTML = `<div class="wdots">${p.words.map((_,i)=>`<span class="${i<S.wi?"done":i===S.wi?"now":""}"></span>`).join("")}</div><span class="lbl">מילה ${S.wi+1} מתוך ${p.words.length}</span>` + (blend && w[1].length>1 ? `<span class="now-word">עַכְשָׁו כָּל הַמִּלָּה</span>` : "");
+  let html;
+  if(blend){
+    S.curVowel = null;
+    html = `<div class="unitbox glow"><div class="wordrow">${w[1].map(u=>unitHTML(u,"whole",settings.color)).join("")}</div></div>`;
+    const items = w[1].flatMap(cueItems);
+    html += `<div class="cues small">${items.map(it=>cueHTML(it,true)).join("")}</div>`;
+  } else {
+    const u = w[1][S.ui], A = analyze(u); S.curVowel = A.vowel;
+    const before = w[1].slice(0,S.ui).map(x=>`<span class="u side">${strip(x)}</span>`).join("");
+    const after = w[1].slice(S.ui+1).map(x=>`<span class="u side">${strip(x)}</span>`).join("");
+    html = `<div class="wordrow">${before}<div class="unitbox glow">${unitHTML(u,"big",settings.color)}</div>${after}</div>`;
+    html += `<div class="cues">${cueItems(u).map(it=>cueHTML(it,false)).join("")}</div>`;
+  }
+  $("stageEl").innerHTML = html;
+  $("art").innerHTML = artHTML(S.page+1, S.revealed, !isQuiet());
+  $("main").classList.remove("pe"); $("bar").hidden=false; $("barEnd").hidden=true;
+  $("bWhole").parentElement.style.visibility = (w[1].length>1 && !blend) || (S.wordFirst && blend) ? "visible" : "hidden";
+  applyQuiet();
+}
+function banner(text){ const b=$("banner"); if(!text){ b.hidden=true; return; } b.hidden=false; b.innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>אַבָּא אוֹמֵר: <b>${text}</b> · אוֹרִי חוֹזֵר`; }
+
+/* ---------- reward: stars + chime ---------- */
+let actx=null;
+function chime(){ try{ actx = actx || new (window.AudioContext||window.webkitAudioContext)(); const t0=actx.currentTime;
+  [659,880,1319].forEach((f,i)=>{ const o=actx.createOscillator(), g=actx.createGain(); o.type="sine"; o.frequency.value=f; const t=t0+i*0.09; g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.16,t+0.02); g.gain.exponentialRampToValueAtTime(0.001,t+0.35); o.connect(g).connect(actx.destination); o.start(t); o.stop(t+0.37); });
+}catch(e){} }
+function stars(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box=$("paper");
+  for(let i=0;i<7;i++){ const a=(i/7)*Math.PI*2 + Math.random()*0.4, d=150+Math.random()*120;
+    const s=document.createElement("div"); s.className="star"; s.style.setProperty("--dx",Math.cos(a)*d+"px"); s.style.setProperty("--dy",Math.sin(a)*d*0.7+"px");
+    s.innerHTML='<svg width="44" height="44" viewBox="0 0 24 24"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 20.9l1.6-7L2 9.2l7.1-.6z" fill="#F2A541" stroke="#C97A12" stroke-width="1"/></svg>';
+    box.appendChild(s); setTimeout(()=>s.remove(),1000); }
+}
+function reward(){ chime(); stars(); }
+
+/* ---------- flow ---------- */
+function startStep(){ S.misses=0; S.t0=now(); banner(null); hideTip(); paint(); log("step_shown"); }
+function wordDone(){ PROG.words++; PROG.seen[wordKey(curWord()[0])]=1; saveProg();
+  const isReveal = S.wi===curPage().reveal;
+  if(isReveal && !S.revealed){ S.revealed=true; log("reveal_shown",{reveal_word:strip(curWord()[0])});
+    const r=$("art").querySelector(".reveal"); if(r) r.classList.add("on");
+    if(isQuiet()){ const f=$("flash"); f.innerHTML=artHTML(S.page+1,true,false); f.classList.add("on"); setTimeout(()=>{ f.classList.remove("on"); nextWord(); }, 2200); return; }
+  }
+  nextWord();
+}
+function countReads(units){ units.forEach(u=>cueItems(u).forEach(it=>{ if(it.type==="letter") reads[it.letter]=(reads[it.letter]||0)+1; })); store.set("ori.t3.letterReads",reads); }
+function onOk(){
+  if(!S || $("flash").classList.contains("on")) return; PROG.stars++; saveProg();
+  S.stats.correct++; log("mark",{outcome:"correct", ms_on_step:now()-S.t0}); reward();
+  const w=curWord();
+  if(S.phase==="units") countReads([w[1][S.ui]]);
+  if(S.phase==="units"){
+    if(S.ui < w[1].length-1){ S.ui++; return startStep(); }
+    if(w[1].length>1){ S.phase="blend"; return startStep(); }
+  }
+  wordDone();
+}
+function onAgain(){
+  if(!S || $("flash").classList.contains("on")) return;
+  S.misses++; S.stats.again++; log("mark",{outcome:"again", ms_on_step:now()-S.t0, try:S.misses});
+  if(S.wordFirst && S.phase==="blend" && curWord()[1].length>1){ S.wordFirst=false; S.phase="units"; S.ui=0; log("drop_to_units"); return startStep(); }
+  if(S.misses >= +settings.modelAfter){ const shown = S.phase==="blend" ? strip(curWord()[0]) : strip(curWord()[1][S.ui]); banner(shown); S.stats.models++; log("model_shown"); }
+}
+function onWhole(){ if(!S || $("flash").classList.contains("on")) return; PROG.stars++; saveProg(); S.stats.correct++; log("mark",{outcome:"whole_word_correct", ms_on_step:now()-S.t0}); reward(); countReads(curWord()[1]); wordDone(); }
+function nextWord(){
+  if(S.wi < curPage().words.length-1){ S.wi++; S.ui=0; S.phase = settings.mode==="word" ? "blend" : "units"; S.wordFirst = settings.mode==="word"; return startStep(); }
+  pageEnd();
+}
+function pageEnd(){
+  $("main").classList.add("pe"); S.phase="pageEnd"; S.misses=0; S.t0=now(); log("page_end_shown"); banner(null);
+  const p=curPage();
+  $("ptop").innerHTML="";
+  $("stageEl").innerHTML = `<div class="sentence-lbl">עַכְשָׁו כָּל הַמִּשְׁפָּט</div><div class="sentence">${p.words.map(w=>w[0]).join(" ")}</div>`;
+  S.revealed=true; $("art").innerHTML = artHTML(S.page+1, true, true);
+  $("bar").hidden=true; $("barEnd").hidden=false;
+  $("nextLbl").textContent = S.page===PAGES.length-1 ? "לַסּוֹף" : "לַדַּף הַבָּא";
+  applyQuiet();
+}
+function gotoPage(i){
+  if(i>=PAGES.length) return endSession();
+  S.page=Math.max(0,i); S.wi=0; S.ui=0; S.revealed=false; S.phase = settings.mode==="word" ? "blend" : "units"; S.wordFirst = settings.mode==="word";
+  log("page_start"); startStep();
+  preload(S.page+2);
+}
+function preload(n){ if(n>PAGES.length) return; const portrait=matchMedia("(orientation: portrait)").matches; ["base","reveal"].forEach(st=>{ const im=new Image(); im.src=`${STORIES[BOOK].art}p${n}-${st}-${portrait?"wide":"tall"}.svg`; }); }
+function begin(withRec){
+  newSession(); quietOverride=null; const first = startPage;
+  $("start").hidden=true; $("end").hidden=true; $("app").hidden=false;
+  log("session_start",{user_agent:navigator.userAgent, screen:`${screen.width}x${screen.height}@${devicePixelRatio}`, settings:Object.assign({},settings)});
+  keepAwake();
+  if(withRec) startRec(); else paintRec();
+  gotoPage(first);
+}
+function endSession(){
+  log("session_end",{stats:S.stats}); S.ended=true; startPage=0;
+  $("app").hidden=true; $("end").hidden=false; document.body.classList.remove("quiet");
+  $("endArt").innerHTML = artHTML(10,true,true);
+  $("stMin").textContent=Math.max(1,Math.round((now()-S.started)/60000)); $("stOk").textContent=S.stats.correct; $("stAgain").textContent=S.stats.again; $("stModel").textContent=S.stats.models;
+  $("endStopRec").hidden = !REC.on;
+  $("endNote").textContent = REC.on ? "ההקלטה עדיין פועלת. היומן נשמר יחד עם הווידאו, כדי שהשניים תמיד יתאימו." : "";
+}
+
+
+/* ---------- home: progress, achievements, collection, page picker ---------- */
+let PROG = Object.assign({done:{}, stars:0, words:0}, store.get("ori.t3.progress",{}));
+/* v2 progress: one "done" map per story; the first story's old map moves over as is */
+if(!PROG.books){ PROG.books = {island:{done:PROG.done||{}}}; }
+STORIES.forEach(b=>{ if(!PROG.books[b.id]) PROG.books[b.id]={done:{}}; });
+if(!PROG.seen) PROG.seen = {};
+delete PROG.done;
+const doneOf = b => PROG.books[STORIES[b].id].done;
+const bookDone = () => doneOf(BOOK);
+const wordKey = w => strip(w).replace(/[?]/g,"");
+const ALL_WORDS = [...new Set(STORIES.flatMap(b=>b.pages.flatMap(p=>p.words.map(w=>wordKey(w[0])))))];
+const TOTAL_PAGES = STORIES.reduce((a,b)=>a+b.pages.length,0);
+function saveProg(){ store.set("ori.t3.progress", PROG); }
+/* items owned = sum over every finished page that gives one (nothing extra is stored) */
+function inventory(){ const inv={}; STORIES.forEach((b,i)=>{ const D=doneOf(i); b.pages.forEach((p,j)=>{ const pi=pageItem(p); if(pi && D[j+1]) inv[pi.id]=(inv[pi.id]||0)+pi.n; }); }); return inv; }
+function itemToast(pi){ const it=ITEM[pi.id]; if(!it) return; const t=$("itemToast");
+  t.innerHTML = `<img src="art/items/${it.id}.svg" alt=""><div><small>חדש בתיק!</small><b>${it.name}${pi.n>1?` ×${pi.n}`:""}</b></div>`;
+  t.classList.remove("on"); void t.offsetWidth; t.classList.add("on"); clearTimeout(itemToast.tm); itemToast.tm=setTimeout(()=>t.classList.remove("on"), 2600); }
+let startPage = 0;
+const live = () => S && !S.ended;
+function paintHome(){
+  const done = Object.keys(bookDone()).length, left = PAGES.length - done;
+  $("bookTitle").innerHTML = STORIES[BOOK].title;
+  $("books").innerHTML = STORIES.map((b,i)=>{ const d=Object.keys(doneOf(i)).length;
+    return `<button class="book${i===BOOK?" on":""}" data-book="${i}"><img src="${b.art}thumb/p${b.cover}-reveal.jpg" alt=""><span class="bt">${b.short}</span><span class="bp">${d===b.pages.length?"✓ ":""}${d}/${b.pages.length}</span></button>`; }).join("");
+  paintAvatar($("homeAvatar"));
+  const cur = live() ? S.page : startPage;
+  $("leftLine").innerHTML = left>0 ? `נקראו <b>${done}</b> מתוך ${PAGES.length} דפים · נשארו <b>${left}</b> עד האוצר` : `<b>כל הסיפור נקרא!</b> אפשר לקרוא שוב כל דף`;
+  const mastered = Object.values(reads).filter(n=>n>=3).length;
+  $("ach").innerHTML = `<div><b>⭐ ${PROG.stars}</b><span>כוכבים</span></div><div><b>${done}/${PAGES.length}</b><span>דפים</span></div><div><b>${PROG.words}</b><span>מילים</span></div><div><b>${mastered}</b><span>אותיות שאורי שולט</span></div>`;
+  $("resumeBox").hidden = !live(); $("newBox").style.display = live() ? "none" : "flex";
+  if(live()) $("resumeLbl").textContent = `המשך לקרוא · דף ${S.page+1}`;
+  $("startRecLbl").textContent = startPage ? `התחל עם הקלטה · מדף ${startPage+1}` : "התחל עם הקלטה";
+  $("startNoRec").textContent = startPage ? `התחל בלי הקלטה · מדף ${startPage+1}` : "התחל בלי הקלטה";
+  $("collCount").textContent = `${done} מתוך ${PAGES.length} פרסים`;
+  $("tiles").innerHTML = PAGES.map((p,i)=>{ const got = !!bookDone()[i+1]; const word = strip(p.words[p.reveal][0]);
+    return `<button class="tile${got?"":" locked"}${i===cur?" cur":""}" data-page="${i}" aria-label="דף ${i+1}${got?", נאסף":""}"><img src="${STORIES[BOOK].art}thumb/p${i+1}-${got?"reveal":"base"}.jpg" alt="" loading="lazy">${got?"":'<span class="q">?</span>'}<span class="num">${i+1}</span>${got?'<span class="ok"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5L19.5 7"/></svg></span>':""}<span class="nm">${got?word:"…"}</span></button>`; }).join("");
+  $("homeRec").hidden = !REC.on; if(REC.on) $("homeRecTime").textContent = fmt((now()-REC.started)/1000);
+  $("startArt").innerHTML = artHTML(Math.min(10, (live()?S.page:startPage)+1), true, true);
+}
+function openHome(){
+  if(S && live()) log("home_open");
+  $("app").hidden=true; $("end").hidden=true; $("room").hidden=true; $("start").hidden=false; document.body.classList.remove("quiet");
+  paintHome();
+}
+function resume(){ $("start").hidden=true; $("app").hidden=false; if(S.phase==="pageEnd") pageEnd(); else paint(); log("home_resume"); }
+$("tiles").addEventListener("click",e=>{ const t=e.target.closest("[data-page]"); if(!t) return; const i=+t.dataset.page;
+  if(live()){ log("page_jump",{to:i+1}); $("start").hidden=true; $("app").hidden=false; gotoPage(i); }
+  else { startPage=i; paintHome(); } });
+$("resumeBtn").onclick=resume;
+/* pick a story (home cards or a room slot). A running session keeps going (and keeps recording) in the new story. */
+function openBook(b, page){
+  if(b!==BOOK){ if(live()) log("book_switch",{to:STORIES[b].id}); setBook(b); }
+  page = page||0;
+  if(live()){ $("start").hidden=true; $("room").hidden=true; $("end").hidden=true; $("app").hidden=false; log("page_jump",{to:page+1}); gotoPage(page); }
+  else { startPage=page; openHome(); }
+}
+$("books").addEventListener("click",e=>{ const t=e.target.closest("[data-book]"); if(!t) return; const b=+t.dataset.book;
+  if(b===BOOK) return; if(live()) return openBook(b,0); setBook(b); startPage=0; paintHome(); });
+
+/* ---------- Ori's room: photo, totals, every treasure slot (open or still locked), letters ---------- */
+function paintAvatar(el){ const ph = store.get("ori.t3.photo", null);
+  el.innerHTML = ph ? `<img src="${ph}" alt="התמונה של אורי">` : `<svg viewBox="0 0 24 24" width="55%" height="55%" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>`; }
+function openRoom(){ if(S && live()) log("room_open"); $("start").hidden=true; $("end").hidden=true; $("app").hidden=true; $("room").hidden=false; document.body.classList.remove("quiet"); paintRoom(); $("room").scrollTop=0; }
+function paintRoom(){
+  paintAvatar($("roomAvatar")); $("photoLbl").textContent = store.get("ori.t3.photo",null) ? "החלף תמונה" : "הוסף תמונה";
+  const inv = inventory(); const gotItems = ITEMS.filter(it=>inv[it.id]).length;
+  const seen = ALL_WORDS.filter(w=>PROG.seen[w]).length;
+  const order = [...LETTERS, ...FINALS];
+  const mastered = order.filter(L=>(reads[L]||0)>=3).length;
+  $("roomStats").innerHTML = `<div><b>${gotItems}<small>/${ITEMS.length}</small></b><span>חפצים נאספו</span></div><div><b>${seen}<small>/${ALL_WORDS.length}</small></b><span>מילים נחשפו</span></div><div><b>${mastered}<small>/${order.length}</small></b><span>אותיות שאורי שולט</span></div><div><b>⭐ ${PROG.stars}</b><span>כוכבים</span></div>`;
+  let next = null; STORIES.some((b,i)=>{ const k=b.pages.findIndex((_,j)=>!doneOf(i)[j+1]); if(k>=0){ next={b:i,p:k}; return true; } return false; });
+  $("roomNext").innerHTML = next ? `<span>האוצר הבא מחכה:</span> <b>${STORIES[next.b].short.replace(/[֑-ׇ]/g,"")} · דף ${next.p+1}</b> <button class="kb kb-g" data-go="${next.b}:${next.p}">לך לשם ←</button>` : `<b>כל האוצרות נפתחו! 🏆</b>`;
+  const slot = (it, go) => { const n=inv[it.id]||0;
+    return n ? `<button class="islot got" ${go?`data-go="${go}"`:""} aria-label="${bare(it.name)}"><img src="art/items/${it.id}.svg" alt="">${n>1?`<b class="cnt">${n}</b>`:""}<span class="nm">${it.name}</span></button>`
+             : `<button class="islot" ${go?`data-go="${go}"`:""} aria-label="עדיין לא נאסף"><img src="art/items/${it.id}-locked.svg" alt=""><span class="q">?</span><span class="nm">…</span></button>`; };
+  $("roomBooks").innerHTML = STORIES.map((b,i)=>{ const D=doneOf(i), d=Object.keys(D).length;
+    const seen = new Set(), slots = [];
+    b.pages.forEach((p,j)=>{ const pi=pageItem(p); if(pi && !seen.has(pi.id)){ seen.add(pi.id); slots.push(slot(ITEM[pi.id], `${i}:${j}`)); } });
+    return `<section class="shelf"><div class="sh"><h3>${b.title}</h3><span class="cnt">${d}/${b.pages.length} דפים</span><div class="bar2"><i style="width:${Math.round(d/b.pages.length*100)}%"></i></div></div><div class="inv">${slots.join("")}</div></section>`; }).join("")
+    + `<section class="shelf"><div class="sh"><h3>בַּהֶמְשֵׁךְ… עַד הַדְּרָקוֹן</h3></div><div class="inv">${ITEMS.filter(it=>it.future).map(it=>slot(it,null)).join("")}</div></section>`;
+  $("roomLetters").innerHTML = order.map(L=>{ const n=reads[L]||0, got=n>=3;
+    const o = cueChoice(L);
+    return got ? `<div class="lt got"><img src="${o.img}" alt="" style="${o.teacher?"":"width:70%;height:70%;image-rendering:pixelated"}"><b>${L}</b></div>` : `<div class="lt"><b>${L}</b><i style="width:${Math.min(100,Math.round(n/3*100))}%"></i></div>`; }).join("");
+}
+$("roomBooks").addEventListener("click",e=>{ const t=e.target.closest("[data-go]"); if(!t) return; const [b,p]=t.dataset.go.split(":").map(Number); openBook(b,p); });
+$("roomNext").addEventListener("click",e=>{ const t=e.target.closest("[data-go]"); if(!t) return; const [b,p]=t.dataset.go.split(":").map(Number); openBook(b,p); });
+$("roomBtn").onclick=openRoom; $("roomHome").onclick=openHome; $("endRoom").onclick=openRoom;
+$("photoIn").onchange=e=>{ const file=e.target.files&&e.target.files[0]; if(!file) return; const img=new Image(); const url=URL.createObjectURL(file);
+  img.onload=()=>{ const s=Math.min(img.width,img.height), c=document.createElement("canvas"); c.width=c.height=360; c.getContext("2d").drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,360,360);
+    store.set("ori.t3.photo", c.toDataURL("image/jpeg",0.85)); URL.revokeObjectURL(url); paintRoom(); }; img.src=url; e.target.value=""; };
+$("homeBtn").onclick=openHome; $("endHome").onclick=openHome; $("homeGear").onclick=openP;
+setInterval(()=>{ if(!$("start").hidden && REC.on) $("homeRecTime").textContent = fmt((now()-REC.started)/1000); }, 1000);
+
+/* ---------- hearing a cue (2026-11-17): tap a cue while reading → the parent's recording of the sound plays.
+   No recording yet → a short explanation of the sound shows instead. Recordings are made in the cue picker and stay on this tablet. ---------- */
+const SOUND_NOTE = {
+  "א":"א לא משמיעה צליל משלה: שומעים רק את הניקוד שלה.", "ע":"ע לא משמיעה צליל משלה (כמו א): שומעים רק את הניקוד שלה.",
+  "ה":"ה נשמעת כמו נשיפה קלה: הההה. בסוף מילה היא בדרך כלל שקטה.",
+  "ח":"ח נשמעת מהגרון, כמו גירוד קטן: חחחח. כ בלי נקודה נשמעת אותו דבר.",
+  "ב":"בּ עם נקודה: השפתיים נסגרות ונפתחות בבת אחת: בּ!",
+  "כ":"כּ עם נקודה: צליל קצר מאחורה בפה: כּ! (בלי נקודה היא נשמעת ח.)",
+  "פ":"פּ עם נקודה: השפתיים נסגרות ונפתחות עם נשיפה: פּ! (בלי נקודה היא נשמעת f.)",
+  "נ":"נ: הלשון נוגעת למעלה מאחורי השיניים והאוויר יוצא מהאף: ננננ.",
+  "מ":"מ: השפתיים סגורות והאוויר יוצא מהאף: מממ.",
+  "ס":"ס: שריקה דקה בין השיניים: ססס.", "צ":"צ: הלשון נוגעת ואז שורקת: צ! (לא כמו ס.)", "ש":"שׁ: כמו להגיד לתינוק להיות בשקט: ששש.",
+  "ך":"ך היא כ בסוף מילה. היא נשמעת ח, מהגרון (לא כּ).", "ם":"ם היא מ בסוף מילה. נשמעת כמו מ: מממ.",
+  "ן":"ן היא נ בסוף מילה. נשמעת בדיוק כמו נ: ננננ.", "ף":"ף היא פ בסוף מילה. נשמעת f: השיניים העליונות על השפה התחתונה.",
+  "ץ":"ץ היא צ בסוף מילה. נשמעת כמו צ.",
+  "rafe:ב":"ב בלי נקודה נשמעת v (כמו ו): השיניים העליונות על השפה התחתונה.", "rafe:כ":"כ בלי נקודה נשמעת ח, מהגרון: חחח.",
+  "rafe:פ":"פ בלי נקודה נשמעת f: השיניים העליונות על השפה התחתונה, ונושפים.",
+  "vowel:a":"קמץ ופתח (אָ אַ): פותחים את הפה גדול: אַ.", "vowel:i":"חיריק (אִ): חיוך רחב: אִי.", "vowel:e":"צירה וסגול (אֵ אֶ): הפה חצי פתוח: אֶ.",
+  "vowel:o":"חולם (אוֹ): השפתיים עגולות: אוֹ.", "vowel:u":"שורוק וקובוץ (אוּ): השפתיים קטנות וקדימה: אוּ."
+};
+function cueTip(k){
+  const o=cueChoice(k), kind=cueKind(k), w=o.word, note=SOUND_NOTE[k]||"";
+  let like = "";
+  if(w && o.id==="face") like = `כמו <span class="tw">${w}</span>`;
+  else if(w && kind==="final") like = `כמו בסוף של <span class="tw">${w}</span>`;
+  else if(w && kind==="rafe") like = `כמו ב<span class="tw">${w}</span>`;
+  else if(w) like = `כמו בהתחלה של <span class="tw">${w}</span>`;
+  if(!note && kind==="letter") return `${k} נשמעת ${like}.`;
+  return note + (like ? ` ${like}.` : "");
+}
+const cueMark = k => cueKind(k)==="vowel" ? VOWEL[k.slice(6)].mark : cueKind(k)==="rafe" ? k.slice(5) : k;
+let tipTimer=null, curAudio=null;
+function hideTip(){ $("cueTip").hidden=true; clearTimeout(tipTimer); }
+function playSound(k){ const b=SOUNDS[k]; if(!b) return false; try{ if(curAudio){ curAudio.pause(); URL.revokeObjectURL(curAudio.src); }
+  curAudio=new Audio(URL.createObjectURL(b)); curAudio.play().catch(()=>{}); }catch(e){ return false; } return true; }
+function tapCue(card){
+  const k=card.dataset.cue; if(!k) return; const played=playSound(k);
+  card.classList.remove("playing"); void card.offsetWidth; card.classList.add("playing");
+  log("cue_tapped",{key:k, option:cueChoice(k).id, sound:played});
+  if(played){ hideTip(); return; }
+  const t=$("cueTip"); t.innerHTML=`<b>${cueMark(k)}</b><div>${cueTip(k)}<small>אין עדיין הקלטה של הצליל. אבא יכול להקליט אותו בבחירת רמזים.</small></div>`; t.hidden=false;
+  clearTimeout(tipTimer); tipTimer=setTimeout(hideTip, 9000);
+}
+/* sound store */
+let sdbp=null;
+function sdb(){ if(sdbp) return sdbp; sdbp=new Promise((res,rej)=>{ const r=indexedDB.open("ori-cue-sounds",1); r.onupgradeneeded=()=>r.result.createObjectStore("s"); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); return sdbp; }
+async function loadSounds(){ try{ const d=await sdb(); await new Promise(r=>{ const st=d.transaction("s").objectStore("s"), q=st.openCursor(); q.onsuccess=()=>{ const c=q.result; if(c){ SOUNDS[c.key]=c.value; c.continue(); } else r(); }; q.onerror=r; }); }catch(e){} }
+async function saveSound(k, blob){ if(blob) SOUNDS[k]=blob; else delete SOUNDS[k];
+  try{ const d=await sdb(); await new Promise(r=>{ const t=d.transaction("s","readwrite"), st=t.objectStore("s"); blob ? st.put(blob,k) : st.delete(k); t.oncomplete=r; t.onerror=r; }); }catch(e){} }
+const SREC = {rec:null, own:null, timer:null};
+async function recordSound(k){
+  if(SREC.rec){ SREC.rec.stop(); return; }
+  let stream;
+  try{ stream = REC.on && REC.stream ? new MediaStream(REC.stream.getAudioTracks()) : await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true, autoGainControl:true}}); }
+  catch(e){ $("cpRecInfo").textContent="אין גישה למיקרופון. צריך לאשר מיקרופון לאתר בהגדרות Chrome."; return; }
+  SREC.own = REC.on ? null : stream;
+  const mime = ["audio/webm;codecs=opus","audio/mp4","audio/webm"].find(m=>{ try{ return MediaRecorder.isTypeSupported(m); }catch(e){ return false; } });
+  const chunks=[]; const rec = new MediaRecorder(stream, mime?{mimeType:mime}:{}); SREC.rec=rec;
+  rec.ondataavailable=e=>{ if(e.data && e.data.size) chunks.push(e.data); };
+  rec.onstop=async()=>{ clearTimeout(SREC.timer); SREC.rec=null; if(SREC.own) SREC.own.getTracks().forEach(t=>t.stop()); SREC.own=null;
+    const blob=new Blob(chunks,{type:rec.mimeType||mime||"audio/webm"}); if(blob.size>800){ await saveSound(k, blob); if(S) log("cue_sound_recorded",{key:k}); playSound(k); }
+    if(cpKey===k) paintCuePick(); };
+  rec.start(); SREC.timer=setTimeout(()=>{ if(rec.state==="recording") rec.stop(); }, 3000);
+  const b=$("cpRec"); if(b){ b.classList.add("on"); b.textContent="⏹ עצור (מקליט…)"; }
+}
+
+/* ---------- cue pictures loaded on this tablet ---------- */
+let idbp=null;
+function idb(){ if(idbp) return idbp; idbp=new Promise((res,rej)=>{ const r=indexedDB.open("ori-cue-images",1); r.onupgradeneeded=()=>r.result.createObjectStore("i",{autoIncrement:true}); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); return idbp; }
+function addCustom(dbid, rec){ (CUSTOM[rec.key] = CUSTOM[rec.key]||[]).push({id:"img-"+dbid, dbid, custom:true, img:URL.createObjectURL(rec.blob), name:rec.name}); }
+async function loadImages(){ try{ const d=await idb(); await new Promise(r=>{ const q=d.transaction("i").objectStore("i").openCursor(); q.onsuccess=()=>{ const c=q.result; if(c){ addCustom(c.key, c.value); c.continue(); } else r(); }; q.onerror=r; }); }catch(e){} }
+/* which cue a file belongs to, from its name: a-- e-- i-- o-- u-- (vowels), a Hebrew letter (ב--, ן--), rafe-ב-- */
+function keyFromName(name){
+  const n = name.normalize("NFC").trim();
+  const m = n.match(/^(shva|[aeiou])--/i); if(m) return m[1].toLowerCase()==="shva" ? null : "vowel:"+m[1].toLowerCase();
+  const r = n.match(/^rafe[-_ ]?([בכפ])/); if(r) return "rafe:"+r[1];
+  const L = n.match(/^([א-ת])(?:--|[-_ .])/); if(L && CUE_SETS[L[1]]) return L[1];
+  return null;
+}
+async function importImages(files, forceKey){
+  const d=await idb(); let ok=0, skipped=[];
+  for(const file of files){ const key = forceKey || keyFromName(file.name); if(!key){ skipped.push(file.name); continue; }
+    const rec={key, name:file.name, blob:file};
+    const id = await new Promise(res=>{ const t=d.transaction("i","readwrite"), q=t.objectStore("i").add(rec); q.onsuccess=()=>res(q.result); q.onerror=()=>res(null); });
+    if(id!=null){ addCustom(id, rec); ok++; } }
+  if(S) log("cue_images_loaded",{count:ok, skipped:skipped.length});
+  return {ok, skipped};
+}
+async function removeImage(dbid){ const d=await idb(); await new Promise(r=>{ const t=d.transaction("i","readwrite"); t.objectStore("i").delete(+dbid); t.oncomplete=r; t.onerror=r; });
+  for(const k in CUSTOM){ CUSTOM[k]=CUSTOM[k].filter(o=>{ if(o.dbid==dbid){ URL.revokeObjectURL(o.img); if(cueChoices[k]===o.id){ delete cueChoices[k]; store.set("ori.t3.cueChoice",cueChoices); } return false; } return true; }); } }
+
+/* ---------- cue picker: a grid of every letter / final / soft letter / vowel, then up to 4 big options for one of them ---------- */
+let cpKey = null;
+function openCuePick(k){ $("cuePick").hidden=false; cpKey = k||null; paintCuePick(); if(S) log("cue_picker_open"); }
+function closeCuePick(){ if(SREC.rec) SREC.rec.stop(); $("cuePick").hidden=true; if(!$("room").hidden) paintRoom(); }
+function paintCuePick(){
+  const body=$("cpBody");
+  $("cpBackLbl").textContent = cpKey ? "כל האותיות" : "סגור";
+  if(!cpKey){
+    $("cpTitle").textContent = "בּוֹחֲרִים רְמָזִים";
+    const tile = k => { const o=cueChoice(k), kind=cueKind(k);
+      const pic = kind==="vowel" ? (o.img ? `<img src="${o.img}" alt="">` : `<span class="vm" style="color:${VOWEL[k.slice(6)].hex}">${VOWEL[k.slice(6)].mark}</span>`)
+        : o.rafe ? `<span class="vm" style="color:#B2524A">${k.slice(5)}</span>` : `<img src="${o.img}" alt="" style="${o.teacher?"image-rendering:auto;width:84%;height:84%":""}">`;
+      return `<button class="cptile" data-key="${k}" aria-label="${cueLabel(k)}">${kind==="vowel"||o.rafe?"":`<b>${kind==="rafe"?k.slice(5):k}</b>`}${pic}${kind==="letter"&&o.teacher?"":`<small>${kind==="vowel"?cueLabel(k):kind==="rafe"?cueLabel(k):o.word||""}</small>`}</button>`; };
+    const grp = (h, keys) => `<section class="cpgrp"><h3>${h}</h3><div class="cpgrid">${keys.map(tile).join("")}</div></section>`;
+    body.innerHTML = `<div class="hint" style="font-size:19px;color:var(--dim-on-dark)">לוחצים על אות, ואורי בוחר את הרמז שהכי עוזר לו לזכור אותה. הבחירה נשמרת ומופיעה בזמן הקריאה.</div>
+      <div class="cpload"><label>📥 טען תמונות רמזים מהטאבלט<input type="file" id="cpLoadAll" accept="image/*" multiple hidden></label>
+        <span class="hint" id="cpLoadInfo" style="font-size:17px;color:var(--dim-on-dark)">אפשר לבחור הרבה קבצים בבת אחת. שם הקובץ קובע לאן התמונה הולכת: a-- e-- i-- o-- u-- לצלילים, או האות עצמה (למשל ב--) לאותיות. התמונות נשמרות רק בטאבלט הזה.</span></div>`
+      + grp("אוֹתִיּוֹת", LETTERS) + grp("אוֹתִיּוֹת סוֹפִיּוֹת", FINALS) + grp("ב כ פ בְּלִי נְקֻדָּה", ["rafe:ב","rafe:כ","rafe:פ"]) + grp("צְלִילֵי הַנִּקּוּד", CUE_KEYS.filter(k=>k.startsWith("vowel:")));
+    return;
+  }
+  const k=cpKey, kind=cueKind(k), cur=cueChoice(k), i=CUE_KEYS.indexOf(k);
+  const what = kind==="vowel" ? `<b style="color:${VOWEL[k.slice(6)].hex}">${VOWEL[k.slice(6)].mark}</b> (${cueLabel(k)})` : kind==="rafe" ? `<b>${k.slice(5)}</b> בלי נקודה` : kind==="final" ? `<b>${k}</b> סופית` : `<b>${k}</b>`;
+  $("cpTitle").textContent = cueLabel(k);
+  body.innerHTML = `<div class="cpq">אֵיזֶה רֶמֶז הֲכִי עוֹזֵר לְךָ? ${what}</div>
+    <div class="cpopts cues">${cueOptions(k).map(o=>`<button class="cpopt${o===cur?" on":""}" data-opt="${o.id}">${cueCard(k,o,"")}<span>${o.teacher?"הרמז של המורה":o.rafe?"הכרטיס של הצליל":o.id==="mouth"?"צורת הפה":o.id==="mark"?"רק הסימן":o.id==="face"?"פרצוף של הצליל":o.photo?o.label:o.custom?`<span class="cpdel" data-del="${o.dbid}" role="button">🗑 הסר</span>`:""}</span><span class="ok"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5L19.5 7"/></svg></span></button>`).join("")}</div>
+    <div class="cpload" style="justify-content:center"><label>➕ הוסף תמונה משלך ל${cueMark(k)}<input type="file" id="cpLoadOne" accept="image/*" multiple hidden></label></div>
+    <section class="sec cprec"><h3>הַצְּלִיל שֶׁל ${cueMark(k)}</h3>
+      <div class="hint" style="font-size:19px;color:var(--ink-on-dark)">${cueTip(k)}</div>
+      <div class="seg"><button id="cpRec">🎙 הקלט את הצליל (עד 3 שניות)</button><button id="cpPlay" ${SOUNDS[k]?"":"disabled"}>▶ השמע</button><button id="cpDel" ${SOUNDS[k]?"":"disabled"}>מחק הקלטה</button></div>
+      <div class="hint" id="cpRecInfo">${SOUNDS[k] ? "יש הקלטה. בזמן הקריאה, לחיצה על הרמז משמיעה אותה." : "אין עדיין הקלטה. מקליטים פעם אחת רק את הצליל (למשל \"בּ\" או \"אַ\", לא את שם האות), ואז לחיצה על הרמז בזמן הקריאה משמיעה אותו. ההקלטה נשמרת רק בטאבלט הזה."}</div>
+    </section>
+    <div class="cpnav"><button class="kb kb-v" data-nav="-1" ${i<=0?"disabled":""}>→ ${i>0?cueLabel(CUE_KEYS[i-1]):""}</button><button class="kb kb-g" data-nav="1" ${i>=CUE_KEYS.length-1?"disabled":""}>${i<CUE_KEYS.length-1?cueLabel(CUE_KEYS[i+1]):""} ←</button></div>`;
+}
+$("cpBody").addEventListener("click",e=>{
+  const t=e.target.closest("[data-key]"); if(t){ cpKey=t.dataset.key; paintCuePick(); $("cuePick").scrollTop=0; return; }
+  const o=e.target.closest("[data-opt]"); if(o && cpKey){ cueChoices[cpKey]=o.dataset.opt; store.set("ori.t3.cueChoice",cueChoices); if(S) log("cue_chosen",{key:cpKey, option:o.dataset.opt}); paintCuePick(); return; }
+  const n=e.target.closest("[data-nav]"); if(n && cpKey){ const i=CUE_KEYS.indexOf(cpKey)+(+n.dataset.nav); if(CUE_KEYS[i]){ cpKey=CUE_KEYS[i]; paintCuePick(); } }
+});
+$("cpBody").addEventListener("change",async e=>{
+  if(e.target.id!=="cpLoadAll" && e.target.id!=="cpLoadOne") return;
+  const files=[...e.target.files]; if(!files.length) return;
+  const r = await importImages(files, e.target.id==="cpLoadOne" ? cpKey : null);
+  paintCuePick();
+  if(e.target.id==="cpLoadAll") $("cpLoadInfo").textContent = `נטענו ${r.ok} תמונות.` + (r.skipped.length ? ` ${r.skipped.length} לא זוהו לפי השם: ${r.skipped.slice(0,6).join(", ")}${r.skipped.length>6?"…":""}` : "");
+});
+$("cpBody").addEventListener("click",e=>{ const dl=e.target.closest("[data-del]"); if(dl){ e.stopImmediatePropagation(); e.preventDefault(); removeImage(dl.dataset.del).then(paintCuePick); } }, true);
+$("cpBody").addEventListener("click",e=>{ if(!cpKey) return;
+  if(e.target.id==="cpRec") recordSound(cpKey);
+  if(e.target.id==="cpPlay") playSound(cpKey);
+  if(e.target.id==="cpDel"){ saveSound(cpKey, null).then(paintCuePick); }
+});
+$("cueTip").onclick=hideTip;
+$("cpBack").onclick=()=>{ if(cpKey){ cpKey=null; paintCuePick(); } else closeCuePick(); };
+$("pickCues").onclick=()=>openCuePick();
+
+/* ---------- recording: parent-started, always visible while on ---------- */
+const REC = {on:false, stream:null, rec:null, chunks:[], started:0, mime:"", timer:null, saved:[]};
+function pickMime(){ const c=["video/mp4;codecs=avc1,mp4a","video/mp4","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"]; if(!window.MediaRecorder) return null; return c.find(m=>{ try{return MediaRecorder.isTypeSupported(m);}catch(e){return false;} }) || ""; }
+async function startRec(){
+  if(REC.on) return;
+  const mime = pickMime();
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || mime===null){ recError("הדפדפן הזה לא מאפשר הקלטה כאן. צריך לפתוח את הכתובת המלאה ב-Chrome (https)."); return; }
+  try{ REC.stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"user", width:{ideal:960}, height:{ideal:720}, frameRate:{ideal:24}}, audio:{echoCancellation:true, noiseSuppression:false, autoGainControl:true}}); }
+  catch(e){ recError("לא התקבלה הרשאה למצלמה/מיקרופון ("+(e.name||e)+"). אפשר לאשר בהגדרות האתר ב-Chrome ולנסות שוב."); return; }
+  REC.chunks=[]; REC.id = "rec-"+new Date().toISOString().replace(/[:.]/g,"-");
+  try{ REC.rec = new MediaRecorder(REC.stream, Object.assign({videoBitsPerSecond:1500000, audioBitsPerSecond:96000}, mime?{mimeType:mime}:{})); } catch(e){ REC.rec = new MediaRecorder(REC.stream); }
+  REC.mime = REC.rec.mimeType || mime || "video/webm";
+  await idbClear();
+  REC.rec.ondataavailable = ev => { if(ev.data && ev.data.size){ REC.chunks.push(ev.data); idbPut(ev.data); } };
+  REC.rec.onstop = finishRec;
+  REC.rec.start(4000);
+  REC.on=true; REC.started=now();
+  store.set("ori.tab.recMeta",{id:REC.id, mime:REC.mime, started:REC.started});
+  log("rec_start",{mime:REC.mime, video_settings: REC.stream.getVideoTracks()[0]?.getSettings?.() || null});
+  REC.timer = setInterval(paintRec, 1000); paintRec(); attachPreview();
+}
+function stopRec(){ if(!REC.on || !REC.rec) return; log("rec_stop"); REC.rec.stop(); }
+function finishRec(){
+  REC.on=false; clearInterval(REC.timer); REC.stream.getTracks().forEach(t=>t.stop());
+  const blob = new Blob(REC.chunks,{type:REC.mime}), ext = REC.mime.includes("mp4") ? "mp4" : "webm", name = `ori-${REC.id.slice(4,20)}.${ext}`;
+  const logBlob = recLogBlob(REC.started, now(), name), logName = name.replace(/\.\w+$/, ".json");
+  download(blob, name); setTimeout(()=>download(logBlob, logName), 600);
+  REC.saved.push({name, size:blob.size, blob, logName, logBlob});
+  store.set("ori.tab.recMeta", null); idbClear(); paintRec(); paintSaved();
+  $("endStopRec").hidden=true; if(!$("start").hidden) paintHome();
+  if(!$("end").hidden) $("endNote").textContent = `ההקלטה נשמרה: ${name} (${(blob.size/1e6).toFixed(1)}MB) בתיקיית ההורדות, יחד עם היומן ${logName}.`;
+}
+/* the log that belongs to one recording: every event from every story read while it ran (not only the last story) */
+function recLogBlob(fromMs, toMs, videoName){
+  const all = store.get("ori.tab.sessions",{});
+  if(S) all[S.id] = {id:S.id, started:S.started, events:S.events, stats:S.stats};
+  const t = e => Date.parse(e.iso);
+  const ev = Object.values(all).flatMap(s=>s.events.map(e=>Object.assign({session:s.id},e))).filter(e=>t(e)>=fromMs-1000 && t(e)<=toMs+1000).sort((a,b)=>t(a)-t(b));
+  const books = [...new Set(ev.map(e=>e.book))];
+  return new Blob([JSON.stringify({app:"ori-tablet-v3", recording:videoName, rec_started:new Date(fromMs).toISOString(), rec_stopped:new Date(toMs).toISOString(),
+    sessions:[...new Set(ev.map(e=>e.session))], books, pages:Object.fromEntries(books.map(b=>{ const st=STORIES.find(x=>x.id===b); return [b, st ? st.pages.map(p=>p.words.map(w=>w[0]).join(" ")) : []]; })), events:ev},null,1)],{type:"application/json"});
+}
+function recError(msg){ $("recState").innerHTML = `<span class="err">${msg}</span>`; $("startNote").innerHTML = `<span class="err">${msg}</span>`; paintRec(); if(S) log("rec_error",{msg}); }
+const fmt = s => { s=Math.floor(s); return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); };
+function paintRec(){
+  const b=$("recBadge"); b.classList.toggle("off", !REC.on);
+  $("recTxt").textContent = REC.on ? "מקליט" : "לא מקליט"; $("recTime").textContent = REC.on ? fmt((now()-REC.started)/1000) : "";
+  if(REC.on || !$("recState").querySelector(".err")) $("recState").innerHTML = REC.on ? `<span style="display:inline-block;width:14px;height:14px;border-radius:14px;background:var(--rec)"></span> מקליט עכשיו <b dir="ltr">${fmt((now()-REC.started)/1000)}</b>` : "ההקלטה כבויה.";
+  $("pRecStart").hidden = REC.on; $("pRecStop").hidden = !REC.on;
+}
+function paintSaved(){ $("savedList").innerHTML = REC.saved.map((r,i)=>`נשמר: ${r.name} (${(r.size/1e6).toFixed(1)}MB) <button class="pbtn" style="display:inline-flex;min-height:40px" data-save="${i}">הורד שוב</button>${r.logBlob?` <button class="pbtn" style="display:inline-flex;min-height:40px" data-savelog="${i}">הורד יומן</button>`:""}${navigator.canShare?` <button class="pbtn" style="display:inline-flex;min-height:40px" data-share="${i}">שתף…</button>`:""}`).join("<br>"); }
+function attachPreview(){ const v=$("preview"); if($("pPreview").checked && REC.stream){ v.srcObject=REC.stream; v.hidden=false; v.play().catch(()=>{}); } else { v.srcObject=null; v.hidden=true; } }
+function download(blob, name){ const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 60000); }
+let dbp=null;
+function db(){ if(dbp) return dbp; dbp = new Promise((res,rej)=>{ const r=indexedDB.open("ori-rec",1); r.onupgradeneeded=()=>r.result.createObjectStore("chunks",{autoIncrement:true}); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); return dbp; }
+async function idbPut(b){ try{ const d=await db(); d.transaction("chunks","readwrite").objectStore("chunks").add(b); }catch(e){} }
+async function idbClear(){ try{ const d=await db(); await new Promise(r=>{ const t=d.transaction("chunks","readwrite"); t.objectStore("chunks").clear(); t.oncomplete=r; t.onerror=r; }); }catch(e){} }
+async function idbAll(){ try{ const d=await db(); return await new Promise(r=>{ const q=d.transaction("chunks").objectStore("chunks").getAll(); q.onsuccess=()=>r(q.result||[]); q.onerror=()=>r([]); }); }catch(e){ return []; } }
+async function checkRecover(){
+  const meta=store.get("ori.tab.recMeta",null); if(!meta) return;
+  const parts=await idbAll(); if(!parts.length) return;
+  const name = `ori-recovered-${meta.id.slice(4,20)}.${meta.mime.includes("mp4")?"mp4":"webm"}`, blob = new Blob(parts,{type:meta.mime});
+  const evs = Object.values(store.get("ori.tab.sessions",{})).flatMap(s=>s.events).map(e=>Date.parse(e.iso)).filter(t=>t>=meta.started);
+  const logBlob = recLogBlob(meta.started, evs.length ? Math.max(...evs) : meta.started, name);
+  download(blob, name); setTimeout(()=>download(logBlob, name.replace(/\.\w+$/, ".json")), 600);
+  store.set("ori.tab.recMeta",null); await idbClear();
+  $("recover").hidden=false; $("recover").innerHTML=`<span>הקלטה קודמת שנקטעה נשמרה אוטומטית לתיקיית ההורדות: ${name}</span>`;
+}
+
+/* ---------- log export ---------- */
+function allEvents(){ const all=store.get("ori.tab.sessions",{}); return Object.values(all).flatMap(s=>s.events.map(e=>Object.assign({session:s.id},e))); }
+function downloadLog(kind){
+  const ev = S ? S.events.map(e=>Object.assign({session:S.id},e)) : allEvents(), id = S ? S.id.slice(0,16) : "all";
+  if(kind==="json") download(new Blob([JSON.stringify({app:"ori-tablet-v3", session:S?S.id:null, recording:REC.saved.map(r=>r.name), pages:PAGES.map(p=>p.words.map(w=>w[0]).join(" ")), events:ev},null,1)],{type:"application/json"}), `ori-log-${id}.json`);
+  else { const cols=["session","type","iso","t_session_s","t_video_s","page","word_index","word","step","unit_index","unit","try","outcome","ms_on_step","letter","reveal_word","quiet","mode","color","font"];
+    const esc=v=>v==null?"":`"${String(typeof v==="object"?JSON.stringify(v):v).replace(/"/g,'""')}"`;
+    download(new Blob(["﻿"+cols.join(",")+"\n"+ev.map(e=>cols.map(c=>esc(e[c])).join(",")).join("\n")],{type:"text/csv"}), `ori-log-${id}.csv`); }
+}
+
+/* ---------- misc ---------- */
+let wake=null;
+async function keepAwake(){ try{ if("wakeLock" in navigator) wake=await navigator.wakeLock.request("screen"); }catch(e){} }
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible" && S && !$("app").hidden) keepAwake(); if(S) log(document.visibilityState==="visible"?"app_visible":"app_hidden"); });
+function goFs(){ if(!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(()=>{}); }
+function toggleFs(){ if(document.fullscreenElement) document.exitFullscreen(); else goFs(); }
+function paintSeg(){ document.querySelectorAll("[data-set]").forEach(g=>g.querySelectorAll("button[data-v]").forEach(b=>b.setAttribute("aria-pressed", String(settings[g.dataset.set]===b.dataset.v)))); }
+function openP(){ $("veil").hidden=false; paintRec(); paintSaved(); paintSeg(); $("scale").value=settings.scale; $("logInfo").textContent = S ? `${S.events.length} אירועים בסשן הזה.` : ""; }
+function closeP(){ $("veil").hidden=true; attachPreview(); if(S && !$("app").hidden){ if(S.phase==="pageEnd") pageEnd(); else paint(); } }
+document.querySelectorAll("[data-set]").forEach(g=>g.addEventListener("click",e=>{ const b=e.target.closest("button[data-v]"); if(!b) return; const k=g.dataset.set; settings[k]=b.dataset.v; if(k==="quiet"){ quietOverride=null; log("quiet_mode",{on:isQuiet(), source:"panel"}); } saveSettings(); paintSeg(); }));
+$("gear").onclick=openP; $("recBadge").onclick=openP; $("closeP").onclick=closeP;
+$("veil").onclick=e=>{ if(e.target===$("veil")) closeP(); };
+$("scale").oninput=e=>{ settings.scale=+e.target.value; saveSettings(); };
+$("resetFade").onclick=()=>{ reads={}; store.set("ori.t3.letterReads",reads); $("resetFade").textContent="אופס ✓"; };
+$("pRecStart").onclick=startRec; $("pRecStop").onclick=stopRec; $("pPreview").onchange=attachPreview;
+$("savedList").onclick=e=>{ const s=e.target.dataset.save, sl=e.target.dataset.savelog, sh=e.target.dataset.share; if(s!=null){ const r=REC.saved[+s]; download(r.blob,r.name);} if(sl!=null){ const r=REC.saved[+sl]; download(r.logBlob,r.logName);} if(sh!=null){ const r=REC.saved[+sh]; const f=new File([r.blob],r.name,{type:r.blob.type}); if(navigator.canShare({files:[f]})) navigator.share({files:[f]}).catch(()=>{}); } };
+$("prevPage").onclick=()=>{ $("veil").hidden=true; if(S){ $("end").hidden=true; $("app").hidden=false; gotoPage(S.page-1);} };
+$("skipPage").onclick=()=>{ $("veil").hidden=true; if(S){ log("page_skipped"); gotoPage(S.page+1);} };
+$("restart").onclick=()=>{ $("veil").hidden=true; if(S){ $("end").hidden=true; $("app").hidden=false; gotoPage(0);} };
+$("dlJson").onclick=()=>downloadLog("json"); $("dlCsv").onclick=()=>downloadLog("csv");
+$("cpLog").onclick=()=>{ const ev=S?S.events:allEvents(); navigator.clipboard.writeText(JSON.stringify(ev)).then(()=>{$("logInfo").textContent="היומן הועתק.";},()=>{$("logInfo").textContent="ההעתקה נכשלה.";}); };
+$("fsBtn").onclick=toggleFs;
+$("quietBtn").onclick=()=>{ quietOverride = !isQuiet(); log("quiet_mode",{on:quietOverride, source:"moon"}); if(S.phase==="pageEnd") pageEnd(); else paint(); };
+$("markBtn").onclick=()=>{ log("parent_marker"); const b=$("markBtn"); b.style.color="var(--amber)"; setTimeout(()=>b.style.color="",500); };
+$("stageEl").addEventListener("click",e=>{ const q=e.target.closest("[data-cue]"); if(q) return tapCue(q); const c=e.target.closest("[data-open]"); if(!c) return; const L=c.dataset.open; c.outerHTML=`<div class="card${SOUNDS[L]?" has-snd":""}" data-cue="${L}">${cueInner(L, cueChoice(L))}</div>`; log("cue_opened",{letter:L}); log("hint_shown",{letter:L, why:"tap"}); });
+$("bOk").onclick=onOk; $("bAgain").onclick=onAgain; $("bWhole").onclick=onWhole;
+$("bSentAgain").onclick=()=>{ S.misses++; log("mark",{outcome:"sentence_again", ms_on_step:now()-S.t0}); };
+$("bNext").onclick=()=>{ log("mark",{outcome:"sentence_correct", ms_on_step:now()-S.t0}); reward(); const first=!bookDone()[S.page+1]; bookDone()[S.page+1]=true; saveProg();
+  const pi=pageItem(curPage()); if(pi){ log("item_collected",{item:pi.id, count:pi.n, first}); itemToast(pi); } gotoPage(S.page+1); };
+$("startRec").onclick=()=>{ goFs(); begin(true); };
+$("startNoRec").onclick=()=>{ goFs(); begin(false); };
+$("endStopRec").onclick=stopRec;
+$("endLog").onclick=()=>downloadLog("json");
+$("endAgain").onclick=()=>{ S.ended=false; $("end").hidden=true; $("app").hidden=false; gotoPage(0); };
+window.addEventListener("beforeunload",e=>{ if(REC.on){ e.preventDefault(); e.returnValue=""; } });
+paintHome();
+applySettings(); checkRecover(); preload(1); loadSounds(); loadImages();
+/* install as an app (home-screen icon, opens full screen without the address bar) */
+const standalone = matchMedia("(display-mode: fullscreen)").matches || matchMedia("(display-mode: standalone)").matches;
+let installEvt=null;
+if(standalone){ $("installBtn").hidden=true; }
+window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); installEvt=e; });
+window.addEventListener("appinstalled",()=>{ $("installBtn").hidden=true; $("installHint").hidden=false; $("installHint").textContent="נוסף למסך הבית. מעכשיו פותחים מהאייקון."; });
+$("installBtn").onclick=async()=>{ if(installEvt){ installEvt.prompt(); const r=await installEvt.userChoice; installEvt=null; if(r.outcome!=="accepted"){ $("installHint").hidden=false; $("installHint").textContent="אפשר גם דרך תפריט ⋮ של Chrome ← הוספה למסך הבית."; } }
+  else { $("installHint").hidden=false; $("installHint").textContent="בתפריט ⋮ של Chrome בחרו \"הוספה למסך הבית\" או \"התקנת אפליקציה\"."; } };
+$("startFs").onclick=toggleFs;
+document.addEventListener("fullscreenchange",()=>{ $("startFs").lastChild.textContent = document.fullscreenElement ? "יציאה ממסך מלא" : "מסך מלא"; });
+/* ---------- stable / beta switch (see the script at the top of <head>) ---------- */
+function paintCh(){ document.querySelectorAll("#chSeg button").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.ch===window.ORI_CHANNEL))); }
+$("chSeg").addEventListener("click", e=>{ const b=e.target.closest("button[data-ch]"); if(!b) return; const ch=b.dataset.ch;
+  if(ch===window.ORI_CHANNEL) return;
+  if(REC.on){ $("chInfo").textContent = "קודם לעצור את ההקלטה (עצור ושמור), ואז להחליף גרסה."; return; }
+  try{ localStorage.setItem("ori.channel", ch); }catch(err){}
+  if(S) log("channel_switch",{from:window.ORI_CHANNEL, to:ch});
+  location.href = ch==="beta" ? "beta/" : "../"; });
+paintCh();
+if("serviceWorker" in navigator && location.protocol==="https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
+if(window.self!==window.top){ $("startNote").textContent="בחלון הזה ההקלטה וההורדות לא זמינות. הקריאה והיומן עובדים; את היומן אפשר להעתיק מפאנל ההורה."; }
+</script>
+</body>
+</html>
