@@ -2,6 +2,24 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
+<script>
+/* Stable / beta. Both copies carry this same code; the folder decides which one this page is.
+   The choice lives in localStorage "ori.channel" and is applied on every launch, so the installed
+   home-screen app (which always opens the stable address) moves to beta when beta is chosen.
+   Escape hatch: open the address with ?stable (or ?beta) to force a version. */
+(function(){
+  var isBeta = /\/beta\/(index\.html)?$/.test(location.pathname);
+  var here = window.ORI_CHANNEL = isBeta ? "beta" : "stable";
+  document.documentElement.classList.add("ch-" + here);
+  try{
+    var q = location.search;
+    if(/[?&]stable\b/.test(q)) localStorage.setItem("ori.channel", "stable");
+    else if(/[?&]beta\b/.test(q)) localStorage.setItem("ori.channel", "beta");
+    var want = localStorage.getItem("ori.channel") === "beta" ? "beta" : "stable";
+    if(want !== here){ window.ORI_LEAVING = true; location.replace(want === "beta" ? "beta/" : "../"); }
+  }catch(e){}
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#221C30">
 <meta name="robots" content="noindex">
@@ -310,6 +328,7 @@ body.quiet .rec.off{display:none}
 .key span{display:flex;align-items:center;gap:6px;font-size:22px;font-weight:600;font-family:var(--word)}
 .key i{width:18px;height:18px;border-radius:18px;display:inline-block}
 .fontpick button{font-size:22px}
+html.ch-beta body::after{content:"בטא";position:fixed;top:6px;left:6px;z-index:99;pointer-events:none;padding:2px 10px;border-radius:10px;background:#F5B841;color:#2A1A05;font:800 14px/1.5 system-ui,sans-serif;opacity:.85}
 </style>
 </head>
 <body class="quiet">
@@ -444,6 +463,10 @@ body.quiet .rec.off{display:none}
           <div class="seg"><button id="dlJson">⬇ יומן JSON</button><button id="dlCsv">⬇ יומן CSV</button><button id="cpLog">העתק יומן</button></div>
           <div class="hint" id="logInfo"></div>
         </section>
+        <section class="sec"><h3>גרסת האפליקציה</h3>
+          <div class="seg" id="chSeg"><button data-ch="stable">יציבה</button><button data-ch="beta">בטא (חדשה, לניסוי)</button></div>
+          <div class="hint" id="chInfo">ההתקדמות וההגדרות של אורי משותפות לשתי הגרסאות. הבחירה נשמרת, והאייקון במסך הבית נפתח בגרסה שנבחרה.</div>
+        </section>
       </div>
       <div class="pcol">
         <section class="sec"><h3>איך מתקדמים</h3>
@@ -573,7 +596,7 @@ const STORIES = [
   {id:"night", title:"פֶּרֶק 6: הַלַּיְלָה בַּכְּפָר", short:"הַלַּיְלָה", art:"art/s6/", day:[], cover:8, pages:PAGES_NIGHT}
 ];
 let BOOK = 0, PAGES = PAGES_ISLAND;
-function setBook(b){ BOOK = Math.max(0, Math.min(STORIES.length-1, b|0)); PAGES = STORIES[BOOK].pages; try{ localStorage.setItem("ori.t3.book", String(BOOK)); }catch(e){} }
+function setBook(b){ BOOK = Math.max(0, Math.min(STORIES.length-1, b|0)); PAGES = STORIES[BOOK].pages; /* a story this version lacks (beta has more) keeps its saved choice */ if(BOOK===(b|0)) try{ localStorage.setItem("ori.t3.book", String(BOOK)); }catch(e){} }
 const CUE_FILE = {"א":"alef","ב":"bet","ג":"gimel","ד":"dalet","ה":"he","ו":"vav","ז":"zayin","ח":"het","ט":"tet","י":"yod","כ":"kaf","ך":"kaf","ל":"lamed","מ":"mem","ם":"mem","נ":"nun","ן":"nun","ס":"samekh","ע":"ayin","פ":"pe","ף":"pe","צ":"tsadi","ץ":"tsadi","ק":"qof","ר":"resh","ש":"shin","ת":"tav"};
 const CUE_WORD = {alef:"אַרְנָב",bet:"בֶּרֶז",gimel:"גִּבּוֹר עָל",dalet:"דַּחְלִיל",he:"הֶגֶה",vav:"וָפֶל",zayin:"זָנָב",het:"חֶדֶר",tet:"טֶלֶפוֹן",yod:"יוֹיוֹ",kaf:"כַּדּוּר",lamed:"לָשׁוֹן לְמַעְלָה",mem:"מְשֻׁלָּשׁ",nun:"נוּרָה",samekh:"סַל",ayin:"עַיִן",pe:"פֶּה",tsadi:"צָב",qof:"קוּקוּ",resh:"רֶגֶל",shin:"שִׁנַּיִם",tav:"תַּנִּין"};
 const VOWEL = {a:{c:"var(--v-a)",hex:"#C8321F",mark:"אַ",name:"פה פתוח"}, i:{c:"var(--v-i)",hex:"#1F5FD0",mark:"אִ",name:"חיוך רחב"}, e:{c:"var(--v-e)",hex:"#1E7F45",mark:"אֵ",name:"פה חצי פתוח"}, o:{c:"var(--v-o)",hex:"#C96A0A",mark:"אוֹ",name:"שפתיים עגולות"}, u:{c:"var(--v-u)",hex:"#7A35B5",mark:"אוּ",name:"שפתיים מכווצות"}};
@@ -1009,6 +1032,15 @@ $("installBtn").onclick=async()=>{ if(installEvt){ installEvt.prompt(); const r=
   else { $("installHint").hidden=false; $("installHint").textContent="בתפריט ⋮ של Chrome בחרו \"הוספה למסך הבית\" או \"התקנת אפליקציה\"."; } };
 $("startFs").onclick=toggleFs;
 document.addEventListener("fullscreenchange",()=>{ $("startFs").lastChild.textContent = document.fullscreenElement ? "יציאה ממסך מלא" : "מסך מלא"; });
+/* ---------- stable / beta switch (see the script at the top of <head>) ---------- */
+function paintCh(){ document.querySelectorAll("#chSeg button").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.ch===window.ORI_CHANNEL))); }
+$("chSeg").addEventListener("click", e=>{ const b=e.target.closest("button[data-ch]"); if(!b) return; const ch=b.dataset.ch;
+  if(ch===window.ORI_CHANNEL) return;
+  if(REC.on){ $("chInfo").textContent = "קודם לעצור את ההקלטה (עצור ושמור), ואז להחליף גרסה."; return; }
+  try{ localStorage.setItem("ori.channel", ch); }catch(err){}
+  if(S) log("channel_switch",{from:window.ORI_CHANNEL, to:ch});
+  location.href = ch==="beta" ? "beta/" : "../"; });
+paintCh();
 if("serviceWorker" in navigator && location.protocol==="https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
 if(window.self!==window.top){ $("startNote").textContent="בחלון הזה ההקלטה וההורדות לא זמינות. הקריאה והיומן עובדים; את היומן אפשר להעתיק מפאנל ההורה."; }
 </script>
