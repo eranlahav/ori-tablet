@@ -44,7 +44,7 @@ const ITEMS = {
   eye: sprite(({ rect, px }) => { rect(4, 3, 8, 10, '#2E9B8F'); rect(3, 5, 10, 6, '#2E9B8F'); rect(5, 5, 6, 6, '#B8F2D8'); rect(6, 6, 4, 4, '#1E5E58'); rect(7, 7, 2, 2, '#0E1E20'); px(5, 4, '#7FE0C8'); }),
   egg: sprite(({ rect, px }) => { rect(6, 1, 4, 1, '#2A1E3C'); rect(5, 2, 6, 2, '#2A1E3C'); rect(4, 4, 8, 4, '#2A1E3C'); rect(3, 8, 10, 4, '#2A1E3C'); rect(4, 12, 8, 2, '#2A1E3C'); rect(6, 14, 4, 1, '#2A1E3C'); [[6, 4], [9, 6], [5, 9], [10, 10], [7, 12], [8, 8]].forEach(([x, y]) => px(x, y, '#9A4FD8')); px(6, 3, '#4A3570'); px(5, 5, '#4A3570'); }),
 };
-module.exports = { ITEMS, svg };
+module.exports = { ITEMS, svg, sprite, K };
 if (require.main === module) { const dir = path.join(__dirname, 'items'); fs.mkdirSync(dir, { recursive: true });
   for (const [id, g] of Object.entries(ITEMS)) { fs.writeFileSync(path.join(dir, id + '.svg'), svg(g)); fs.writeFileSync(path.join(dir, id + '-locked.svg'), svg(g, true)); }
   console.log(Object.keys(ITEMS).length + ' icons'); }

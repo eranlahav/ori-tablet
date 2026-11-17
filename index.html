@@ -287,6 +287,38 @@ body.quiet .rec.off{display:none}
 .cue.rafe .card span{font-family:var(--word);font-size:calc(var(--cs) * .17);font-weight:700;color:#B2524A;direction:rtl}
 .cue.rafe .card .rl{font-family:var(--word);font-size:calc(var(--cs) * .5);color:#B2524A}
 
+/* drawn cue cards (Ori's own choices): letter + picture + word, like the teacher's cards */
+.dc{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr auto;align-items:center;justify-items:center;padding:6% 6% 4%;direction:rtl}
+.dc .dl{font-family:var(--word);font-weight:700;font-size:calc(var(--cs) * .5);line-height:1;color:var(--lc)}
+.cue .card .dc img,.dc img{width:92%;height:auto;max-height:100%;object-fit:contain;image-rendering:pixelated;mix-blend-mode:normal}
+.dc .dw{grid-column:1 / 3;font-family:var(--word);font-weight:700;font-size:calc(var(--cs) * .15);line-height:1.1;color:#6B3A1F;white-space:nowrap}
+.dc .dw .hl,.cue.vowel .card .hl{color:var(--lc,#B2524A);text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:4px}
+.cue.vowel .card img{width:52%;height:auto;image-rendering:pixelated;mix-blend-mode:normal}
+.cue.vowel .card .vm{font-size:calc(var(--cs) * .42)}
+.cue.rafe.drawn .card{display:block}
+
+/* cue picker: Ori picks the cue that helps him most */
+.cpick{z-index:12;overflow:auto}
+.cpick .starttop h2{margin:0;font-size:30px;flex:1}
+.cpgrp h3{margin:10px 0 10px;color:var(--amber);font-size:22px}
+.cpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:12px}
+.cptile{position:relative;aspect-ratio:1;border-radius:18px;background:#FFFDF7;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:0 5px 0 #1A1526;overflow:hidden;padding:6px}
+.cptile b{position:absolute;top:2px;right:8px;font-family:var(--word);font-size:30px;color:var(--ink)}
+.cptile img{width:66%;height:66%;object-fit:contain;image-rendering:pixelated}
+.cptile .vm{font-family:var(--word);font-size:44px;font-weight:700}
+.cptile small{font-family:var(--word);font-size:16px;color:#6B3A1F;font-weight:700}
+.cpq{font-size:clamp(24px,3.6vh,34px);font-weight:800;text-align:center}
+.cpq b{font-family:var(--word);color:var(--amber);font-size:1.3em}
+.cpopts{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;--cs:min(30vh,19vw)}
+@media (orientation:portrait){.cpopts{grid-template-columns:repeat(2,1fr);--cs:min(24vh,36vw)}}
+.cpopt{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px 8px 14px;border-radius:24px;background:var(--surface);color:var(--ink-on-dark);font-size:18px;font-weight:800}
+.cpopt .cue .stem{display:none}
+.cpopt.on{background:var(--surface2);box-shadow:0 0 0 5px var(--amber),0 0 24px rgba(242,165,65,.45)}
+.cpopt .ok{position:absolute;top:8px;left:8px;width:44px;height:44px;border-radius:22px;background:#36A54F;display:none;place-items:center}
+.cpopt.on .ok{display:grid}
+.cpnav{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.cpnav button{min-height:64px;padding:0 26px;border-radius:20px;font-size:22px;font-weight:800}
+
 /* parent panel */
 .veil{position:fixed;inset:0;z-index:10;background:rgba(15,12,24,.55);display:flex;justify-content:flex-start}
 .panel{width:min(820px,100%);height:100%;background:var(--night);overflow:auto;padding:24px;display:flex;flex-direction:column;gap:16px;box-shadow:-20px 0 40px rgba(0,0,0,.4)}
@@ -362,6 +394,12 @@ body.quiet .rec.off{display:none}
   <div class="next" id="roomNext"></div>
   <div id="roomBooks"></div>
   <section class="shelf"><div class="sh"><h3>הָאוֹתִיּוֹת שֶׁל אוֹרִי</h3><span class="cnt">כל אות נפתחת אחרי 3 קריאות נכונות</span></div><div class="letters" id="roomLetters"></div></section>
+</section>
+
+<!-- CUE PICKER (parent panel → בחירת רמזים) -->
+<section class="screen cpick" id="cuePick" hidden>
+  <div class="starttop"><button class="kb kb-v" id="cpBack"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg><span id="cpBackLbl">סגור</span></button><h2 id="cpTitle">בּוֹחֲרִים רְמָזִים</h2></div>
+  <div id="cpBody" style="display:flex;flex-direction:column;gap:18px"></div>
 </section>
 
 <!-- READING -->
@@ -450,7 +488,9 @@ body.quiet .rec.off{display:none}
           <div class="seg" data-set="mode"><button data-v="units">יחידה אחרי יחידה</button><button data-v="word">מילה קודם, יחידות אחרי טעות</button></div>
           <label>"אבא אומר" אחרי <span class="seg" data-set="modelAfter" style="flex:1"><button data-v="2">2 טעויות</button><button data-v="3">3 טעויות</button></span></label>
         </section>
-        <section class="sec"><h3>רמזי המורה</h3>
+        <section class="sec"><h3>רמזים</h3>
+          <button class="pbtn" id="pickCues" style="flex:none;background:var(--amber);color:#2A1A05">בחירת רמזים: אורי בוחר רמז לכל אות ולכל ניקוד</button>
+          <div class="hint">לכל אות (גם אותיות סופיות, וגם ב כ פ בלי נקודה) ולכל צליל ניקוד יש עד 4 רמזים. הרמז של המורה הוא ברירת המחדל. מה שאורי בוחר נשמר ומופיע בזמן הקריאה.</div>
           <div class="seg" data-set="cues"><button data-v="always">תמיד גלויים</button><button data-v="fade">דוהים אחרי 3 קריאות נכונות</button></div>
           <div class="hint">רמז לכל אות ביחידה, צמוד לאות שלו. במצב דהייה: אחרי 3 קריאות נכונות של אות הרמז קטן, ואחרי 6 הוא הופך לכפתור קטן שנפתח בלחיצה.</div>
           <button class="pbtn" id="resetFade" style="flex:none">איפוס ספירת הקריאות</button>
@@ -574,7 +614,6 @@ const STORIES = [
 ];
 let BOOK = 0, PAGES = PAGES_ISLAND;
 function setBook(b){ BOOK = Math.max(0, Math.min(STORIES.length-1, b|0)); PAGES = STORIES[BOOK].pages; try{ localStorage.setItem("ori.t3.book", String(BOOK)); }catch(e){} }
-const CUE_FILE = {"א":"alef","ב":"bet","ג":"gimel","ד":"dalet","ה":"he","ו":"vav","ז":"zayin","ח":"het","ט":"tet","י":"yod","כ":"kaf","ך":"kaf","ל":"lamed","מ":"mem","ם":"mem","נ":"nun","ן":"nun","ס":"samekh","ע":"ayin","פ":"pe","ף":"pe","צ":"tsadi","ץ":"tsadi","ק":"qof","ר":"resh","ש":"shin","ת":"tav"};
 const CUE_WORD = {alef:"אַרְנָב",bet:"בֶּרֶז",gimel:"גִּבּוֹר עָל",dalet:"דַּחְלִיל",he:"הֶגֶה",vav:"וָפֶל",zayin:"זָנָב",het:"חֶדֶר",tet:"טֶלֶפוֹן",yod:"יוֹיוֹ",kaf:"כַּדּוּר",lamed:"לָשׁוֹן לְמַעְלָה",mem:"מְשֻׁלָּשׁ",nun:"נוּרָה",samekh:"סַל",ayin:"עַיִן",pe:"פֶּה",tsadi:"צָב",qof:"קוּקוּ",resh:"רֶגֶל",shin:"שִׁנַּיִם",tav:"תַּנִּין"};
 const VOWEL = {a:{c:"var(--v-a)",hex:"#C8321F",mark:"אַ",name:"פה פתוח"}, i:{c:"var(--v-i)",hex:"#1F5FD0",mark:"אִ",name:"חיוך רחב"}, e:{c:"var(--v-e)",hex:"#1E7F45",mark:"אֵ",name:"פה חצי פתוח"}, o:{c:"var(--v-o)",hex:"#C96A0A",mark:"אוֹ",name:"שפתיים עגולות"}, u:{c:"var(--v-u)",hex:"#7A35B5",mark:"אוּ",name:"שפתיים מכווצות"}};
 const MOUTH = {
@@ -585,6 +624,84 @@ const MOUTH = {
  u:'<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="52" r="20" fill="#7A35B5"/><circle cx="50" cy="52" r="6.5" fill="#3A1420"/><path d="M24 38 L31 44 M76 38 L69 44 M24 66 L31 60 M76 66 L69 60" stroke="#7A35B5" stroke-width="4" stroke-linecap="round"/></svg>'};
 /* f / v: upper teeth on the lower lip (for פ and ב without a dagesh) */
 const RAFE_MOUTH = '<svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="50" rx="38" ry="24" fill="#D9786A"/><rect x="24" y="34" width="52" height="15" rx="4" fill="#FFFFFF"/><path d="M14 54 Q50 76 86 54 Q50 64 14 54Z" fill="#B2524A"/><path d="M28 50 H72" stroke="#3A1420" stroke-width="3"/></svg>';
+/* ---------- cue choices (2026-11-17) ----------
+   Every letter, every final letter, soft ב/כ/פ and every vowel sound has up to 4 cues, and Ori picks the one that helps him most
+   (parent panel → בחירת רמזים). The first option is the default: the teacher's cue where she has one.
+   Pictures in art/cues/ are original pixel drawings (node art/cues.js); art/items/ are the collectible item icons. */
+const T_ = f => ({id:"teacher", teacher:true, img:`cues/${f}.png`, word:CUE_WORD[f]});
+const D_ = (id, word) => ({id, img:`art/cues/${id}.svg`, word});
+const I_ = (id, word) => ({id:"item-"+id, img:`art/items/${id}.svg`, word});
+const LETTERS = ["א","ב","ג","ד","ה","ו","ז","ח","ט","י","כ","ל","מ","נ","ס","ע","פ","צ","ק","ר","ש","ת"];
+const FINALS = ["ך","ם","ן","ף","ץ"];
+const CUE_SETS = {
+  "א":[T_("alef"), I_("emerald","אֶמֶרַלְד"), I_("iron","אַיְרוֹן"), D_("fire","אֵשׁ")],
+  "ב":[T_("bet"), D_("house","בַּיִת"), D_("banana","בָּנָנָה"), D_("balloon","בַּלּוֹן")],
+  "ג":[T_("gimel"), D_("carrot","גֶּזֶר"), D_("icecream","גְּלִידָה"), D_("guitar","גִּיטָרָה")],
+  "ד":[T_("dalet"), I_("diamond","דַּיְמוֹנְד"), D_("fish","דָּג"), D_("door","דֶּלֶת")],
+  "ה":[T_("he"), D_("mountain","הַר"), D_("burger","הַמְבּוּרְגֶּר"), D_("hippo","הִיפּוֹפּוֹטָם")],
+  "ו":[T_("vav"), D_("rose","וֶרֶד"), D_("curtain","וִילוֹן")],
+  "ז":[T_("zayin"), D_("zombie","זוֹמְבִּי"), D_("gold","זָהָב"), D_("fly","זְבוּב")],
+  "ח":[T_("het"), I_("sword","חֶרֶב"), D_("cat","חֲתוּל"), I_("wheat","חִטָּה")],
+  "ט":[T_("tet"), D_("rocket","טִיל"), D_("drop","טִיפָּה"), D_("ring","טַבַּעַת")],
+  "י":[T_("yod"), D_("hand","יָד"), D_("moon","יָרֵחַ"), D_("schoolbag","יַלְקוּט")],
+  "כ":[T_("kaf"), D_("star","כּוֹכָב"), D_("crown","כֶּתֶר"), D_("dog","כֶּלֶב")],
+  "ל":[T_("lamed"), I_("torch","לַפִּיד"), D_("heart","לֵב"), D_("lemon","לִימוֹן")],
+  "מ":[T_("mem"), I_("map","מַפָּה"), I_("shield","מָגֵן"), D_("key","מַפְתֵּחַ")],
+  "נ":[T_("nun"), D_("snake","נָחָשׁ"), D_("candle","נֵר"), D_("ant","נְמָלָה")],
+  "ס":[T_("samekh"), D_("skull","סְקֶלֶטוֹן"), I_("boat","סִירָה"), D_("candy","סֻכָּרִיָּה")],
+  "ע":[T_("ayin"), I_("log","עֵץ"), I_("bone","עֶצֶם"), D_("cake","עוּגָה")],
+  "פ":[T_("pe"), I_("pickaxe","פִּיקָאקְס"), I_("lantern","פָּנָס"), D_("pizza","פִּיצָה")],
+  "צ":[T_("tsadi"), D_("bird","צִפּוֹר"), D_("frog","צְפַרְדֵּעַ"), D_("plate","צַלַּחַת")],
+  "ק":[T_("qof"), I_("bow","קֶשֶׁת"), I_("helmet","קַסְדָּה"), D_("monkey","קוֹף")],
+  "ר":[T_("resh"), D_("robot","רוֹבּוֹט"), D_("pomegranate","רִמּוֹן"), D_("train","רַכֶּבֶת")],
+  "ש":[T_("shin"), D_("sun","שֶׁמֶשׁ"), D_("clock","שָׁעוֹן"), D_("chocolate","שׁוֹקוֹלָד")],
+  "ת":[T_("tav"), D_("apple","תַּפּוּחַ"), D_("strawberry","תּוּת"), D_("drum","תּוֹף")],
+  /* final letters: own cues, the word ENDS with the letter (ך sounds ח and ף sounds f, never like כּ / פּ) */
+  "ך":[D_("crown","מֶלֶךְ"), D_("road","דֶּרֶךְ"), D_("moon","חֹשֶׁךְ")],
+  "ם":[D_("sea","יָם"), D_("rain","גֶּשֶׁם"), D_("drop","מַיִם"), D_("fire","חַם")],
+  "ן":[I_("shield","מָגֵן"), D_("balloon","בַּלּוֹן"), D_("lemon","לִימוֹן"), D_("clock","שָׁעוֹן")],
+  "ף":[D_("monkey","קוֹף"), D_("spoon","כַּף"), D_("chicken","עוֹף"), D_("beach","חוֹף")],
+  "ץ":[I_("log","עֵץ"), I_("arrow","חֵץ"), D_("juice","מִיץ"), D_("sun","קַיִץ")],
+  /* ב כ פ without a dagesh (v, ח, f): the first option is the existing sound card */
+  "rafe:ב":[{id:"sound", rafe:true}, I_("sword","חֶרֶב"), D_("star","כּוֹכָב"), D_("gold","זָהָב")],
+  "rafe:כ":[{id:"sound", rafe:true}, D_("car","מְכוֹנִית"), D_("pants","מִכְנָסַיִם")],
+  "rafe:פ":[{id:"sound", rafe:true}, D_("glasses","מִשְׁקָפַיִם"), D_("book","סֵפֶר"), D_("phone","טֶלֶפוֹן")],
+  /* vowel sounds: mouth shape (default), a word that starts with the sound, a face making the sound, or just the mark */
+  "vowel:a":[{id:"mouth"}, I_("chest","אַרְגָּז"), {id:"face", img:"art/cues/face-a.svg", word:"אָאָא"}, {id:"mark"}],
+  "vowel:i":[{id:"mouth"}, D_("island","אִי"), {id:"face", img:"art/cues/face-i.svg", word:"אִיייי"}, {id:"mark"}],
+  "vowel:e":[{id:"mouth"}, I_("emerald","אֶמֶרַלְד"), {id:"face", img:"art/cues/face-e.svg", word:"אֶה?"}, {id:"mark"}],
+  "vowel:o":[{id:"mouth"}, I_("treasure","אוֹצָר"), {id:"face", img:"art/cues/face-o.svg", word:"אוֹ!"}, {id:"mark"}],
+  "vowel:u":[{id:"mouth"}, D_("cake","עוּגָה"), {id:"face", img:"art/cues/face-u.svg", word:"אוּוּוּ"}, {id:"mark"}]
+};
+const CUE_KEYS = [...LETTERS, ...FINALS, "rafe:ב", "rafe:כ", "rafe:פ", ...["a","i","e","o","u"].map(v=>"vowel:"+v)];
+let cueChoices = {};
+const cueKind = k => k.startsWith("vowel:") ? "vowel" : k.startsWith("rafe:") ? "rafe" : FINALS.includes(k) ? "final" : "letter";
+const cueChoice = k => (CUE_SETS[k]||[]).find(o=>o.id===cueChoices[k]) || (CUE_SETS[k]||[])[0];
+const letterColor = L => ["#7E95AA","#C9862A","#9C4A1E","#CF8080"][L.charCodeAt(0)%4];
+/* underline the letter the cue is about: for finals and soft ב/כ/פ it is not the first letter of the word */
+function markLetter(word, L){ let done=false; return word.replace(/([א-ת])([֑-ׇ]*)/g,(m,ch,mk)=>{ if(done || ch!==L || mk.includes("ּ")) return m; done=true; return `<span class="hl">${m}</span>`; }); }
+const cueLabel = k => { const kind=cueKind(k);
+  if(kind==="vowel"){ const v=k.slice(6); return {a:"קמץ / פתח",i:"חיריק",e:"צירה / סגול",o:"חולם",u:"שורוק / קובוץ"}[v]; }
+  if(kind==="rafe") return `${k.slice(5)} בלי נקודה`; if(kind==="final") return `${k} סופית`; return k; };
+/* the inside of a cue card for key k with option o */
+function cueInner(k, o){
+  const kind = cueKind(k);
+  if(kind==="vowel"){ const v=k.slice(6), V=VOWEL[v];
+    if(o.id==="mouth") return MOUTH[v]+`<span>${V.mark}</span>`;
+    if(o.id==="mark") return `<span class="vm">${V.mark}</span>`;
+    return `<img src="${o.img}" alt=""><span>${o.word}</span>`; }
+  if(o.rafe){ const L=k.slice(5), snd={"פ":"f","ב":"v","כ":"ח"}[L]; return (L==="כ" ? `<b class="rl">ח</b>` : RAFE_MOUTH) + `<span>${L} = ${snd}</span>`; }
+  if(o.teacher) return `<img src="${o.img}" alt="">`;
+  const L = kind==="rafe" ? k.slice(5) : k;
+  return `<div class="dc" style="--lc:${letterColor(L)}"><b class="dl">${L}</b><img src="${o.img}" alt=""><span class="dw">${kind==="letter" ? o.word : markLetter(o.word, L)}</span></div>`;
+}
+/* a whole cue (stem + card); extra = attributes for the card */
+function cueCard(k, o, cls, extra){
+  const kind = cueKind(k), alt = o.word ? `: ${o.word}` : "";
+  if(kind==="vowel"){ const V=VOWEL[k.slice(6)]; return `<div class="cue vowel ${cls||""}" style="--vc:${V.c};--lc:${V.c}"><span class="stem"></span><div class="card" ${extra||""} role="img" aria-label="${V.name}${alt}">${cueInner(k,o)}</div></div>`; }
+  if(kind==="rafe") return `<div class="cue rafe${o.rafe?"":" drawn"} ${cls||""}"><span class="stem"></span><div class="card" ${extra||""} role="img" aria-label="${k.slice(5)} בלי נקודה${alt}">${cueInner(k,o)}</div></div>`;
+  return `<div class="cue letter ${cls||""}" style="--vc:${S && S.curVowel ? VOWEL[S.curVowel].c : "transparent"}"><span class="stem"></span><div class="card" ${extra||""} role="img" aria-label="רמז לאות ${k}${alt}">${cueInner(k,o)}</div></div>`;
+}
 const FONTS = {alef:"'Alef'", noto:"'Noto Sans Hebrew'", rubik:"'Rubik'", frank:"'Frank Ruhl Libre'"};
 
 /* ---------- Hebrew unit analysis ---------- */
@@ -620,7 +737,7 @@ function cueItems(unit){
   const A = analyze(unit), items=[];
   A.letters.forEach((l,i)=>{
     if(!l.carrier && !l.silent && "בכפ".includes(l.ch) && !l.marks.includes("ּ")) items.push({type:"rafe", letter:l.ch});
-    else if(!l.carrier && !l.silent && CUE_FILE[l.ch]) items.push({type:"letter", letter:l.ch, file:CUE_FILE[l.ch]});
+    else if(!l.carrier && !l.silent && CUE_SETS[l.ch]) items.push({type:"letter", letter:l.ch});
     if(i===A.vowelAt && A.vowel) items.push({type:"vowel", v:A.vowel});
   });
   return items;
@@ -640,6 +757,7 @@ const $ = id => document.getElementById(id);
 const store = { get(k,d){ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){return d;} }, set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} } };
 const settings = Object.assign({mode:"units", modelAfter:"2", cues:"always", quiet:"reading", color:"tint", font:"alef", scale:1, theme:"dark"}, store.get("ori.t3.settings",{}));
 let reads = store.get("ori.t3.letterReads",{});
+cueChoices = store.get("ori.t3.cueChoice",{});
 function saveSettings(){ store.set("ori.t3.settings", settings); applySettings(); }
 function applySettings(){
   const r=document.documentElement.style; r.setProperty("--scale", settings.scale); r.setProperty("--word", FONTS[settings.font]+",'Noto Sans Hebrew',Arial,sans-serif");
@@ -672,15 +790,15 @@ function paintTop(){
   $("dots").innerHTML = PAGES.map((_,i)=>`<span class="${i<S.page?"done":i===S.page?"now":""}"></span>`).join("");
   $("pageLbl").textContent = `דף ${S.page+1} מתוך ${PAGES.length}`;
 }
+const cueKeyOf = it => it.type==="letter" ? it.letter : it.type==="rafe" ? "rafe:"+it.letter : "vowel:"+it.v;
 function cueHTML(it, small){
-  if(it.type==="rafe"){ const snd = {"פ":"f","ב":"v","כ":"ח"}[it.letter]; const pic = it.letter==="כ" ? `<b class="rl">ח</b>` : RAFE_MOUTH;
-    return `<div class="cue rafe"><span class="stem"></span><div class="card" role="img" aria-label="${it.letter} בלי נקודה נשמעת ${snd}">${pic}<span>${it.letter} = ${snd}</span></div></div>`; }
-  if(it.type==="vowel"){ const V=VOWEL[it.v]; return `<div class="cue vowel" style="--vc:${V.c}"><span class="stem"></span><div class="card" role="img" aria-label="צורת הפה: ${V.name}">${MOUTH[it.v]}<span>${V.mark}</span></div></div>`; }
+  const k = cueKeyOf(it), tap = `data-cue="${k}"`;
+  if(it.type!=="letter") return cueCard(k, cueChoice(k), "", tap);
   const n = reads[it.letter]||0, fade = settings.cues==="fade" && !small;
   const state = fade ? (n>=6 ? "chip" : n>=3 ? "faded" : "") : "";
   const vc = S && S.curVowel ? VOWEL[S.curVowel].c : "transparent";
   if(state==="chip") return `<div class="cue letter chip" style="--vc:${vc}"><span class="stem"></span><div class="card" data-open="${it.letter}" role="button" aria-label="פתח רמז לאות ${it.letter}">${it.letter}</div></div>`;
-  return `<div class="cue letter ${state}" style="--vc:${vc}"><span class="stem"></span><div class="card"><img src="cues/${it.file}.png" alt="רמז המורה לאות ${it.letter}: ${CUE_WORD[it.file]||""}"></div></div>`;
+  return cueCard(k, cueChoice(k), state, tap);
 }
 function paint(){
   paintTop();
@@ -858,9 +976,9 @@ function paintRoom(){
   paintAvatar($("roomAvatar")); $("photoLbl").textContent = store.get("ori.t3.photo",null) ? "החלף תמונה" : "הוסף תמונה";
   const inv = inventory(); const gotItems = ITEMS.filter(it=>inv[it.id]).length;
   const seen = ALL_WORDS.filter(w=>PROG.seen[w]).length;
-  const order = ["א","ב","ג","ד","ה","ו","ז","ח","ט","י","כ","ל","מ","נ","ס","ע","פ","צ","ק","ר","ש","ת"];
+  const order = [...LETTERS, ...FINALS];
   const mastered = order.filter(L=>(reads[L]||0)>=3).length;
-  $("roomStats").innerHTML = `<div><b>${gotItems}<small>/${ITEMS.length}</small></b><span>חפצים נאספו</span></div><div><b>${seen}<small>/${ALL_WORDS.length}</small></b><span>מילים נחשפו</span></div><div><b>${mastered}<small>/22</small></b><span>אותיות שאורי שולט</span></div><div><b>⭐ ${PROG.stars}</b><span>כוכבים</span></div>`;
+  $("roomStats").innerHTML = `<div><b>${gotItems}<small>/${ITEMS.length}</small></b><span>חפצים נאספו</span></div><div><b>${seen}<small>/${ALL_WORDS.length}</small></b><span>מילים נחשפו</span></div><div><b>${mastered}<small>/${order.length}</small></b><span>אותיות שאורי שולט</span></div><div><b>⭐ ${PROG.stars}</b><span>כוכבים</span></div>`;
   let next = null; STORIES.some((b,i)=>{ const k=b.pages.findIndex((_,j)=>!doneOf(i)[j+1]); if(k>=0){ next={b:i,p:k}; return true; } return false; });
   $("roomNext").innerHTML = next ? `<span>האוצר הבא מחכה:</span> <b>${STORIES[next.b].short.replace(/[֑-ׇ]/g,"")} · דף ${next.p+1}</b> <button class="kb kb-g" data-go="${next.b}:${next.p}">לך לשם ←</button>` : `<b>כל האוצרות נפתחו! 🏆</b>`;
   const slot = (it, go) => { const n=inv[it.id]||0;
@@ -872,7 +990,8 @@ function paintRoom(){
     return `<section class="shelf"><div class="sh"><h3>${b.title}</h3><span class="cnt">${d}/${b.pages.length} דפים</span><div class="bar2"><i style="width:${Math.round(d/b.pages.length*100)}%"></i></div></div><div class="inv">${slots.join("")}</div></section>`; }).join("")
     + `<section class="shelf"><div class="sh"><h3>בַּהֶמְשֵׁךְ… עַד הַדְּרָקוֹן</h3></div><div class="inv">${ITEMS.filter(it=>it.future).map(it=>slot(it,null)).join("")}</div></section>`;
   $("roomLetters").innerHTML = order.map(L=>{ const n=reads[L]||0, got=n>=3;
-    return got ? `<div class="lt got"><img src="cues/${CUE_FILE[L]}.png" alt=""><b>${L}</b></div>` : `<div class="lt"><b>${L}</b><i style="width:${Math.min(100,Math.round(n/3*100))}%"></i></div>`; }).join("");
+    const o = cueChoice(L);
+    return got ? `<div class="lt got"><img src="${o.img}" alt="" style="${o.teacher?"":"width:70%;height:70%;image-rendering:pixelated"}"><b>${L}</b></div>` : `<div class="lt"><b>${L}</b><i style="width:${Math.min(100,Math.round(n/3*100))}%"></i></div>`; }).join("");
 }
 $("roomBooks").addEventListener("click",e=>{ const t=e.target.closest("[data-go]"); if(!t) return; const [b,p]=t.dataset.go.split(":").map(Number); openBook(b,p); });
 $("roomNext").addEventListener("click",e=>{ const t=e.target.closest("[data-go]"); if(!t) return; const [b,p]=t.dataset.go.split(":").map(Number); openBook(b,p); });
@@ -882,6 +1001,40 @@ $("photoIn").onchange=e=>{ const file=e.target.files&&e.target.files[0]; if(!fil
     store.set("ori.t3.photo", c.toDataURL("image/jpeg",0.85)); URL.revokeObjectURL(url); paintRoom(); }; img.src=url; e.target.value=""; };
 $("homeBtn").onclick=openHome; $("endHome").onclick=openHome; $("homeGear").onclick=openP;
 setInterval(()=>{ if(!$("start").hidden && REC.on) $("homeRecTime").textContent = fmt((now()-REC.started)/1000); }, 1000);
+
+/* ---------- cue picker: a grid of every letter / final / soft letter / vowel, then up to 4 big options for one of them ---------- */
+let cpKey = null;
+function openCuePick(k){ $("cuePick").hidden=false; cpKey = k||null; paintCuePick(); if(S) log("cue_picker_open"); }
+function closeCuePick(){ $("cuePick").hidden=true; if(!$("room").hidden) paintRoom(); }
+function paintCuePick(){
+  const body=$("cpBody");
+  $("cpBackLbl").textContent = cpKey ? "כל האותיות" : "סגור";
+  if(!cpKey){
+    $("cpTitle").textContent = "בּוֹחֲרִים רְמָזִים";
+    const tile = k => { const o=cueChoice(k), kind=cueKind(k);
+      const pic = kind==="vowel" ? (o.img ? `<img src="${o.img}" alt="">` : `<span class="vm" style="color:${VOWEL[k.slice(6)].hex}">${VOWEL[k.slice(6)].mark}</span>`)
+        : o.rafe ? `<span class="vm" style="color:#B2524A">${k.slice(5)}</span>` : `<img src="${o.img}" alt="" style="${o.teacher?"image-rendering:auto;width:84%;height:84%":""}">`;
+      return `<button class="cptile" data-key="${k}" aria-label="${cueLabel(k)}">${kind==="vowel"||o.rafe?"":`<b>${kind==="rafe"?k.slice(5):k}</b>`}${pic}${kind==="letter"&&o.teacher?"":`<small>${kind==="vowel"?cueLabel(k):kind==="rafe"?cueLabel(k):o.word||""}</small>`}</button>`; };
+    const grp = (h, keys) => `<section class="cpgrp"><h3>${h}</h3><div class="cpgrid">${keys.map(tile).join("")}</div></section>`;
+    body.innerHTML = `<div class="hint" style="font-size:19px;color:var(--dim-on-dark)">לוחצים על אות, ואורי בוחר את הרמז שהכי עוזר לו לזכור אותה. הבחירה נשמרת ומופיעה בזמן הקריאה.</div>`
+      + grp("אוֹתִיּוֹת", LETTERS) + grp("אוֹתִיּוֹת סוֹפִיּוֹת", FINALS) + grp("ב כ פ בְּלִי נְקֻדָּה", ["rafe:ב","rafe:כ","rafe:פ"]) + grp("צְלִילֵי הַנִּקּוּד", CUE_KEYS.filter(k=>k.startsWith("vowel:")));
+    return;
+  }
+  const k=cpKey, kind=cueKind(k), cur=cueChoice(k), i=CUE_KEYS.indexOf(k);
+  const what = kind==="vowel" ? `<b style="color:${VOWEL[k.slice(6)].hex}">${VOWEL[k.slice(6)].mark}</b> (${cueLabel(k)})` : kind==="rafe" ? `<b>${k.slice(5)}</b> בלי נקודה` : kind==="final" ? `<b>${k}</b> סופית` : `<b>${k}</b>`;
+  $("cpTitle").textContent = cueLabel(k);
+  body.innerHTML = `<div class="cpq">אֵיזֶה רֶמֶז הֲכִי עוֹזֵר לְךָ? ${what}</div>
+    <div class="cpopts cues">${CUE_SETS[k].map(o=>`<button class="cpopt${o===cur?" on":""}" data-opt="${o.id}">${cueCard(k,o,"")}<span>${o.teacher?"הרמז של המורה":o.rafe?"הכרטיס של הצליל":o.id==="mouth"?"צורת הפה":o.id==="mark"?"רק הסימן":o.id==="face"?"פרצוף של הצליל":""}</span><span class="ok"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5L19.5 7"/></svg></span></button>`).join("")}</div>
+    <div id="cpExtra"></div>
+    <div class="cpnav"><button class="kb kb-v" data-nav="-1" ${i<=0?"disabled":""}>→ ${i>0?cueLabel(CUE_KEYS[i-1]):""}</button><button class="kb kb-g" data-nav="1" ${i>=CUE_KEYS.length-1?"disabled":""}>${i<CUE_KEYS.length-1?cueLabel(CUE_KEYS[i+1]):""} ←</button></div>`;
+}
+$("cpBody").addEventListener("click",e=>{
+  const t=e.target.closest("[data-key]"); if(t){ cpKey=t.dataset.key; paintCuePick(); $("cuePick").scrollTop=0; return; }
+  const o=e.target.closest("[data-opt]"); if(o && cpKey){ cueChoices[cpKey]=o.dataset.opt; store.set("ori.t3.cueChoice",cueChoices); if(S) log("cue_chosen",{key:cpKey, option:o.dataset.opt}); paintCuePick(); return; }
+  const n=e.target.closest("[data-nav]"); if(n && cpKey){ const i=CUE_KEYS.indexOf(cpKey)+(+n.dataset.nav); if(CUE_KEYS[i]){ cpKey=CUE_KEYS[i]; paintCuePick(); } }
+});
+$("cpBack").onclick=()=>{ if(cpKey){ cpKey=null; paintCuePick(); } else closeCuePick(); };
+$("pickCues").onclick=()=>openCuePick();
 
 /* ---------- recording: parent-started, always visible while on ---------- */
 const REC = {on:false, stream:null, rec:null, chunks:[], started:0, mime:"", timer:null, saved:[]};
@@ -986,7 +1139,7 @@ $("cpLog").onclick=()=>{ const ev=S?S.events:allEvents(); navigator.clipboard.wr
 $("fsBtn").onclick=toggleFs;
 $("quietBtn").onclick=()=>{ quietOverride = !isQuiet(); log("quiet_mode",{on:quietOverride, source:"moon"}); if(S.phase==="pageEnd") pageEnd(); else paint(); };
 $("markBtn").onclick=()=>{ log("parent_marker"); const b=$("markBtn"); b.style.color="var(--amber)"; setTimeout(()=>b.style.color="",500); };
-$("stageEl").addEventListener("click",e=>{ const c=e.target.closest("[data-open]"); if(!c) return; const L=c.dataset.open; c.outerHTML=`<div class="card"><img src="cues/${CUE_FILE[L]}.png" alt=""></div>`; log("cue_opened",{letter:L}); log("hint_shown",{letter:L, why:"tap"}); });
+$("stageEl").addEventListener("click",e=>{ const c=e.target.closest("[data-open]"); if(!c) return; const L=c.dataset.open; c.outerHTML=`<div class="card" data-cue="${L}">${cueInner(L, cueChoice(L))}</div>`; log("cue_opened",{letter:L}); log("hint_shown",{letter:L, why:"tap"}); });
 $("bOk").onclick=onOk; $("bAgain").onclick=onAgain; $("bWhole").onclick=onWhole;
 $("bSentAgain").onclick=()=>{ S.misses++; log("mark",{outcome:"sentence_again", ms_on_step:now()-S.t0}); };
 $("bNext").onclick=()=>{ log("mark",{outcome:"sentence_correct", ms_on_step:now()-S.t0}); reward(); const first=!bookDone()[S.page+1]; bookDone()[S.page+1]=true; saveProg();
