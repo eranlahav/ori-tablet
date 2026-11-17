@@ -1,5 +1,5 @@
 // Network first, so updates show up right away; the cache is only a fallback when offline.
-const CACHE = "ori-tablet-v6";
+const CACHE = "ori-tablet-v7";
 self.addEventListener("install", e => self.skipWaiting());
 self.addEventListener("activate", e => e.waitUntil(self.clients.claim()));
 self.addEventListener("fetch", e => {
