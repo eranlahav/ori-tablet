@@ -248,6 +248,23 @@ body.quiet .rec.off{display:none}
 .book .bt{font-family:var(--word);font-size:24px;font-weight:700;line-height:1.1}
 .book .bp{position:absolute;top:10px;left:10px;background:rgba(20,16,30,.8);border-radius:10px;padding:1px 8px;font-size:16px;font-weight:800}
 .book.on{box-shadow:0 0 0 4px var(--amber),0 5px 0 #1A1526}
+/* story list: current story big, other open ones beside it, next locked one, finished ones folded away */
+#books{display:flex;flex-direction:column;gap:10px}
+.brow{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;align-items:stretch}
+.book.now{grid-row:span 1}
+.book.now img{aspect-ratio:2/1}
+.book.now .bt{font-size:30px}
+.book .bar3{display:block;width:92%;height:8px;border-radius:8px;background:rgba(255,255,255,.15);overflow:hidden}
+.book .bar3 b{display:block;height:100%;background:var(--amber);border-radius:8px}
+.book.locked{opacity:.75}
+.book.locked img{filter:grayscale(1) brightness(.4)}
+.book.locked .lock{position:absolute;top:22%;left:50%;transform:translateX(-50%);font-size:40px}
+.book.shake{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+.shelfbtn{display:flex;align-items:center;gap:10px;justify-content:center;background:rgba(255,255,255,.08);border-radius:14px;padding:8px 14px;color:var(--ink-on-dark);font-family:var(--word);font-size:22px;font-weight:700}
+.shelfbtn b{background:var(--amber);color:#2A1A05;border-radius:12px;padding:0 10px;font-size:18px}
+.bshelf{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.bshelf .book .bt{font-size:18px}
 /* room */
 .room{overflow-y:auto;overflow-x:hidden}
 .hero{display:flex;gap:28px;align-items:center;flex-shrink:0}
@@ -528,6 +545,12 @@ html.ch-beta body::after{content:"בטא";position:fixed;top:6px;left:6px;z-inde
         </section>
       </div>
       <div class="pcol">
+        <section class="sec"><h3>הסיפורים</h3>
+          <div class="seg" data-set="name"><button data-v="on">עם השם של אורי</button><button data-v="off">בגוף ראשון ("אני")</button></div>
+          <div class="hint">בפרקים 10 ומעלה. בפרקים 1–3 השם תמיד בסיפור, ובפרקים 4–9 הסיפור תמיד בגוף ראשון.</div>
+          <div class="seg" data-set="unlock"><button data-v="order">נפתחים לפי הסדר</button><button data-v="all">כל הסיפורים פתוחים</button></div>
+          <div class="hint">לפי הסדר: סיפור נפתח כשהקודם נקרא עד הסוף (או אם אורי כבר התחיל אותו). סיפורים שנגמרו מחכים מתחת ל"סיפורים שקראתי".</div>
+        </section>
         <section class="sec"><h3>איך מתקדמים</h3>
           <div class="seg" data-set="mode"><button data-v="units">יחידה אחרי יחידה</button><button data-v="word">מילה קודם, יחידות אחרי טעות</button></div>
           <label>"אבא אומר" אחרי <span class="seg" data-set="modelAfter" style="flex:1"><button data-v="2">2 טעויות</button><button data-v="3">3 טעויות</button></span></label>
@@ -674,6 +697,66 @@ const PAGES_PORTAL = [
   {reveal:3, words:[["דֶּנִיס",["דֶּ","נִיס"]],["וַאֲנִי",["וַ","אֲ","נִי"]],["רָצִים",["רָ","צִים"]],["לַפּוֹרְטָל!",["לַ","פּוֹרְ","טָל"]]]},
   {reveal:2, words:[["לְאָן?",["לְ","אָן"]],["לְעוֹלַם",["לְ","עוֹ","לַם"]],["הָאֵשׁ!",["הָ","אֵשׁ"]]]}
 ];
+/* saga episodes 10-12 (2026-11-18): open-ended (no dragon ending for now). Eran asked for Ori's name back in the text:
+   each page is written with the name (3rd person, like stories 1-3); pages that change without it carry `me` = the first-person
+   version ("I"), used when the parent panel switch "השם של אורי בסיפור" is off. No soft כ/ך, no sin, no double yod. */
+const W = (w, u) => [w, u];
+const ORI = W("אוֹרִי",["אוֹ","רִי"]);
+/* page 1 of each episode is kept extra easy (17.11 video: he resists starting). */
+/* episode 10: the fire world. Ori says "blaze", so the monster is בְּלֵיז (one yod, so the app does not cue a second letter) */
+const PAGES_FIRE = [
+  {reveal:3, words:[ORI,W("בָּא.",["בָּא"]),W("הַכֹּל",["הַ","כֹּל"]),W("אָדֹם!",["אָ","דֹם"])],
+     me:{reveal:2, words:[W("בָּאתִי.",["בָּא","תִי"]),W("הַכֹּל",["הַ","כֹּל"]),W("אָדֹם!",["אָ","דֹם"])]}},
+  {reveal:2, words:[W("זֶה",["זֶה"]),W("עוֹלַם",["עוֹ","לַם"]),W("הָאֵשׁ!",["הָ","אֵשׁ"])]},
+  {reveal:4, words:[W("יֵשׁ",["יֵשׁ"]),W("פֹּה",["פֹּה"]),W("יָם",["יָם"]),W("שֶׁל",["שֶׁל"]),W("לָבָה!",["לָ","בָה"])]},
+  {reveal:2, words:[W("פִּתְאוֹם",["פִּתְ","אוֹם"]),W("בָּא",["בָּא"]),W("בְּלֵיז!",["בְּ","לֵיז"])]},
+  {reveal:2, words:[W("הַבְּלֵיז",["הַ","בְּ","לֵיז"]),W("יָרָה",["יָ","רָה"]),W("אֵשׁ!",["אֵשׁ"])]},
+  {reveal:3, words:[ORI,W("הֵרִים",["הֵ","רִים"]),W("אֶת",["אֶת"]),W("הַמָּגֵן.",["הַ","מָּ","גֵן"])],
+     me:{reveal:2, words:[W("הֵרַמְתִּי",["הֵ","רַמְ","תִּי"]),W("אֶת",["אֶת"]),W("הַמָּגֵן.",["הַ","מָּ","גֵן"])]}},
+  {reveal:3, words:[ORI,W("הִכָּה",["הִ","כָּה"]),W("אֶת",["אֶת"]),W("הַבְּלֵיז!",["הַ","בְּ","לֵיז"])],
+     me:{reveal:2, words:[W("הִכֵּיתִי",["הִ","כֵּי","תִי"]),W("אֶת",["אֶת"]),W("הַבְּלֵיז!",["הַ","בְּ","לֵיז"])]}},
+  {reveal:1, words:[W("הַבְּלֵיז",["הַ","בְּ","לֵיז"]),W("נָפַל!",["נָ","פַל"])]},
+  {reveal:3, item:["firerod",2], words:[ORI,W("מָצָא",["מָ","צָא"]),W("בְּלֵיז",["בְּ","לֵיז"]),W("רוֹד!",["רוֹד"])],
+     me:{reveal:2, words:[W("מָצָאתִי",["מָ","צָא","תִי"]),W("בְּלֵיז",["בְּ","לֵיז"]),W("רוֹד!",["רוֹד"])]}},
+  {reveal:3, words:[ORI,W("וְדֶנִיס",["וְ","דֶ","נִיס"]),W("בָּאוּ",["בָּ","אוּ"]),W("הַבַּיְתָה.",["הַ","בַּיְ","תָה"])],
+     me:{reveal:3, words:[W("דֶּנִיס",["דֶּ","נִיס"]),W("וַאֲנִי",["וַ","אֲ","נִי"]),W("בָּאנוּ",["בָּא","נוּ"]),W("הַבַּיְתָה.",["הַ","בַּיְ","תָה"])]}}
+];
+/* episode 11: a new house, flowers and bees. Something to learn: bees live in a nest, they sting, smoke calms them (a campfire under
+   the nest works in the game too). The soft ב in דְּבוֹרִים / דְּבַשׁ gets the v card. */
+const PAGES_BEES = [
+  {reveal:3, words:[ORI,W("בָּנָה",["בָּ","נָה"]),W("בַּיִת",["בַּ","יִת"]),W("גָּדוֹל!",["גָּ","דוֹל"])],
+     me:{reveal:2, words:[W("בָּנִיתִי",["בָּ","נִי","תִי"]),W("בַּיִת",["בַּ","יִת"]),W("גָּדוֹל!",["גָּ","דוֹל"])]}},
+  {reveal:3, item:["flower",3], words:[W("לְיַד",["לְ","יַד"]),W("הַבַּיִת",["הַ","בַּ","יִת"]),W("יֵשׁ",["יֵשׁ"]),W("פְּרָחִים.",["פְּ","רָ","חִים"])]},
+  {reveal:3, words:[W("עַל",["עַל"]),W("הַפְּרָחִים",["הַ","פְּ","רָ","חִים"]),W("יֵשׁ",["יֵשׁ"]),W("דְּבוֹרִים!",["דְּ","בוֹ","רִים"])]},
+  {reveal:2, words:[W("דְּבוֹרִים",["דְּ","בוֹ","רִים"]),W("גָּרוֹת",["גָּ","רוֹת"]),W("בַּקֵּן.",["בַּ","קֵּן"])]},
+  {reveal:2, words:[W("בַּקֵּן",["בַּ","קֵּן"]),W("יֵשׁ",["יֵשׁ"]),W("דְּבַשׁ!",["דְּ","בַשׁ"])]},
+  {reveal:2, words:[W("זְהִירוּת!",["זְ","הִי","רוּת"]),W("דְּבוֹרִים",["דְּ","בוֹ","רִים"]),W("עוֹקְצוֹת!",["עוֹקְ","צוֹת"])]},
+  {reveal:2, words:[ORI,W("הִדְלִיק",["הִדְ","לִיק"]),W("מְדוּרָה.",["מְ","דוּ","רָה"])],
+     me:{reveal:1, words:[W("הִדְלַקְתִּי",["הִדְ","לַקְ","תִּי"]),W("מְדוּרָה.",["מְ","דוּ","רָה"])]}},
+  {reveal:1, words:[W("יֵשׁ",["יֵשׁ"]),W("עָשָׁן.",["עָ","שָׁן"]),W("הַדְּבוֹרִים",["הַ","דְּ","בוֹ","רִים"]),W("שְׁקֵטוֹת.",["שְׁ","קֵ","טוֹת"])]},
+  {reveal:2, item:["honey",3], words:[ORI,W("לָקַח",["לָ","קַח"]),W("דְּבַשׁ!",["דְּ","בַשׁ"])],
+     me:{reveal:1, words:[W("לָקַחְתִּי",["לָ","קַחְ","תִּי"]),W("דְּבַשׁ!",["דְּ","בַשׁ"])]}},
+  {reveal:2, words:[ORI,W("טָעַם:",["טָ","עַם"]),W("מָתוֹק",["מָ","תוֹק"]),W("מְאֹד!",["מְ","אֹד"])],
+     me:{reveal:1, words:[W("טָעַמְתִּי:",["טָ","עַמְ","תִּי"]),W("מָתוֹק",["מָ","תוֹק"]),W("מְאֹד!",["מְ","אֹד"])]}}
+];
+/* episode 12: the turtles. Something to learn: turtles lay eggs in the sand and the babies run to the sea.
+   The teacher's צ cue is צָב, so this episode repeats it a lot. Ends with a treasure map: a hook for whatever comes next. */
+const PAGES_TURTLES = [
+  {reveal:2, words:[ORI,W("בָּא",["בָּא"]),W("לַיָּם.",["לַ","יָּם"])],
+     me:{reveal:1, words:[W("בָּאתִי",["בָּא","תִי"]),W("לַיָּם.",["לַ","יָּם"])]}},
+  {reveal:2, words:[W("בַּחוֹל",["בַּ","חוֹל"]),W("יֵשׁ",["יֵשׁ"]),W("צָבִים!",["צָ","בִים"])]},
+  {reveal:3, words:[W("צָב",["צָב"]),W("גָּדוֹל",["גָּ","דוֹל"]),W("וְצָב",["וְ","צָב"]),W("קָטָן.",["קָ","טָן"])]},
+  {reveal:2, words:[W("לַצָּבִים",["לַ","צָּ","בִים"]),W("יֵשׁ",["יֵשׁ"]),W("בֵּיצִים",["בֵּי","צִים"]),W("בַּחוֹל.",["בַּ","חוֹל"])]},
+  {reveal:3, words:[W("מֵהַבֵּיצִים",["מֵ","הַ","בֵּי","צִים"]),W("יָצְאוּ",["יָצְ","אוּ"]),W("צָבִים",["צָ","בִים"]),W("קְטַנִּים!",["קְ","טַ","נִּים"])]},
+  {reveal:3, item:"turtle", words:[ORI,W("שָׁמַר",["שָׁ","מַר"]),W("עַל",["עַל"]),W("הַצָּבִים.",["הַ","צָּ","בִים"])],
+     me:{reveal:2, words:[W("שָׁמַרְתִּי",["שָׁ","מַרְ","תִּי"]),W("עַל",["עַל"]),W("הַצָּבִים.",["הַ","צָּ","בִים"])]}},
+  {reveal:2, words:[W("הַצָּבִים",["הַ","צָּ","בִים"]),W("רָצוּ",["רָ","צוּ"]),W("לַמַּיִם.",["לַ","מַּ","יִם"])]},
+  {reveal:2, words:[ORI,W("קָפַץ",["קָ","פַץ"]),W("לַמַּיִם!",["לַ","מַּ","יִם"])],
+     me:{reveal:1, words:[W("קָפַצְתִּי",["קָ","פַצְ","תִּי"]),W("לַמַּיִם!",["לַ","מַּ","יִם"])]}},
+  {reveal:2, words:[W("בַּמַּיִם",["בַּ","מַּ","יִם"]),W("יֵשׁ",["יֵשׁ"]),W("סְפִינָה",["סְ","פִי","נָה"]),W("יְשָׁנָה!",["יְ","שָׁ","נָה"])]},
+  {reveal:3, item:"tmap", words:[ORI,W("מָצָא",["מָ","צָא"]),W("מַפַּת",["מַ","פַּת"]),W("אוֹצָר!",["אוֹ","צָר"])],
+     me:{reveal:2, words:[W("מָצָאתִי",["מָ","צָא","תִי"]),W("מַפַּת",["מַ","פַּת"]),W("אוֹצָר!",["אוֹ","צָר"])]}}
+];
 /* collectible items: one slot each in the room; a page that gives an item says item:"id" or item:["id",count].
    future:true = waits for a later episode (shown as a silhouette, so there is something to look forward to). */
 const ITEMS = [
@@ -684,7 +767,8 @@ const ITEMS = [
   {id:"sword", name:"חֶרֶב"}, {id:"shield", name:"מָגֵן"}, {id:"helmet", name:"קַסְדָּה"}, {id:"dmap", name:"מַפַּת דַּיְמוֹנְדִּים"},
   {id:"diamond", name:"דַּיְמוֹנְד"}, {id:"dpick", name:"דַּיְמוֹנְד פִּיקְאַקְס"}, {id:"flint", name:"מַצִּית"}, {id:"dog", name:"דֶּנִיס הַכֶּלֶב"},
   {id:"obsidian", name:"אוֹבְּסִידִיאַן"},
-  {id:"firerod", name:"מוֹט אֵשׁ", future:true}, {id:"eye", name:"עַיִן", future:true}, {id:"egg", name:"בֵּיצַת דְּרָקוֹן", future:true}
+  {id:"firerod", name:"בְּלֵיז רוֹד"}, {id:"flower", name:"פֶּרַח"}, {id:"honey", name:"דְּבַשׁ"}, {id:"turtle", name:"צָב"}, {id:"tmap", name:"מַפַּת אוֹצָר"},
+  {id:"eye", name:"עַיִן", future:true}, {id:"egg", name:"בֵּיצַת דְּרָקוֹן", future:true}
 ];
 const ITEM = Object.fromEntries(ITEMS.map(i=>[i.id,i]));
 const pageItem = p => !p.item ? null : Array.isArray(p.item) ? {id:p.item[0], n:p.item[1]} : {id:p.item, n:1};
@@ -697,8 +781,15 @@ const STORIES = [
   {id:"night", title:"פֶּרֶק 6: הַלַּיְלָה בַּכְּפָר", short:"הַלַּיְלָה", art:"art/s6/", day:[], cover:8, pages:PAGES_NIGHT},
   {id:"diamonds", title:"פֶּרֶק 7: הַדַּיְמוֹנְדִּים", short:"הַדַּיְמוֹנְדִּים", art:"art/s7/", day:[2], cover:8, pages:PAGES_DIAMONDS},
   {id:"dog", title:"פֶּרֶק 8: הַסּוֹחֵר וְהַכֶּלֶב", short:"הַכֶּלֶב", art:"art/s8/", day:[1,2,3,4,5,6,7,8,9,10], cover:8, pages:PAGES_DOG},
-  {id:"portal", title:"פֶּרֶק 9: הַפּוֹרְטָל", short:"הַפּוֹרְטָל", art:"art/s9/", day:[1], cover:8, pages:PAGES_PORTAL}
+  {id:"portal", title:"פֶּרֶק 9: הַפּוֹרְטָל", short:"הַפּוֹרְטָל", art:"art/s9/", day:[1], cover:8, pages:PAGES_PORTAL},
+  {id:"fire", title:"פֶּרֶק 10: עוֹלַם הָאֵשׁ", short:"עוֹלַם הָאֵשׁ", art:"art/s10/", day:[], cover:7, pages:PAGES_FIRE},
+  {id:"bees", title:"פֶּרֶק 11: הַדְּבוֹרִים", short:"הַדְּבוֹרִים", art:"art/s11/", day:[1,2,3,4,5,6], cover:5, pages:PAGES_BEES},
+  {id:"turtles", title:"פֶּרֶק 12: הַצָּבִים", short:"הַצָּבִים", art:"art/s12/", day:[], cover:5, pages:PAGES_TURTLES}
 ];
+/* Ori's name in the story (Eran, 2026-11-18): pages written with the name may carry `me` (first person, no name).
+   Parent panel → "השם של אורי בסיפור" switches them; the default is with the name. */
+STORIES.forEach(b=>b.pages.forEach(p=>{ if(p.me){ p.named={reveal:p.reveal, words:p.words}; } }));
+function applyNameMode(on){ STORIES.forEach(b=>b.pages.forEach(p=>{ if(!p.me) return; const v = on ? p.named : p.me; p.reveal=v.reveal; p.words=v.words; })); }
 let BOOK = 0, PAGES = PAGES_ISLAND;
 function setBook(b){ BOOK = Math.max(0, Math.min(STORIES.length-1, b|0)); PAGES = STORIES[BOOK].pages; /* a story this version lacks (beta has more) keeps its saved choice */ if(BOOK===(b|0)) try{ localStorage.setItem("ori.t3.book", String(BOOK)); }catch(e){} }
 const CUE_WORD = {alef:"אַרְנָב",bet:"בֶּרֶז",gimel:"גִּבּוֹר עָל",dalet:"דַּחְלִיל",he:"הֶגֶה",vav:"וָפֶל",zayin:"זָנָב",het:"חֶדֶר",tet:"טֶלֶפוֹן",yod:"יוֹיוֹ",kaf:"כַּדּוּר",lamed:"לָשׁוֹן לְמַעְלָה",mem:"מְשֻׁלָּשׁ",nun:"נוּרָה",samekh:"סַל",ayin:"עַיִן",pe:"פֶּה",tsadi:"צָב",qof:"קוּקוּ",resh:"רֶגֶל",shin:"שִׁנַּיִם",tav:"תַּנִּין"};
@@ -854,7 +945,8 @@ function artHTML(n, revealed, bees){
 /* ---------- storage + settings ---------- */
 const $ = id => document.getElementById(id);
 const store = { get(k,d){ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){return d;} }, set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} } };
-const settings = Object.assign({mode:"units", modelAfter:"2", cues:"always", quiet:"reading", color:"tint", font:"alef", scale:1, theme:"dark"}, store.get("ori.t3.settings",{}));
+const settings = Object.assign({mode:"units", modelAfter:"2", cues:"always", quiet:"reading", color:"tint", font:"alef", scale:1, theme:"dark", name:"on", unlock:"order"}, store.get("ori.t3.settings",{}));
+applyNameMode(settings.name!=="off");
 let reads = store.get("ori.t3.letterReads",{});
 cueChoices = store.get("ori.t3.cueChoice",{});
 function saveSettings(){ store.set("ori.t3.settings", settings); applySettings(); }
@@ -998,7 +1090,7 @@ function begin(withRec){
   gotoPage(first);
 }
 function endSession(){
-  log("session_end",{stats:S.stats}); S.ended=true; startPage=0;
+  log("session_end",{stats:S.stats}); S.ended=true; startPage=0; autoBook=true;
   $("app").hidden=true; $("end").hidden=false; document.body.classList.remove("quiet");
   $("endArt").innerHTML = artHTML(10,true,true);
   $("stMin").textContent=Math.max(1,Math.round((now()-S.started)/60000)); $("stOk").textContent=S.stats.correct; $("stAgain").textContent=S.stats.again; $("stModel").textContent=S.stats.models;
@@ -1027,11 +1119,12 @@ function itemToast(pi){ const it=ITEM[pi.id]; if(!it) return; const t=$("itemToa
   t.classList.remove("on"); void t.offsetWidth; t.classList.add("on"); clearTimeout(itemToast.tm); itemToast.tm=setTimeout(()=>t.classList.remove("on"), 2600); }
 let startPage = 0;
 const live = () => S && !S.ended;
+let autoBook = true; // until Ori picks a story himself, home opens on the story he is up to
 function paintHome(){
+  if(autoBook && !live()){ const i = STORIES.findIndex((_,k)=>isOpen(k) && !isFinished(k)); if(i>=0 && (isFinished(BOOK) || !isOpen(BOOK))){ setBook(i); startPage=0; } }
   const done = Object.keys(bookDone()).length, left = PAGES.length - done;
   $("bookTitle").innerHTML = STORIES[BOOK].title;
-  $("books").innerHTML = STORIES.map((b,i)=>{ const d=Object.keys(doneOf(i)).length;
-    return `<button class="book${i===BOOK?" on":""}" data-book="${i}"><img src="${b.art}thumb/p${b.cover}-reveal.jpg" alt=""><span class="bt">${b.short}</span><span class="bp">${d===b.pages.length?"✓ ":""}${d}/${b.pages.length}</span></button>`; }).join("");
+  paintBooks();
   paintAvatar($("homeAvatar"));
   const cur = live() ? S.page : startPage;
   $("leftLine").innerHTML = left>0 ? `נקראו <b>${done}</b> מתוך ${PAGES.length} דפים · נשארו <b>${left}</b> עד האוצר` : `<b>כל הסיפור נקרא!</b> אפשר לקרוא שוב כל דף`;
@@ -1046,6 +1139,30 @@ function paintHome(){
     return `<button class="tile${got?"":" locked"}${i===cur?" cur":""}" data-page="${i}" aria-label="דף ${i+1}${got?", נאסף":""}"><img src="${STORIES[BOOK].art}thumb/p${i+1}-${got?"reveal":"base"}.jpg" alt="" loading="lazy">${got?"":'<span class="q">?</span>'}<span class="num">${i+1}</span>${got?'<span class="ok"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5L19.5 7"/></svg></span>':""}<span class="nm">${got?word:"…"}</span></button>`; }).join("");
   $("homeRec").hidden = !REC.on; if(REC.on) $("homeRecTime").textContent = fmt((now()-REC.started)/1000);
   $("startArt").innerHTML = artHTML(Math.min(10, (live()?S.page:startPage)+1), true, true);
+}
+/* story list (2026-11-18): the story being read up front, the other open ones beside it, the next locked one with a lock,
+   and every finished story folded under "סיפורים שקראתי". A story opens when the one before it is read to the end
+   (or once Ori has started it); the parent panel can open all of them. */
+const pagesDone = i => Object.keys(doneOf(i)).length;
+const isFinished = i => pagesDone(i) >= STORIES[i].pages.length;
+const isOpen = i => settings.unlock==="all" || i===0 || isFinished(i-1) || pagesDone(i)>0;
+let shelfOpen = false;
+function paintBooks(){
+  const card = (i, cls) => { const b=STORIES[i], d=pagesDone(i), n=b.pages.length;
+    return `<button class="book ${cls||""}${i===BOOK?" on":""}" data-book="${i}"><img src="${b.art}thumb/p${b.cover}-reveal.jpg" alt="" loading="lazy"><span class="bt">${b.short}</span><span class="bp">${d>=n?"✓ ":""}${d}/${n}</span>${cls==="now"?`<i class="bar3"><b style="width:${Math.round(d/n*100)}%"></b></i>`:""}</button>`; };
+  const open = STORIES.map((_,i)=>i).filter(i=>isOpen(i) && !isFinished(i));
+  const locked = STORIES.map((_,i)=>i).filter(i=>!isOpen(i));
+  const now = open.includes(BOOK) ? BOOK : (open[0]!=null ? open[0] : BOOK);
+  // beside the big card: the next open story (or the next locked one); everything else waits on the shelf
+  const side = open.filter(i=>i!==now).sort((a,b)=>(a<now)-(b<now) || a-b).slice(0,1);
+  let h = `<div class="brow">${card(now,"now")}`;
+  side.forEach(i=>{ h += card(i,"open"); });
+  if(locked.length) h += `<button class="book locked" data-locked="${locked[0]}" aria-label="נעול"><img src="${STORIES[locked[0]].art}thumb/p1-base.jpg" alt="" loading="lazy"><span class="lock">🔒</span><span class="bt">${STORIES[locked[0]].short}</span>${locked.length>1?`<span class="bp">+${locked.length-1}</span>`:""}</button>`;
+  h += `</div>`;
+  const rest = STORIES.map((_,i)=>i).filter(i=>i!==now && !side.includes(i) && isOpen(i));
+  if(rest.length) h += `<button class="shelfbtn" id="shelfBtn" aria-expanded="${shelfOpen}"><span>${rest.every(isFinished)?"סִפּוּרִים שֶׁקָּרָאתִי":"עוֹד סִפּוּרִים"}</span><b>${rest.length}</b><span class="chev">${shelfOpen?"▴":"▾"}</span></button>`
+    + (shelfOpen ? `<div class="bshelf">${rest.map(i=>card(i,"done")).join("")}</div>` : "");
+  $("books").innerHTML = h;
 }
 function openHome(){
   if(S && live()) log("home_open");
@@ -1064,7 +1181,11 @@ function openBook(b, page){
   if(live()){ $("start").hidden=true; $("room").hidden=true; $("end").hidden=true; $("app").hidden=false; log("page_jump",{to:page+1}); gotoPage(page); }
   else { startPage=page; openHome(); }
 }
-$("books").addEventListener("click",e=>{ const t=e.target.closest("[data-book]"); if(!t) return; const b=+t.dataset.book;
+$("books").addEventListener("click",e=>{
+  if(e.target.closest("#shelfBtn")){ shelfOpen=!shelfOpen; paintBooks(); return; }
+  const lk=e.target.closest("[data-locked]"); if(lk){ lk.classList.remove("shake"); void lk.offsetWidth; lk.classList.add("shake");
+    const i=+lk.dataset.locked; $("leftLine").innerHTML = `🔒 <b>${bare(STORIES[i].short)}</b> נפתח כשמסיימים את <b>${bare(STORIES[i-1].short)}</b>`; return; }
+  const t=e.target.closest("[data-book]"); if(!t) return; const b=+t.dataset.book; autoBook=false;
   if(b===BOOK) return; if(live()) return openBook(b,0); setBook(b); startPage=0; paintHome(); });
 
 /* ---------- Ori's room: photo, totals, every treasure slot (open or still locked), letters ---------- */
@@ -1087,7 +1208,7 @@ function paintRoom(){
     const seen = new Set(), slots = [];
     b.pages.forEach((p,j)=>{ const pi=pageItem(p); if(pi && !seen.has(pi.id)){ seen.add(pi.id); slots.push(slot(ITEM[pi.id], `${i}:${j}`)); } });
     return `<section class="shelf"><div class="sh"><h3>${b.title}</h3><span class="cnt">${d}/${b.pages.length} דפים</span><div class="bar2"><i style="width:${Math.round(d/b.pages.length*100)}%"></i></div></div><div class="inv">${slots.join("")}</div></section>`; }).join("")
-    + `<section class="shelf"><div class="sh"><h3>בַּהֶמְשֵׁךְ… עַד הַדְּרָקוֹן</h3></div><div class="inv">${ITEMS.filter(it=>it.future).map(it=>slot(it,null)).join("")}</div></section>`;
+    + `<section class="shelf"><div class="sh"><h3>בַּהֶמְשֵׁךְ…</h3></div><div class="inv">${ITEMS.filter(it=>it.future).map(it=>slot(it,null)).join("")}</div></section>`;
   $("roomLetters").innerHTML = order.map(L=>{ const n=reads[L]||0, got=n>=3;
     const o = cueChoice(L);
     return got ? `<div class="lt got"><img src="${o.img}" alt="" style="${o.teacher||o.photo?"":"width:70%;height:70%;image-rendering:pixelated"}"><b>${L}</b></div>` : `<div class="lt"><b>${L}</b><i style="width:${Math.min(100,Math.round(n/3*100))}%"></i></div>`; }).join("");
@@ -1335,7 +1456,9 @@ function toggleFs(){ if(document.fullscreenElement) document.exitFullscreen(); e
 function paintSeg(){ document.querySelectorAll("[data-set]").forEach(g=>g.querySelectorAll("button[data-v]").forEach(b=>b.setAttribute("aria-pressed", String(settings[g.dataset.set]===b.dataset.v)))); }
 function openP(){ $("veil").hidden=false; paintRec(); paintSaved(); paintSeg(); $("scale").value=settings.scale; $("logInfo").textContent = S ? `${S.events.length} אירועים בסשן הזה.` : ""; }
 function closeP(){ $("veil").hidden=true; attachPreview(); if(S && !$("app").hidden){ if(S.phase==="pageEnd") pageEnd(); else paint(); } }
-document.querySelectorAll("[data-set]").forEach(g=>g.addEventListener("click",e=>{ const b=e.target.closest("button[data-v]"); if(!b) return; const k=g.dataset.set; settings[k]=b.dataset.v; if(k==="quiet"){ quietOverride=null; log("quiet_mode",{on:isQuiet(), source:"panel"}); } saveSettings(); paintSeg(); }));
+document.querySelectorAll("[data-set]").forEach(g=>g.addEventListener("click",e=>{ const b=e.target.closest("button[data-v]"); if(!b) return; const k=g.dataset.set; settings[k]=b.dataset.v; if(k==="quiet"){ quietOverride=null; log("quiet_mode",{on:isQuiet(), source:"panel"}); }
+  if(k==="name"){ applyNameMode(settings.name!=="off"); if(live()){ log("name_mode",{on:settings.name!=="off"}); gotoPage(S.page); } }
+  saveSettings(); paintSeg(); if(k==="unlock" || k==="name") paintHome(); }));
 $("gear").onclick=openP; $("recBadge").onclick=openP; $("closeP").onclick=closeP;
 $("veil").onclick=e=>{ if(e.target===$("veil")) closeP(); };
 $("scale").oninput=e=>{ settings.scale=+e.target.value; saveSettings(); };
