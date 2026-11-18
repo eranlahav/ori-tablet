@@ -36,3 +36,17 @@ Eran's rule: use the words kids actually say. Ori says "אֶמֶרַלְד", so 
 | מַכּוֹשׁ (item label) | פִּיקָאקְס | label only, not in the text |
 | לַפִּיד | טוֹרְץ' | צ' (ch) has no cue — conflict; keep לַפִּיד |
 | יַהֲלוֹם (ep. 7) | דַּיְימוֹנְד | decide before episode 7 |
+
+## Update 2026-11-18: episodes 10–12, open-ended
+Eran: no need to reach the dragon now; let Ori grow, collect things and learn things. Ori's name is back in the text.
+
+- **Name:** episodes 10+ are written with "אוֹרִי" (3rd person, like stories 1–3). Pages that change carry a first-person `me` version; parent panel → "הסיפורים" switches. Default: with the name.
+- **Reading (17.11 video):** page 1 of each episode extra easy; at most 1–2 closed mid-word syllables per episode in the name version; no כָּרִיתִי; vocal shva repeated in short words; Minecraft words + items in the bag.
+
+| # | Episode | What happens | Items |
+|---|---|---|---|
+| 10 | עוֹלַם הָאֵשׁ | fire world, a blaze (בְּלֵיז), shield up, win, back home with Dennis | בְּלֵיז רוֹד ×2 |
+| 11 | הַדְּבוֹרִים | build a big house, flowers, bees live in a nest and sting, a campfire's smoke calms them, honey | פֶּרַח ×3, דְּבַשׁ ×3 |
+| 12 | הַצָּבִים | beach, turtles lay eggs in the sand, babies run to the sea, Ori guards them, dives to an old ship, finds a treasure map (hook for 13) | צָב, מַפַּת אוֹצָר |
+
+Art: `beta/art/saga2.js` (node beta/art/saga2.js s10|s11|s12). Words to check with Ori: בְּלֵיז / בְּלֵיז רוֹד (spelled with one yod so the app does not cue a second letter).

@@ -54,6 +54,8 @@ function hero(S, G, p) { const q = Object.assign({ kind: 'ori' }, p); const hold
   if (hold === 'sword') { B(0.5, 4.5, 13.5, 1.6, 2.2, 0.5, '#F2C94C'); B(0.9, 5.2, 14.0, 0.8, 0.8, 6.6, '#C9D2DC', { top: '#E3E9F0', fl: 1.05, fr: 0.92 }); }
   if (hold === 'dpick') { B(0.9, 5.0, 12.4, 0.8, 0.8, 4.4, '#7A4E2B'); B(0.5, 3.0, 16.4, 1.6, 4.8, 1.1, '#56D6E2', { top: '#C4F6FA' }); }
   if (hold === 'flint') { B(1.0, 4.8, 13.0, 1.0, 1.6, 1.0, '#8792A0', { top: '#B9C3CF' }); B(1.0, 5.6, 14.0, 1.0, 0.8, 1.0, '#4A4652'); }
+  if (hold === 'rod') { B(0.9, 5.0, 12.6, 0.8, 0.8, 5.2, '#F2A541', { top: '#FFE58A', fl: 1.1, fr: 1 }); B(0.7, 4.8, 17.6, 1.2, 1.2, 0.8, '#FFD27A', { top: '#FFF2C4', fl: 1.1, fr: 1 }); }
+  if (hold === 'honey') { B(0.9, 4.6, 12.8, 1.6, 1.6, 2.0, '#F2A541', { top: '#FFD27A', op: 0.95 }); B(1.3, 5.0, 14.8, 0.8, 0.8, 0.6, '#E9E4D6'); }
   if (hold === 'bone') { B(1.0, 4.4, 13.2, 0.8, 2.8, 0.8, '#F1ECDD', { top: '#FFFFFF' }); }
   if (hold === 'map') { B(1.6, 4.0, 12.6, 0.4, 4.0, 3.4, '#EADBB0', { decR: [[0.6 * u, 0.8 * u, 1.2 * u, 1.2 * u, '#56D6E2'], [2.2 * u, 2.0 * u, 1.4 * u, 0.4 * u, '#A0703A']] }); }
   if (p.shield) { B(2.3, -1.2, 4.0, 0.6, 3.2, 4.6, '#8A5A2E', { decR: [[1.3 * u, 0, 0.6 * u, 4.6 * u, '#3D6FB0'], [0, 2.0 * u, 3.2 * u, 0.6 * u, '#3D6FB0'], [0, 4.2 * u, 3.2 * u, 0.4 * u, '#B9C3CF']] }); }
@@ -312,5 +314,5 @@ const S9 = {
   10: { base: deep({ obsidian: true, portal: 'lit', hero: HP, dog: Object.assign({}, DOGC, DOGP), glow2: [4.6, 13, 3, 4.4, '#C27BF0'] }), reveal: fireWorld({ hero: Object.assign({ arms: 'up' }, HP), dog: Object.assign({ wag: true }, DOGC, DOGP) }) },
 };
 const SAGA = { s4: { pages: S4, hm: hmSaga }, s5: { pages: S5, hm: hmSaga }, s6: { pages: S6, hm: hmSaga }, s7: { pages: S7, hm: hmSaga }, s8: { pages: S8, hm: hmSaga }, s9: { pages: S9, hm: hmSaga } };
-module.exports = { SAGA };
+module.exports = { SAGA, hero, outdoor, outdoor2, fireWorld, mobber, mobber2, heroDog, deep, cave, caveBg, iconBubble, poof, portalFrame, hmSaga, V, HERO_V, HERO_M, VILL, VILLAGE_VIEW, CAVE_VIEW, LAVA, LAVA_TOP, LIT, DI, DI2 };
 if (require.main === module) { renderAll(SAGA, process.argv.slice(2), __dirname); console.log('done'); }
