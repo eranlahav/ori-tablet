@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#1b1726">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<title>מערת העטלפים של אורי</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&display=swap">
+<style>
+:root{--bg:#1b1726;--stone:#3a3446;--stone2:#4a4358;--em:#3ad17a;--em2:#1f9d55;--gold:#ffcf4a;--paper:#f6f1e4;--ink:#1d2340;--line:#3b4a8c;--text:#fff;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Rubik,'Noto Sans Hebrew',Arial,sans-serif}
+body{background:
+  linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,.25)),
+  repeating-conic-gradient(from 0deg at 50% 50%,#231d31 0 25%,#1d1829 0 50%) 0 0/48px 48px;}
+button{font-family:inherit;cursor:pointer;border:0}
+.screen{position:fixed;inset:0;display:none;flex-direction:column}
+.screen.on{display:flex}
+.top{display:flex;align-items:center;gap:12px;padding:12px 18px;flex:0 0 auto}
+.top h1{font-size:28px;margin:0;flex:1;text-shadow:3px 3px 0 #000}
+.blk{background:var(--stone2);color:#fff;font-weight:700;font-size:20px;padding:10px 16px;border-radius:4px;box-shadow:inset -4px -4px 0 rgba(0,0,0,.35),inset 4px 4px 0 rgba(255,255,255,.12)}
+.blk.green{background:var(--em2)}
+.blk.gold{background:#c9902a}
+.blk.ghost{background:transparent;box-shadow:none;opacity:.8}
+.gems{display:flex;align-items:center;gap:6px;font-size:24px;font-weight:800;text-shadow:2px 2px 0 #000}
+.gems svg{width:30px;height:30px}
+.seg{display:flex;border-radius:4px;overflow:hidden;box-shadow:inset 0 0 0 3px #000}
+.seg button{background:var(--stone);color:#fff;font-size:18px;font-weight:700;padding:10px 14px}
+.seg button.on{background:var(--em2)}
+/* home */
+#home .grid{flex:1;display:flex;flex-wrap:wrap;gap:18px;justify-content:center;align-content:center;padding:10px 24px 24px}
+.card{width:190px;height:230px;background:var(--stone);border-radius:6px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:10px;color:#fff;
+  box-shadow:inset -6px -6px 0 rgba(0,0,0,.35),inset 6px 6px 0 rgba(255,255,255,.08),0 6px 0 #000}
+.card .bat{position:absolute;top:0;width:70px;height:56px}
+.card .glyph{width:120px;height:120px;background:var(--paper);border-radius:4px;margin-bottom:10px;overflow:hidden}
+.card .glyph svg,.card .bat svg{width:100%;height:100%;display:block}
+.card .pips{display:flex;gap:6px}
+.card .pip{width:16px;height:16px;background:#221d2c;border-radius:2px}
+.card .pip.on{background:var(--em)}
+.card.done{background:#3d4a3a}
+.card.locked{opacity:.45}
+.card .tag{position:absolute;top:8px;left:8px;font-size:15px;background:#000a;padding:2px 8px;border-radius:3px}
+.card.words{width:400px}
+.card.words .glyph{width:370px}
+/* practice */
+#practice .stagebar{display:flex;gap:6px;align-items:center}
+.stg{font-size:16px;padding:6px 10px;border-radius:3px;background:#0006;color:#bbb}
+.stg.on{background:var(--em2);color:#fff;font-weight:700}
+.stg.done{color:var(--em)}
+#board{position:relative;flex:1;margin:0 14px 14px;border-radius:6px;overflow:hidden;background:var(--paper);box-shadow:0 0 0 6px #000,0 0 0 12px var(--stone)}
+#board canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+#msg{position:absolute;top:14px;right:0;left:0;text-align:center;font-size:30px;font-weight:800;color:var(--ink);pointer-events:none}
+#reps{position:absolute;top:18px;left:18px;display:flex;gap:6px;pointer-events:none}
+#reps i{width:20px;height:20px;border:3px solid var(--ink);border-radius:3px;display:block}
+#reps i.on{background:var(--em2);border-color:var(--em2)}
+#actions{position:absolute;bottom:16px;left:0;right:0;display:flex;justify-content:center;gap:16px;pointer-events:none}
+#actions button{pointer-events:auto;font-size:26px;padding:14px 26px}
+#side{position:absolute;bottom:16px;right:16px;display:flex;gap:10px}
+#side button{font-size:22px;padding:10px 14px}
+#modeHint{position:absolute;bottom:20px;left:20px;color:#7a6f5a;font-size:16px;pointer-events:none}
+/* room */
+#room .cave{flex:1;position:relative;margin:0 14px 14px}
+#roomCanvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}
+/* celebration */
+#cele{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#000b;z-index:20;flex-direction:column;gap:20px}
+#cele.on{display:flex}
+#cele .big{font-size:48px;font-weight:800;text-shadow:4px 4px 0 #000;text-align:center}
+#cele svg{width:200px;height:160px}
+/* parent */
+#parent{position:fixed;inset:0;background:#000c;z-index:30;display:none;align-items:center;justify-content:center}
+#parent.on{display:flex}
+#parent .box{background:var(--stone);padding:24px;border-radius:6px;width:min(560px,92vw);display:flex;flex-direction:column;gap:16px;box-shadow:0 0 0 6px #000}
+#parent h2{margin:0}
+#parent label{display:flex;justify-content:space-between;align-items:center;font-size:20px;gap:12px}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<section id="home" class="screen on">
+  <div class="top">
+    <h1>מְעָרַת הָעֲטַלֵּפִים שֶׁל אוֹרִי</h1>
+    <div class="gems"><span id="gemCountH">0</span><span class="emIcon"></span></div>
+    <div class="seg" id="modeSeg"><button data-m="pen">✏️ עט</button><button data-m="finger">👆 אצבע</button></div>
+    <button class="blk gold" id="toRoom">⛏️ הַמְּעָרָה שֶׁלִּי</button>
+    <button class="blk ghost" id="fsBtn" title="מסך מלא">⛶</button>
+    <button class="blk ghost" id="parentBtn" title="הורה">⚙️</button>
+  </div>
+  <div class="grid" id="grid"></div>
+</section>
+
+<!-- PRACTICE -->
+<section id="practice" class="screen">
+  <div class="top">
+    <button class="blk" id="backHome">🏠</button>
+    <div class="stagebar" id="stagebar"></div>
+    <div style="flex:1"></div>
+    <div class="gems"><span id="gemCountP">0</span><span class="emIcon"></span></div>
+  </div>
+  <div id="board">
+    <canvas id="guide"></canvas>
+    <canvas id="ink"></canvas>
+    <div id="msg"></div>
+    <div id="reps"></div>
+    <div id="side"><button class="blk" id="demoBtn" title="תראה לי">🦇 תַּרְאֶה לִי</button><button class="blk" id="clearBtn" title="מחק">🧽</button></div>
+    <div id="actions"></div>
+    <div id="modeHint"></div>
+  </div>
+</section>
+
+<!-- ROOM -->
+<section id="room" class="screen">
+  <div class="top">
+    <button class="blk" id="roomBack">🏠</button>
+    <h1>הַמְּעָרָה שֶׁל אוֹרִי</h1>
+    <div class="gems"><span id="gemCountR">0</span><span class="emIcon"></span></div>
+  </div>
+  <div class="cave"><canvas id="roomCanvas"></canvas></div>
+</section>
+
+<div id="cele"><div id="celeArt"></div><div class="big" id="celeText"></div><button class="blk green" id="celeOk" style="font-size:28px;padding:14px 30px">יֵשׁ!</button></div>
+
+<div id="parent"><div class="box">
+  <h2>הגדרות הורה</h2>
+  <label>פתיחת כל האותיות <input type="checkbox" id="pUnlock"></label>
+  <label>דילוג על שלבים (בדיקה) <input type="checkbox" id="pSkip"></label>
+  <button class="blk" id="pReset">איפוס ההתקדמות בכתיבה</button>
+  <div style="font-size:14px;opacity:.7">נשמר במכשיר בלבד (ori.write.v1). לא נוגע באפליקציית הקריאה.</div>
+  <button class="blk green" id="pClose">סגור</button>
+</div></div>
+
+<script>
+"use strict";
+/* ---------- letters: units: ceiling y=0, floor (line) y=100, pit y=150. x grows to the right. One stroke each. ---------- */
+const LETTERS = {
+  "י": {w:36,  name:"יוּד",  strokes:[[[22,0],[21,22],[18,46]]]},
+  "ו": {w:36,  name:"וָו",   strokes:[[[18,0],[18,100]]]},
+  "ן": {w:36,  name:"נוּן סוֹפִית", strokes:[[[18,0],[18,150]]]},
+  "נ": {w:80,  name:"נוּן",  strokes:[[[68,0],[68,86],[64,96],[54,100],[8,100]]]},
+  "מ": {w:96,  name:"מֵם",   strokes:[[[84,0],[84,100],[22,0],[16,100]]]},
+};
+const ORDER = ["י","ו","ן","נ","מ"];
+const WORDS = [
+  {id:"mi",   show:"מִי",   letters:["מ","י"]},
+  {id:"man",  show:"מָן",   letters:["מ","ן"]},
+  {id:"yayin",show:"יַיִן", letters:["י","י","ן"]},
+  {id:"nin",  show:"נִין",  letters:["נ","י","ן"]},
+  {id:"yamin",show:"יָמִין",letters:["י","מ","י","ן"]},
+];
+const STAGES = [
+  {id:"watch",  label:"צוֹפִים",       reps:1},
+  {id:"trace",  label:"שְׁבִיל",       reps:2},
+  {id:"fade",   label:"דֻּגְמָה",      reps:3, alphas:[.45,.25,.12]},
+  {id:"dot",    label:"נְקֻדָּה",      reps:2},
+  {id:"memory", label:"מֵהַזִּכָּרוֹן", reps:2},
+];
+const WORD_STAGES = [
+  {id:"wfade",   label:"עִם דֻּגְמָה", reps:1},
+  {id:"wmemory", label:"מֵהַזִּכָּרוֹן", reps:1},
+];
+
+/* ---------- storage (own key, never touches ori.t3.* / ori.tab.*) ---------- */
+const KEY = "ori.write.v1";
+function blank(){ return {mode:"pen", gems:0, letters:{}, words:{}, unlockAll:false, skip:false, log:[]}; }
+let S; try{ S = Object.assign(blank(), JSON.parse(localStorage.getItem(KEY)||"{}")); }catch(e){ S = blank(); }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function L(ch){ return S.letters[ch] || (S.letters[ch] = {stage:0, rep:0, done:false, writes:0}); }
+function W(id){ return S.words[id] || (S.words[id] = {stage:0, rep:0, done:false}); }
+function logEv(o){ S.log.push(Object.assign({t:new Date().toISOString()}, o)); if(S.log.length>500) S.log.splice(0, S.log.length-500); }
+
+/* ---------- pixel art (original) ---------- */
+const PAL = {k:"#111",d:"#2b2433",g:"#4b4256",G:"#6d6380",w:"#fff",r:"#e2453c",e:"#3ad17a",E:"#1f9d55",l:"#b6ffd2",y:"#ffcf4a",o:"#f08a24",b:"#7a4a24",B:"#5a3418",s:"#9a9a9a",S:"#6a6a6a"};
+const BAT = [ // hanging upside down, feet up
+  "....kk..kk....",
+  "....kgkkgk....",
+  "...kgggggk....",
+  "..kGgggggGk...",
+  ".kGGgggggGGk..",
+  "kGGkggggkGGk..",
+  "kGk.kggk.kGk..",
+  "kk..kwrwk.kk..",
+  "....kgggk.....",
+  "....kgggk.....",
+  ".....k.k......"];
+const BAT_FLY = [
+  "k..........k",
+  "kk..k..k..kk",
+  "kGk.kkkk.kGk",
+  "kGGkgggg kGGk".replace(" ",""),
+  "kGGgwrrwgGGk",
+  ".kGggggggGk.",
+  "..kk.gg.kk..",
+  ".....kk....."];
+const EMERALD = [
+  "....kk....",
+  "...klek...",
+  "..kleeEk..",
+  ".kleeeeEk.",
+  "kleeeeeeEk",
+  ".kEeeeeEk.",
+  "..kEeeEk..",
+  "...kEEk...",
+  "....kk...."];
+const TORCH = [
+  "..y..",
+  ".yoy.",
+  ".yoy.",
+  "..o..",
+  "..b..",
+  "..b..",
+  "..b..",
+  "..B..",
+  "..B.."];
+const CHEST = [
+  "kkkkkkkkkk",
+  "kbbbbbbbbk",
+  "kbBBBBBBbk",
+  "kkkkyykkkk",
+  "kbbbyybbbk",
+  "kbBBBBBBbk",
+  "kbbbbbbbbk",
+  "kkkkkkkkkk"];
+function pixSVG(map, px=1){
+  const h=map.length, w=Math.max(...map.map(r=>r.length)); let r="";
+  map.forEach((row,y)=>[...row].forEach((c,x)=>{ if(PAL[c]) r+=`<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${PAL[c]}"/>`; }));
+  return `<svg viewBox="0 0 ${w} ${h}" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">${r}</svg>`;
+}
+function drawPix(ctx, map, x, y, px, alpha=1){
+  ctx.save(); ctx.globalAlpha=alpha;
+  map.forEach((row,j)=>[...row].forEach((c,i)=>{ if(PAL[c]){ ctx.fillStyle=PAL[c]; ctx.fillRect(Math.round(x+i*px),Math.round(y+j*px),Math.ceil(px),Math.ceil(px)); }}));
+  ctx.restore();
+}
+document.querySelectorAll(".emIcon").forEach(e=>e.innerHTML=pixSVG(EMERALD));
+
+/* ---------- geometry helpers ---------- */
+function plen(p){ let s=0; for(let i=1;i<p.length;i++) s+=Math.hypot(p[i][0]-p[i-1][0],p[i][1]-p[i-1][1]); return s; }
+function sampleAlong(p, step){ // points every `step` units incl. start and end
+  const out=[p[0]]; let carry=0;
+  for(let i=1;i<p.length;i++){
+    const [x0,y0]=p[i-1],[x1,y1]=p[i]; const seg=Math.hypot(x1-x0,y1-y0); let d=step-carry;
+    while(d<=seg){ out.push([x0+(x1-x0)*d/seg, y0+(y1-y0)*d/seg]); d+=step; }
+    carry = seg-(d-step);
+  }
+  const last=p[p.length-1], o=out[out.length-1];
+  if(Math.hypot(last[0]-o[0],last[1]-o[1])>step*.4) out.push(last); else out[out.length-1]=last;
+  return out;
+}
+function pointAt(p, t){ // t in [0,1] along length
+  const total=plen(p); let want=t*total;
+  for(let i=1;i<p.length;i++){ const seg=Math.hypot(p[i][0]-p[i-1][0],p[i][1]-p[i-1][1]);
+    if(want<=seg){ const f=seg?want/seg:0; return [p[i-1][0]+(p[i][0]-p[i-1][0])*f, p[i-1][1]+(p[i][1]-p[i-1][1])*f]; } want-=seg; }
+  return p[p.length-1];
+}
+function distSeg(px,py,a,b){ const dx=b[0]-a[0],dy=b[1]-a[1]; const l2=dx*dx+dy*dy; let t=l2?((px-a[0])*dx+(py-a[1])*dy)/l2:0; t=Math.max(0,Math.min(1,t)); return Math.hypot(px-(a[0]+t*dx),py-(a[1]+t*dy)); }
+function distPoly(px,py,p){ let m=1e9; for(let i=1;i<p.length;i++) m=Math.min(m,distSeg(px,py,p[i-1],p[i])); return m; }
+
+/* ---------- audio ---------- */
+let AC=null;
+function beep(f=660,d=.08,type="square",vol=.05){ try{ AC=AC||new (window.AudioContext||window.webkitAudioContext)(); const o=AC.createOscillator(),g=AC.createGain(); o.type=type; o.frequency.value=f; g.gain.value=vol; g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+d); o.connect(g).connect(AC.destination); o.start(); o.stop(AC.currentTime+d); }catch(e){} }
+function chord(){ [523,659,784,1046].forEach((f,i)=>setTimeout(()=>beep(f,.18,"square",.05),i*90)); }
+
+/* ---------- screens ---------- */
+function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on", s.id===id)); }
+function updGems(){ ["gemCountH","gemCountP","gemCountR"].forEach(i=>document.getElementById(i).textContent=S.gems); }
+
+function glyphSVG(letters, pad=14){
+  // RTL layout in units; returns svg with lines
+  const lay = layout(letters); const W0=lay.width+pad*2;
+  let lines=`<line x1="0" y1="0" x2="${W0}" y2="0" stroke="#3b4a8c" stroke-width="2"/><line x1="0" y1="100" x2="${W0}" y2="100" stroke="#3b4a8c" stroke-width="2"/><line x1="0" y1="150" x2="${W0}" y2="150" stroke="#3b4a8c" stroke-width="1" stroke-dasharray="6 6" opacity=".5"/>`;
+  let ps=""; lay.items.forEach(it=>it.strokes.forEach(s=>{ ps+=`<polyline fill="none" stroke="#1d2340" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" points="${s.map(q=>(q[0]+pad)+","+q[1]).join(" ")}"/>`; }));
+  return `<svg viewBox="0 -25 ${W0} 190" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">${lines}${ps}</svg>`;
+}
+function layout(letters, gap=22){ // place letters right-to-left; x in units from left edge of the word
+  const ws=letters.map(c=>LETTERS[c].w); const width=ws.reduce((a,b)=>a+b,0)+gap*(letters.length-1);
+  let right=width; const items=[];
+  letters.forEach((c,i)=>{ const left=right-ws[i]; items.push({ch:c, left, strokes:LETTERS[c].strokes.map(s=>s.map(([x,y])=>[x+left,y]))}); right=left-gap; });
+  return {width, items};
+}
+
+function letterUnlocked(i){ if(S.unlockAll||i===0) return true; const prev=L(ORDER[i-1]); return prev.done || prev.stage>=3 || L(ORDER[i]).stage>0; }
+function wordUnlocked(w){ return S.unlockAll || w.letters.every(c=>L(c).done); }
+
+function renderHome(){
+  updGems(); setModeSeg();
+  const g=document.getElementById("grid"); g.innerHTML="";
+  ORDER.forEach((ch,i)=>{
+    const st=L(ch), un=letterUnlocked(i);
+    const c=document.createElement("button"); c.className="card"+(st.done?" done":"")+(un?"":" locked");
+    c.innerHTML=`<div class="bat">${pixSVG(BAT)}</div>${st.done?'<span class="tag">✔︎</span>':''}<div class="glyph">${glyphSVG([ch])}</div>
+      <div class="pips">${STAGES.map((s,k)=>`<span class="pip ${(st.done||k<st.stage)?"on":""}"></span>`).join("")}</div>`;
+    c.onclick=()=>{ if(!un){ beep(200,.15); return; } startLetter(ch); };
+    g.appendChild(c);
+  });
+  const anyWord = WORDS.some(wordUnlocked);
+  const wc=document.createElement("button"); wc.className="card words"+(anyWord?"":" locked");
+  const doneW=WORDS.filter(w=>W(w.id).done).length;
+  wc.innerHTML=`<div class="glyph" style="display:flex;align-items:center;justify-content:center;color:#1d2340;font-size:30px;font-weight:800">${WORDS.map(w=>w.show).join(" · ")}</div>
+    <div style="font-size:20px;font-weight:700">מִלִּים ${doneW}/${WORDS.length} ${anyWord?"":"🔒"}</div>`;
+  wc.onclick=()=>{ if(!anyWord){ beep(200,.15); return; } const w=WORDS.find(w=>wordUnlocked(w)&&!W(w.id).done)||WORDS.find(wordUnlocked); startWord(w); };
+  g.appendChild(wc);
+}
+function setModeSeg(){ document.querySelectorAll("#modeSeg button").forEach(b=>b.classList.toggle("on", b.dataset.m===S.mode)); }
+document.querySelectorAll("#modeSeg button").forEach(b=>b.onclick=()=>{ S.mode=b.dataset.m; save(); setModeSeg(); });
+
+/* ---------- practice engine ---------- */
+const board=document.getElementById("board"), gC=document.getElementById("guide"), iC=document.getElementById("ink");
+const gx=gC.getContext("2d"), ix=iC.getContext("2d");
+let P=null; // current session
+let geo=null; // screen mapping
+let anim=null;
+
+function startLetter(ch){
+  const st=L(ch); if(st.done){ st.stage=2; st.rep=0; st.replay=true; }
+  P={kind:"letter", ch, letters:[ch], stages:STAGES, get st(){return L(ch);} };
+  show("practice"); requestAnimationFrame(()=>{ resize(); enterStage(); });
+}
+function startWord(w){
+  P={kind:"word", w, letters:w.letters, stages:WORD_STAGES, get st(){return W(w.id);} };
+  if(P.st.done){ P.st.stage=0; P.st.rep=0; }
+  show("practice"); requestAnimationFrame(()=>{ resize(); enterStage(); });
+}
+function stage(){ return P.stages[P.st.stage]; }
+
+function resize(){
+  const r=board.getBoundingClientRect(), dpr=Math.min(window.devicePixelRatio||1, 2.5);
+  [gC,iC].forEach(c=>{ c.width=r.width*dpr; c.height=r.height*dpr; c.getContext("2d").setTransform(dpr,0,0,dpr,0,0); });
+  if(!P) return;
+  const lay=layout(P.letters);
+  const finger = S.mode==="finger";
+  // unit height H: band from -10..160 must fit vertically; width must fit horizontally
+  let H = Math.min(r.height/2.15, (r.width*.82)/ (lay.width/100), finger? 330 : 230);
+  if(P.kind==="word") H=Math.min(H, finger?240:190);
+  const s=H/100, wpx=lay.width*s;
+  const ox=(r.width-wpx)/2, oy=Math.max(70, (r.height-1.5*H)/2 - 10);
+  geo={W:r.width, Hh:r.height, s, ox, oy, H, lay,
+       strokes: lay.items.flatMap(it=>it.strokes.map(st=>st.map(([x,y])=>[ox+x*s, oy+y*s]))),
+       tol: H*(finger?.16:.13), wide: H*(finger?.30:.24), half: H*(finger?.12:.10)};
+  geo.cps = geo.strokes.map(st=>sampleAlong(st.map(([x,y])=>[(x-ox)/s,(y-oy)/s]), 16).map(([x,y])=>[ox+x*s, oy+y*s]));
+  drawGuide(); redrawInk();
+}
+window.addEventListener("resize", ()=>{ if(document.getElementById("practice").classList.contains("on")) resize(); else if(document.getElementById("room").classList.contains("on")) drawRoom(); });
+
+function enterStage(){
+  stopAnim(); clearInk(); P.hit=geo? geo.cps.map(()=>0):[]; P.strokeIdx=0; P.inked=false; P.failMsg="";
+  renderStagebar(); setActions([]); setMsg(stageMsg());
+  document.getElementById("modeHint").textContent = S.mode==="pen" ? "מצב עט: רק העט כותב, כף היד יכולה לנוח על המסך" : "מצב אצבע";
+  drawGuide();
+  const id=stage().id;
+  if(id==="watch"){ playDemo(true); setActions([{t:"עַכְשָׁו אֲנִי! ✋", c:"green", f:()=>advance()}]); }
+  if(id==="wfade" && P.st.rep===0) playDemo(false);
+}
+function stageMsg(){
+  const id=stage().id, nm = P.kind==="letter" ? LETTERS[P.ch].name : P.w.show;
+  return {watch:`הָעֲטַלֵּף מַרְאֶה אֶת הַדֶּרֶךְ: ${nm}`, trace:"עֲבֹר בַּשְּׁבִיל וְאֱסֹף אֶת הָאֶמֶרַלְדִּים", fade:"כְּתֹב עַל הַדֻּגְמָה",
+          dot:"מַתְחִילִים בַּנְּקֻדָּה הַיְּרֻקָּה", memory:"עַכְשָׁו לְבַד, מֵהַזִּכָּרוֹן", wfade:`כְּתֹב: ${nm}`, wmemory:`כְּתֹב לְבַד: ${nm}`}[id];
+}
+function renderStagebar(){
+  const b=document.getElementById("stagebar");
+  b.innerHTML = (P.kind==="letter"?`<span class="stg on" style="background:#0000;font-size:22px">${LETTERS[P.ch].name}</span>`:"") +
+    P.stages.map((s,i)=>`<span class="stg ${i===P.st.stage?"on":(i<P.st.stage?"done":"")}">${s.label}</span>`).join("");
+  const reps=document.getElementById("reps"); const n=stage().reps;
+  reps.innerHTML = n>1 ? Array.from({length:n},(_,i)=>`<i class="${i<P.st.rep?"on":""}"></i>`).join("") : "";
+}
+function setMsg(t){ document.getElementById("msg").textContent=t||""; }
+function setActions(list){
+  const a=document.getElementById("actions"); a.innerHTML="";
+  list.forEach(o=>{ const b=document.createElement("button"); b.className="blk "+(o.c||""); b.textContent=o.t; b.onclick=o.f; a.appendChild(b); });
+}
+
+/* guide drawing */
+function drawGuide(extra){
+  if(!geo) return; const g=gx, {W,Hh,s,ox,oy,H}=geo; g.clearRect(0,0,W,Hh);
+  // cave ceiling (top line) + floor line + pit line
+  g.fillStyle="#d9d0bd"; g.fillRect(0,0,W,oy);
+  for(let x=0;x<W;x+=24){ g.fillStyle=(x/24)%2? "#cfc5ae":"#c4b99f"; g.fillRect(x,oy-10,24,10); }
+  g.strokeStyle="#3b4a8c"; g.lineWidth=4; g.beginPath(); g.moveTo(0,oy); g.lineTo(W,oy); g.stroke();
+  g.lineWidth=3; g.beginPath(); g.moveTo(0,oy+H); g.lineTo(W,oy+H); g.stroke();
+  g.setLineDash([10,10]); g.lineWidth=2; g.globalAlpha=.45; g.beginPath(); g.moveTo(0,oy+1.5*H); g.lineTo(W,oy+1.5*H); g.stroke(); g.setLineDash([]); g.globalAlpha=1;
+  g.fillStyle="#3b4a8c"; g.font="600 14px Rubik"; g.textAlign="right";
+  g.fillText("תִּקְרַת הַמְּעָרָה", W-12, oy-14); g.fillText("הָרִצְפָּה", W-12, oy+H-8); g.fillText("הַבּוֹר", W-12, oy+1.5*H-8);
+  // hanging bats on the ceiling, decorative
+  [.08,.9].forEach(f=>drawPix(g,BAT,W*f,oy, Math.max(3,H/40), .35));
+  const id=stage().id;
+  const line=(st,width,color,alpha=1,dash)=>{ g.save(); g.globalAlpha=alpha; g.strokeStyle=color; g.lineWidth=width; g.lineCap="round"; g.lineJoin="round"; if(dash) g.setLineDash(dash);
+    g.beginPath(); st.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y)); g.stroke(); g.restore(); };
+  geo.strokes.forEach((st,k)=>{
+    if(id==="watch"||id==="trace"){
+      line(st, geo.half*2+8, "#8a7a5a", 1); line(st, geo.half*2, "#efe3c4", 1); // tunnel
+      line(st, 3, "#b9a77d", 1, [8,10]);
+      if(id==="trace") geo.cps[k].forEach((p,j)=>{ if(!P.hit[k]||j>=P.hit[k]) if(j>0) drawPix(g,EMERALD,p[0]-H*.045,p[1]-H*.045,H*.01); });
+      arrowAlong(g, st, H);
+    } else if(id==="fade"){
+      line(st, H*.07, "#1d2340", stage().alphas[P.st.rep]||.12);
+    } else if(id==="wfade"){
+      line(st, H*.07, "#1d2340", .2);
+    }
+    if(id!=="memory" && id!=="wmemory"){
+      const [sx,sy]=st[0]; g.fillStyle="#2bb35e"; g.beginPath(); g.arc(sx,sy,Math.max(9,H*.05),0,7); g.fill();
+      g.strokeStyle="#fff"; g.lineWidth=3; g.stroke();
+    }
+  });
+  if(extra) extra(g);
+}
+function arrowAlong(g, st, H){
+  for(let i=1;i<st.length;i++){ const [x0,y0]=st[i-1],[x1,y1]=st[i]; const L0=Math.hypot(x1-x0,y1-y0); if(L0<H*.25) continue;
+    const mx=(x0+x1)/2, my=(y0+y1)/2, a=Math.atan2(y1-y0,x1-x0), r=H*.06;
+    g.save(); g.translate(mx,my); g.rotate(a); g.fillStyle="#2bb35e"; g.beginPath(); g.moveTo(r,0); g.lineTo(-r*.7,r*.7); g.lineTo(-r*.7,-r*.7); g.closePath(); g.fill(); g.restore(); }
+}
+
+/* demo: bat flies along the strokes */
+function stopAnim(){ if(anim){ cancelAnimationFrame(anim.raf); anim=null; } }
+function playDemo(loop){
+  stopAnim(); const t0=performance.now(); const per=1500;
+  const strokes=geo.strokes; const n=strokes.length;
+  const frame=(now)=>{
+    let t=(now-t0)/per; const total=n+0.6; if(t>total){ if(loop) return playDemoAfter(); drawGuide(); anim=null; return; }
+    drawGuide(g=>{
+      for(let k=0;k<n;k++){ const f=Math.max(0,Math.min(1,t-k)); if(f<=0) break; const st=strokes[k];
+        // trail
+        g.save(); g.strokeStyle="#1d2340"; g.lineWidth=geo.H*.06; g.lineCap="round"; g.lineJoin="round"; g.beginPath();
+        const N=40; for(let q=0;q<=N*f;q++){ const p=pointAt(st,q/N); q?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]); } const pe=pointAt(st,f); g.lineTo(pe[0],pe[1]); g.stroke(); g.restore();
+        if(f<1){ const px=geo.H/26; drawPix(g,BAT_FLY,pe[0]-6*px,pe[1]-8*px,px); }
+      }
+    });
+    anim.raf=requestAnimationFrame(frame);
+  };
+  anim={raf:requestAnimationFrame(frame)};
+  function playDemoAfter(){ anim={raf:requestAnimationFrame(()=>{ setTimeout(()=>{ if(anim) playDemo(true); }, 500); })}; }
+}
+document.getElementById("demoBtn").onclick=()=>{ clearInk(); playDemo(false); };
+document.getElementById("clearBtn").onclick=()=>{ clearInk(); P.hit=geo.cps.map(()=>0); P.strokeIdx=0; P.inked=false; drawGuide(); if(isParentStage()) setActions([]); };
+
+/* ink */
+let strokesInk=[]; let cur=null;
+function clearInk(){ strokesInk=[]; cur=null; ix.clearRect(0,0,iC.width,iC.height); }
+function redrawInk(){ ix.clearRect(0,0,iC.width,iC.height); strokesInk.forEach(drawStroke); }
+function drawStroke(st){
+  ix.save(); ix.strokeStyle=st.color||"#1d2340"; ix.lineCap="round"; ix.lineJoin="round";
+  for(let i=1;i<st.pts.length;i++){ const a=st.pts[i-1], b=st.pts[i]; ix.lineWidth=st.base*(0.6+0.8*(b.p||.5)); ix.beginPath(); ix.moveTo(a.x,a.y); ix.lineTo(b.x,b.y); ix.stroke(); }
+  if(st.pts.length===1){ const a=st.pts[0]; ix.fillStyle=ix.strokeStyle; ix.beginPath(); ix.arc(a.x,a.y,st.base/2,0,7); ix.fill(); }
+  ix.restore();
+}
+function accepts(e){ if(e.pointerType==="mouse") return true; if(S.mode==="pen") return e.pointerType==="pen"; return true; }
+function isParentStage(){ const id=stage().id; return id==="memory"||id==="wmemory"||id==="wfade"; }
+iC.addEventListener("pointerdown", e=>{
+  if(!P||!accepts(e)||cur) return; const id=stage().id; if(id==="watch") return;
+  e.preventDefault(); stopAnim(); drawGuide(); iC.setPointerCapture(e.pointerId);
+  const r=iC.getBoundingClientRect(); const x=e.clientX-r.left, y=e.clientY-r.top;
+  const base = S.mode==="finger" ? geo.H*.075 : geo.H*.055;
+  cur={id:e.pointerId, pts:[{x,y,p:e.pressure||.5}], base, k:P.strokeIdx, maxDev:0, startOk:true, hits:0};
+  if(!isParentStage()){
+    const st=geo.strokes[cur.k]; if(!st){ cur=null; return; }
+    cur.startOk = Math.hypot(x-st[0][0], y-st[0][1]) < geo.tol*1.4;
+    if(cur.startOk){ P.hit[cur.k]=1; beep(520,.05); }
+  }
+  drawStroke(cur);
+});
+iC.addEventListener("pointermove", e=>{
+  if(!cur||e.pointerId!==cur.id) return; e.preventDefault();
+  const r=iC.getBoundingClientRect(); const evs=e.getCoalescedEvents?e.getCoalescedEvents():[e];
+  for(const ev of evs){
+    const x=ev.clientX-r.left, y=ev.clientY-r.top; const prev=cur.pts[cur.pts.length-1];
+    if(Math.hypot(x-prev.x,y-prev.y)<1.2) continue;
+    cur.pts.push({x,y,p:ev.pressure||.5});
+    ix.save(); ix.strokeStyle="#1d2340"; ix.lineCap="round"; ix.lineWidth=cur.base*(0.6+0.8*(ev.pressure||.5)); ix.beginPath(); ix.moveTo(prev.x,prev.y); ix.lineTo(x,y); ix.stroke(); ix.restore();
+    if(!isParentStage() && cur.startOk){
+      const st=geo.strokes[cur.k], cps=geo.cps[cur.k];
+      cur.maxDev=Math.max(cur.maxDev, distPoly(x,y,st));
+      // collect next checkpoint(s) in order (allow skipping one for leniency)
+      for(let j=P.hit[cur.k]; j<Math.min(cps.length, P.hit[cur.k]+2); j++){
+        if(Math.hypot(x-cps[j][0], y-cps[j][1]) < geo.tol){ P.hit[cur.k]=j+1; if(stage().id==="trace"){ beep(600+40*j,.05); drawGuide(); } break; }
+      }
+    }
+  }
+});
+function endStroke(e){
+  if(!cur||e.pointerId!==cur.id) return; const st=cur; cur=null; strokesInk.push(st); P.inked=true;
+  if(isParentStage()){ askParent(); return; }
+  const cps=geo.cps[st.k]; const id=stage().id;
+  const limit = id==="trace" ? geo.wide : geo.wide*1.25;
+  const done = P.hit[st.k] >= cps.length-1 && P.hit[st.k]>=Math.ceil(cps.length*.85);
+  if(!st.startOk){ return fail("מַתְחִילִים בַּנְּקֻדָּה הַיְּרֻקָּה, לְמַעְלָה בַּתִּקְרָה"); }
+  if(st.maxDev>limit){ return fail("יָצָאנוּ מֵהַשְּׁבִיל, נְנַסֶּה שׁוּב"); }
+  if(!done){
+    if(st.pts.length<4) return; // a tap; ignore
+    return fail("עוֹד קְצָת! עַד הַסּוֹף בְּלִי לְהָרִים");
+  }
+  P.strokeIdx++;
+  if(P.strokeIdx>=geo.strokes.length) success(); else drawGuide();
+}
+iC.addEventListener("pointerup", endStroke); iC.addEventListener("pointercancel", e=>{ if(cur&&e.pointerId===cur.id){ cur=null; redrawInk(); } });
+
+function fail(text){
+  setMsg(text); beep(220,.15,"triangle",.06);
+  logEv({ev:"miss", what:P.ch||P.w.id, stage:stage().id, why:text});
+  setTimeout(()=>{ clearInk(); P.hit=geo.cps.map(()=>0); P.strokeIdx=0; playDemo(false); setTimeout(()=>setMsg(stageMsg()),1400); }, 700);
+  save();
+}
+function success(){
+  S.gems+=1; updGems(); chord(); setMsg("כׇּל הַכָּבוֹד אוֹרִי! +1 💎");
+  if(P.kind==="letter") L(P.ch).writes++;
+  logEv({ev:"ok", what:P.ch||P.w.id, stage:stage().id});
+  save(); setTimeout(nextRep, 900);
+}
+function askParent(){
+  // show the model faintly for comparison ("open your eyes and check") + parent buttons
+  setActions([
+    {t:"✓ נָכוֹן", c:"green", f:()=>{ showModelOverlay(); logEv({ev:"parent_ok", what:P.ch||P.w.id, stage:stage().id}); S.gems+=2; updGems(); chord(); setMsg("יוֹפִי! +2 💎"); setActions([]); save(); setTimeout(nextRep, 1300); }},
+    {t:"↺ עוֹד פַּעַם", c:"", f:()=>{ showModelOverlay(); logEv({ev:"parent_retry", what:P.ch||P.w.id, stage:stage().id}); setActions([]); save(); setTimeout(()=>{ clearInk(); P.inked=false; drawGuide(); setMsg(stageMsg()); }, 1500); }},
+  ]);
+}
+function showModelOverlay(){ drawGuide(g=>geo.strokes.forEach(st=>{ g.save(); g.globalAlpha=.35; g.strokeStyle="#2bb35e"; g.lineWidth=geo.H*.05; g.lineCap="round"; g.lineJoin="round"; g.beginPath(); st.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y)); g.stroke(); g.restore(); })); }
+
+function nextRep(){
+  const st=P.st; st.rep++;
+  if(st.rep>=stage().reps || S.skip){ advance(); return; }
+  save(); enterStage();
+}
+function advance(){
+  const st=P.st; st.rep=0; st.stage++;
+  if(st.stage>=P.stages.length){ st.stage=P.stages.length-1; finishItem(); return; }
+  save(); enterStage();
+}
+function finishItem(){
+  const st=P.st; const first=!st.done; st.done=true; st.stage=0; st.rep=0; delete st.replay; save();
+  logEv({ev:"done", what:P.ch||P.w.id}); save();
+  if(P.kind==="letter"){
+    celebrate(first? `עֲטַלֵּף חָדָשׁ הִצְטָרֵף לַמְּעָרָה! ${P.ch}` : `עוֹד פַּעַם ${P.ch}! מְצֻיָּן`, pixSVG(BAT));
+  } else {
+    celebrate(first? `תֵּבַת אוֹצָר חֲדָשָׁה! ${P.w.show}` : `${P.w.show} מְצֻיָּן!`, pixSVG(CHEST));
+  }
+}
+function celebrate(text, art){
+  document.getElementById("celeText").textContent=text; document.getElementById("celeArt").innerHTML=art;
+  document.getElementById("cele").classList.add("on"); chord();
+}
+document.getElementById("celeOk").onclick=()=>{
+  document.getElementById("cele").classList.remove("on");
+  if(P && P.kind==="word"){ const next=WORDS.find(w=>wordUnlocked(w)&&!W(w.id).done); if(next){ startWord(next); return; } }
+  goHome();
+};
+
+/* ---------- room ---------- */
+function drawRoom(){
+  updGems();
+  const c=document.getElementById("roomCanvas"), r=c.getBoundingClientRect(), dpr=Math.min(devicePixelRatio||1,2);
+  c.width=r.width*dpr; c.height=r.height*dpr; const g=c.getContext("2d"); g.setTransform(dpr,0,0,dpr,0,0);
+  const W0=r.width, H0=r.height, B=Math.round(Math.min(W0,H0)/14);
+  // stone blocks
+  for(let y=0;y<H0;y+=B) for(let x=0;x<W0;x+=B){ const n=(Math.sin(x*12.9898+y*78.233)*43758.5453)%1; g.fillStyle= n>0.6?"#4a4358":n>0.2?"#3d374a":"#332e3f"; g.fillRect(x,y,B,B); g.fillStyle="#0002"; g.fillRect(x,y+B-3,B,3); }
+  // cave opening (lit area)
+  const lit = ORDER.filter(ch=>L(ch).done).length;
+  g.fillStyle=`rgba(255,200,120,${0.04+lit*0.04})`; g.fillRect(B,B*2,W0-2*B,H0-3*B);
+  // ceiling ledge
+  g.fillStyle="#262131"; g.fillRect(0,B*2-6,W0,8);
+  // bats per letter
+  const slotW=(W0-2*B)/ORDER.length;
+  ORDER.forEach((ch,i)=>{
+    const st=L(ch); const cx=W0-B-slotW*(i+.5); const px=Math.max(4,B/5);
+    if(st.done){ drawPix(g,BAT,cx-7*px,B*2,px); drawPix(g,TORCH,cx+slotW*.3,B*2+B*1.2,px*.8); }
+    else drawPix(g,BAT,cx-7*px,B*2,px,.18);
+    g.fillStyle=st.done?"#fff":"#fff5"; g.font=`800 ${Math.round(B*.9)}px Rubik`; g.textAlign="center"; g.fillText(st.done?ch:"?", cx, B*2+px*11+B*1.1);
+  });
+  // chests for words on the floor
+  const fy=H0-B*2.4; g.fillStyle="#2a2433"; g.fillRect(0,H0-B,W0,B);
+  const cw=(W0-2*B)/WORDS.length;
+  WORDS.forEach((w,i)=>{ const done=W(w.id).done; const cx=W0-B-cw*(i+.5); const px=Math.max(4,B/7);
+    drawPix(g,CHEST,cx-5*px,H0-B-8*px,px, done?1:.2);
+    g.fillStyle=done?"#ffcf4a":"#fff4"; g.font=`700 ${Math.round(B*.5)}px Rubik`; g.textAlign="center"; g.fillText(done?w.show:"🔒", cx, H0-B-9*px-8); });
+  // emerald pile
+  const pile=Math.min(S.gems,60); const px=Math.max(2,B/9);
+  for(let i=0;i<pile;i++){ const col=i%12, row=Math.floor(i/12); drawPix(g,EMERALD, B*1.2+col*px*7 + (row%2)*px*3, fy-row*px*6 - B*.6, px); }
+  g.fillStyle="#fff"; g.font=`800 ${Math.round(B*.6)}px Rubik`; g.textAlign="left"; g.fillText(`${S.gems} אֶמֶרַלְדִּים`, B*1.2, fy-Math.ceil(pile/12)*px*6-B*.9);
+}
+
+/* ---------- nav / parent ---------- */
+function goHome(){ stopAnim(); P=null; show("home"); renderHome(); }
+document.getElementById("backHome").onclick=goHome;
+document.getElementById("roomBack").onclick=goHome;
+document.getElementById("toRoom").onclick=()=>{ show("room"); requestAnimationFrame(drawRoom); };
+document.getElementById("fsBtn").onclick=()=>{ const d=document.documentElement; (document.fullscreenElement? document.exitFullscreen() : d.requestFullscreen&&d.requestFullscreen()).catch?.(()=>{}); };
+const pp=document.getElementById("parent");
+document.getElementById("parentBtn").onclick=()=>{ document.getElementById("pUnlock").checked=S.unlockAll; document.getElementById("pSkip").checked=S.skip; pp.classList.add("on"); };
+document.getElementById("pClose").onclick=()=>{ S.unlockAll=document.getElementById("pUnlock").checked; S.skip=document.getElementById("pSkip").checked; save(); pp.classList.remove("on"); renderHome(); };
+document.getElementById("pReset").onclick=()=>{ if(confirm("לאפס את כל ההתקדמות בכתיבה?")){ const m=S.mode; S=blank(); S.mode=m; save(); pp.classList.remove("on"); renderHome(); } };
+if("serviceWorker" in navigator) navigator.serviceWorker.register("../sw.js",{scope:"../"}).catch(()=>{});
+// expose for testing
+window.__W={S, startLetter, startWord, get P(){return P;}, get geo(){return geo;}, renderHome};
+renderHome();
+</script>
+</body>
+</html>
