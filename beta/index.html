@@ -116,6 +116,9 @@ svg{flex-shrink:0}
 .unitbox{display:flex;align-items:baseline;justify-content:center;padding:0 30px;border-radius:48px;background:rgba(255,253,247,.55)}
 .u{position:relative;display:inline-block;font-family:var(--word);line-height:1.3;font-weight:700;letter-spacing:.03em;white-space:nowrap}
 .u .ov{position:absolute;top:0;right:0;color:var(--ink)}
+/* vowel cue labels: the letters stay ink, only the vowel mark keeps the sound colour (teacher, 2026-11-19) */
+.nk{position:relative;display:inline-block;font-style:normal}
+.nk .ov{position:absolute;top:0;right:0;font-style:normal;color:var(--ink)}
 .u.big{font-size:calc(min(26vh,17vw) * var(--scale))}
 .u.side{font-size:calc(min(9vh,6vw) * var(--scale));color:var(--faint-word)}
 .u.whole{font-size:calc(min(22vh,13vw) * var(--scale))}
@@ -928,9 +931,9 @@ function cueInner(k, o){
   const kind = cueKind(k);
   if(o.custom || o.photo) return `<img class="ph" src="${o.img}" alt="">`;
   if(kind==="vowel"){ const v=k.slice(6), V=VOWEL[v];
-    if(o.id==="mouth") return MOUTH[v]+`<span>${V.mark}</span>`;
-    if(o.id==="mark") return `<span class="vm">${V.mark}</span>`;
-    return `<img src="${o.img}" alt=""><span>${o.word}</span>`; }
+    if(o.id==="mouth") return MOUTH[v]+`<span>${nkHTML(V.mark,v)}</span>`;
+    if(o.id==="mark") return `<span class="vm">${nkHTML(V.mark,v)}</span>`;
+    return `<img src="${o.img}" alt=""><span>${nkHTML(o.word,v)}</span>`; }
   if(o.rafe){ const L=k.slice(5), snd={"פ":"f","ב":"v","כ":"ח"}[L]; return (L==="כ" ? `<b class="rl">ח</b>` : RAFE_MOUTH) + `<span>${L} = ${snd}</span>`; }
   if(o.teacher) return `<img src="${o.img}" alt="">`;
   const L = kind==="rafe" ? k.slice(5) : k;
@@ -969,6 +972,12 @@ function analyze(unit){
 }
 /* text with vowel marks removed (keeps dagesh, shva, shin/sin dot); the shuruk dot is removed so it shows in colour */
 function overlayText(unit){ const A=analyze(unit); return A.letters.map(l=>{ let m=l.marks.replace(/[ֱ-ֻ]/g,""); if(l.shuruk) m=m.replace("ּ",""); return l.ch+m; }).join(""); }
+/* cue label (e.g. אוֹ, אוֹצָר): letters in ink, only the marks of vowel v keep the colour; follows the colour setting */
+const V_MARKS = {a:/[ֲֳַָ]/g, i:/ִ/g, e:/[ֱֵֶ]/g, o:/[ֹֺ]/g, u:/ֻ|(?<=ו)ּ/g};
+function nkHTML(text, v){
+  if(settings.color==="tint" || !V_MARKS[v]) return text;
+  return `<i class="nk">${text}<i class="ov" aria-hidden="true">${text.replace(V_MARKS[v],"")}</i></i>`;
+}
 function unitHTML(unit, cls, colorMode){
   const A = analyze(unit), t = strip(unit), vc = A.vowel ? VOWEL[A.vowel].c : "var(--ink)";
   if(colorMode==="off" || !A.vowel) return `<span class="u ${cls}" style="color:var(--ink)">${t}</span>`;
@@ -997,7 +1006,9 @@ function artHTML(n, revealed, bees){
 /* ---------- storage + settings ---------- */
 const $ = id => document.getElementById(id);
 const store = { get(k,d){ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){return d;} }, set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} } };
-const settings = Object.assign({mode:"units", modelAfter:"2", cues:"always", quiet:"reading", color:"tint", font:"alef", scale:1, theme:"dark", name:"on", unlock:"order"}, store.get("ori.t3.settings",{}));
+const settings = Object.assign({mode:"units", modelAfter:"2", cues:"always", quiet:"reading", color:"nikud", font:"alef", scale:1, theme:"dark", name:"on", unlock:"order"}, store.get("ori.t3.settings",{}));
+/* 2026-11-19 teacher: colour only the vowel mark, letters and letter-card frames stay neutral. One-time switch of the saved setting; the parent can still pick "כל היחידה צבועה" afterwards */
+if(!store.get("ori.t3.nikudColor1",false)){ settings.color="nikud"; store.set("ori.t3.settings", settings); store.set("ori.t3.nikudColor1", true); }
 applyNameMode(settings.name!=="off");
 let reads = store.get("ori.t3.letterReads",{});
 cueChoices = store.get("ori.t3.cueChoice",{});
