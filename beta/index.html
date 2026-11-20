@@ -357,6 +357,46 @@ body.quiet .rec.off{display:none}
 
 /* cue picker: Ori picks the cue that helps him most */
 .cpick{z-index:12;overflow:auto}
+/* school texts */
+.schoolbtn{padding:0 16px!important}
+.school .starttop{flex-wrap:wrap}
+.stitle{flex:1;font-size:clamp(30px,5.4vh,48px);display:flex;align-items:center;gap:12px}
+.starttop .sadd{height:72px;font-size:24px;padding:0 22px;border-radius:20px}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;padding-bottom:20px}
+.scard{position:relative;background:var(--paper);color:var(--ink);border-radius:24px;padding:22px 22px 16px;display:flex;flex-direction:column;gap:10px;text-align:right;box-shadow:0 7px 0 #B9A478,0 14px 20px rgba(0,0,0,.35);min-height:170px;background-image:repeating-linear-gradient(transparent 0 38px,rgba(90,120,200,.18) 38px 40px)}
+.scard:active{transform:translateY(5px)}
+.scard .st{font-family:var(--word);font-size:34px;font-weight:700;line-height:1.15;padding-inline-end:56px}
+.scard .sx{font-family:var(--word);font-size:20px;color:var(--dim-on-paper);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.scard .sp{display:flex;align-items:center;gap:10px;font-size:19px;font-weight:800;color:var(--dim-on-paper);margin-top:auto}
+.scard .sp i{flex:1;height:10px;border-radius:10px;background:rgba(0,0,0,.1);overflow:hidden;display:block}
+.scard .sp i b{display:block;height:100%;background:#27853D;border-radius:10px}
+.scard.done .st::after{content:" ✓";color:#27853D}
+.scard.now{box-shadow:0 0 0 5px var(--amber),0 7px 0 #B9A478}
+.scard .sedit{position:absolute;top:12px;left:12px;width:56px;height:56px;border-radius:16px;background:rgba(42,34,51,.1);color:var(--ink);display:flex;align-items:center;justify-content:center}
+.scard .warn{font-size:17px;font-weight:800;color:#A4530D}
+.sempty{grid-column:1/-1;background:var(--surface);border-radius:24px;padding:28px;font-size:22px;line-height:1.5;color:var(--ink-on-dark)}
+.sed{z-index:12;overflow:auto}
+.sed .starttop h2{margin:0;font-size:28px;flex:1}
+.sedcols{display:grid;grid-template-columns:1fr 1fr;gap:20px;min-height:0;flex:1}
+@media (orientation:portrait){.sedcols{grid-template-columns:1fr}}
+.sedin,.sedout{display:flex;flex-direction:column;gap:12px;min-width:0}
+.sedl{display:flex;flex-direction:column;gap:6px;font-size:19px;font-weight:800;color:var(--ink-on-dark)}
+div.sedl{flex-direction:row;align-items:center;justify-content:space-between}
+div.sedl .pbtn{flex:none;min-height:48px}
+.sed input,.sed textarea{font-family:var(--word);font-size:26px;border-radius:14px;border:2px solid var(--line);background:var(--paper);color:var(--ink);padding:10px 14px;width:100%}
+.sed textarea{min-height:38vh;flex:1;line-height:1.6;resize:vertical}
+.sedsum{font-size:20px;font-weight:800;color:var(--ink-on-dark)}
+.sedissues{display:flex;flex-direction:column;gap:6px}
+.sedissues div{background:#5A3A12;color:#FFE2B8;border-radius:12px;padding:8px 12px;font-size:18px}
+.sedissues b{font-family:var(--word);font-size:22px}
+.sedpages{display:flex;flex-direction:column;gap:8px}
+.sedpg{background:var(--paper);color:var(--ink);border-radius:14px;padding:8px 12px;font-family:var(--word);font-size:26px;line-height:1.5;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.sedpg small{font-family:system-ui,sans-serif;font-size:15px;font-weight:800;color:var(--dim-on-paper);min-width:40px}
+.sedpg .w{white-space:nowrap}
+.sedpg .w i{font-style:normal;color:#A99B85;font-size:.7em;padding:0 1px}
+.sedpg .w.bad{background:#FFD18A;border-radius:6px;box-shadow:0 0 0 3px #FFD18A}
+body.school .main .art{display:none}
+.sart{position:absolute;inset:0;background:var(--paper);background-image:repeating-linear-gradient(transparent 0 46px,rgba(90,120,200,.2) 46px 48px);display:flex;align-items:center;justify-content:center;color:#356FCB;font-size:min(30vh,30vw)}
 .cpick .starttop h2{margin:0;font-size:30px;flex:1}
 .cpgrp h3{margin:10px 0 10px;color:var(--amber);font-size:22px}
 .cpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:12px}
@@ -409,6 +449,7 @@ html.ch-beta body::after{content:"בטא";position:fixed;top:6px;left:6px;z-inde
 <section class="screen home" id="start">
   <div class="starttop" id="startTop">
     <button class="kb kb-g roombtn" id="roomBtn"><span class="av" id="homeAvatar"></span><span>הַחֶדֶר שֶׁלִּי</span><small>אוֹצָרוֹת</small></button>
+    <button class="kb kb-b roombtn schoolbtn" id="schoolBtn" aria-label="סיפורים מבית הספר"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10 5 7 4.5 3.5 5v13c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5z"/><path d="M12 6.5v13"/></svg><span>בֵּית הַסֵּפֶר</span></button>
     <span style="margin-inline-end:auto"></span>
     <span class="rec" id="homeRec" hidden><i></i><span>מקליט</span><span class="t" id="homeRecTime"></span></span>
     <button class="kb kb-v" id="installBtn"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M12 7v8M9 12l3 3 3-3"/></svg>הוסף למסך הבית</button>
@@ -453,6 +494,37 @@ html.ch-beta body::after{content:"בטא";position:fixed;top:6px;left:6px;z-inde
   <div class="next" id="roomNext"></div>
   <div id="roomBooks"></div>
   <section class="shelf"><div class="sh"><h3>הָאוֹתִיּוֹת שֶׁל אוֹרִי</h3><span class="cnt">כל אות נפתחת אחרי 3 קריאות נכונות</span></div><div class="letters" id="roomLetters"></div></section>
+</section>
+
+<!-- SCHOOL TEXTS (2026-11-20): texts from the teacher, pasted with nikud by a parent; read with the same engine, no art -->
+<section class="screen room school" id="school" hidden>
+  <div class="starttop">
+    <button class="kb kb-v" id="schoolHome"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>מסך הבית</button>
+    <h1 class="title stitle"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10 5 7 4.5 3.5 5v13c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5z"/><path d="M12 6.5v13"/></svg> סִפּוּרִים מִבֵּית הַסֵּפֶר</h1>
+    <button class="kb kb-g sadd" id="schoolAdd" aria-label="הוספת טקסט חדש"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span>טֶקְסְט חָדָשׁ</span></button>
+  </div>
+  <div class="sgrid" id="schoolList"></div>
+</section>
+<section class="screen sed" id="schoolEd" hidden>
+  <div class="starttop">
+    <button class="kb kb-v" id="sedCancel"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>ביטול</button>
+    <h2 id="sedTitle">טקסט חדש מבית הספר</h2>
+    <button class="kb kb-r" id="sedDel" hidden>מחק</button>
+    <button class="kb kb-g" id="sedSave">שמור</button>
+  </div>
+  <div class="sedcols">
+    <div class="sedin">
+      <label class="sedl">שם הסיפור<input id="sedName" maxlength="60" placeholder="למשל: הַחָתוּל שֶׁל דָּנָה" autocomplete="off"></label>
+      <div class="sedl">הטקסט, עם ניקוד <button class="pbtn" id="sedPaste" type="button">הדבק מהלוח</button></div>
+      <textarea id="sedText" dir="rtl" spellcheck="false" placeholder="מדביקים כאן את הטקסט המנוקד מהמורה."></textarea>
+      <div class="hint">כל משפט (נגמר ב . ! ? :) או שורה הוא דף. משפט ארוך מ־7 מילים מתחלק לבד, קודם בפסיק. שורה ריקה תמיד מתחילה דף חדש.<br>מילה בלי ניקוד לא מנחשים: היא מסומנת כאן בכתום, ואורי יקרא אותה כמילה שלמה בלי רמזים. עדיף להוסיף לה ניקוד (למשל בנקדן של דיקטה).</div>
+    </div>
+    <div class="sedout">
+      <div class="sedsum" id="sedSum"></div>
+      <div class="sedissues" id="sedIssues"></div>
+      <div class="sedpages" id="sedPages"></div>
+    </div>
+  </div>
 </section>
 
 <!-- CUE PICKER (parent panel → בחירת רמזים) -->
@@ -579,6 +651,7 @@ html.ch-beta body::after{content:"בטא";position:fixed;top:6px;left:6px;z-inde
   </div>
 </div>
 
+<script src="school.js"></script>
 <script>
 "use strict";
 /* ---------- story (approved 2026-11-15). Every ב/כ/פ has a dagesh; no final ך/ף.
@@ -845,8 +918,11 @@ const NAMED_4_9 = {
 STORIES.forEach(b=>{ const N=NAMED_4_9[b.id]; if(N) b.pages.forEach((p,j)=>{ const n=N[j+1]; if(n){ p.me={reveal:p.reveal, words:p.words}; p.reveal=n.reveal; p.words=n.words; } }); });
 STORIES.forEach(b=>b.pages.forEach(p=>{ if(p.me){ p.named={reveal:p.reveal, words:p.words}; } }));
 function applyNameMode(on){ STORIES.forEach(b=>b.pages.forEach(p=>{ if(!p.me) return; const v = on ? p.named : p.me; p.reveal=v.reveal; p.words=v.words; })); }
+const SAGA_N = STORIES.length; /* the saga; school texts (parent-added) are appended after it, see "school texts" below */
+const SCHOOL_ICON = '<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10 5 7 4.5 3.5 5v13c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5z"/><path d="M12 6.5v13"/></svg>';
 let BOOK = 0, PAGES = PAGES_ISLAND;
-function setBook(b){ BOOK = Math.max(0, Math.min(STORIES.length-1, b|0)); PAGES = STORIES[BOOK].pages; /* a story this version lacks (beta has more) keeps its saved choice */ if(BOOK===(b|0)) try{ localStorage.setItem("ori.t3.book", String(BOOK)); }catch(e){} }
+function setBook(b){ BOOK = Math.max(0, Math.min(STORIES.length-1, b|0)); PAGES = STORIES[BOOK].pages; /* a story this version lacks (beta has more) keeps its saved choice */ if(BOOK===(b|0) && !STORIES[BOOK].school) try{ localStorage.setItem("ori.t3.book", String(BOOK)); }catch(e){}
+  document.body.classList.toggle("school", !!STORIES[BOOK].school); }
 const CUE_WORD = {alef:"אַרְנָב",bet:"בֶּרֶז",gimel:"גִּבּוֹר עָל",dalet:"דַּחְלִיל",he:"הֶגֶה",vav:"וָפֶל",zayin:"זָנָב",het:"חֶדֶר",tet:"טֶלֶפוֹן",yod:"יוֹיוֹ",kaf:"כַּדּוּר",lamed:"לָשׁוֹן לְמַעְלָה",mem:"מְשֻׁלָּשׁ",nun:"נוּרָה",samekh:"סַל",ayin:"עַיִן",pe:"פֶּה",tsadi:"צָב",qof:"קוּקוּ",resh:"רֶגֶל",shin:"שִׁנַּיִם",tav:"תַּנִּין"};
 const VOWEL = {a:{c:"var(--v-a)",hex:"#C8321F",mark:"אַ",name:"פה פתוח"}, i:{c:"var(--v-i)",hex:"#1F5FD0",mark:"אִ",name:"חיוך רחב"}, e:{c:"var(--v-e)",hex:"#1E7F45",mark:"אֵ",name:"פה חצי פתוח"}, o:{c:"var(--v-o)",hex:"#C96A0A",mark:"אוֹ",name:"שפתיים עגולות"}, u:{c:"var(--v-u)",hex:"#7A35B5",mark:"אוּ",name:"שפתיים מכווצות"}};
 const MOUTH = {
@@ -987,6 +1063,8 @@ function unitHTML(unit, cls, colorMode){
 function cueItems(unit){
   const A = analyze(unit), items=[];
   A.letters.forEach((l,i)=>{
+    if(l.ch==="ש" && l.marks.includes("ׂ")){ if(i===A.vowelAt && A.vowel) items.push({type:"vowel", v:A.vowel}); return; } /* sin (school texts): the ש cards teach sh */
+
     if(!l.carrier && !l.silent && "בכפ".includes(l.ch) && !l.marks.includes("ּ")) items.push({type:"rafe", letter:l.ch});
     else if(!l.carrier && !l.silent && CUE_SETS[l.ch]) items.push({type:"letter", letter:l.ch});
     if(i===A.vowelAt && A.vowel) items.push({type:"vowel", v:A.vowel});
@@ -996,6 +1074,7 @@ function cueItems(unit){
 
 /* ---------- art ---------- */
 function artHTML(n, revealed, bees){
+  if(STORIES[BOOK].school) return `<div class="sart">${SCHOOL_ICON}</div>`; /* school texts have no pictures */
   const A = STORIES[BOOK].art;
   const pic = st => `<picture><source media="(orientation: portrait)" srcset="${A}p${n}-${st}-wide.svg"><img src="${A}p${n}-${st}-tall.svg" alt=""></picture>`;
   const day = STORIES[BOOK].day.includes(n);
@@ -1143,7 +1222,7 @@ function gotoPage(i){
   log("page_start"); startStep();
   preload(S.page+2);
 }
-function preload(n){ if(n>PAGES.length) return; const portrait=matchMedia("(orientation: portrait)").matches; ["base","reveal"].forEach(st=>{ const im=new Image(); im.src=`${STORIES[BOOK].art}p${n}-${st}-${portrait?"wide":"tall"}.svg`; }); }
+function preload(n){ if(n>PAGES.length || STORIES[BOOK].school) return; const portrait=matchMedia("(orientation: portrait)").matches; ["base","reveal"].forEach(st=>{ const im=new Image(); im.src=`${STORIES[BOOK].art}p${n}-${st}-${portrait?"wide":"tall"}.svg`; }); }
 function begin(withRec){
   newSession(); quietOverride=null; const first = startPage;
   $("start").hidden=true; $("end").hidden=true; $("app").hidden=false;
@@ -1184,7 +1263,7 @@ let startPage = 0;
 const live = () => S && !S.ended;
 let autoBook = true; // until Ori picks a story himself, home opens on the story he is up to
 function paintHome(){
-  if(autoBook && !live()){ const i = STORIES.findIndex((_,k)=>isOpen(k) && !isFinished(k)); if(i>=0 && (isFinished(BOOK) || !isOpen(BOOK))){ setBook(i); startPage=0; } }
+  if(autoBook && !live()){ const i = STORIES.findIndex((_,k)=>k<SAGA_N && isOpen(k) && !isFinished(k)); if(i>=0 && (isFinished(BOOK) || !isOpen(BOOK))){ setBook(i); startPage=0; } }
   const done = Object.keys(bookDone()).length, left = PAGES.length - done;
   $("bookTitle").innerHTML = STORIES[BOOK].title;
   paintBooks();
@@ -1213,8 +1292,9 @@ let shelfOpen = false;
 function paintBooks(){
   const card = (i, cls) => { const b=STORIES[i], d=pagesDone(i), n=b.pages.length;
     return `<button class="book ${cls||""}${i===BOOK?" on":""}" data-book="${i}"><img src="${b.art}thumb/p${b.cover}-reveal.jpg" alt="" loading="lazy"><span class="bt">${b.short}</span><span class="bp">${d>=n?"✓ ":""}${d}/${n}</span>${cls==="now"?`<i class="bar3"><b style="width:${Math.round(d/n*100)}%"></b></i>`:""}</button>`; };
-  const open = STORIES.map((_,i)=>i).filter(i=>isOpen(i) && !isFinished(i));
-  const locked = STORIES.map((_,i)=>i).filter(i=>!isOpen(i));
+  const saga = STORIES.slice(0,SAGA_N).map((_,i)=>i); /* school texts live on their own screen */
+  const open = saga.filter(i=>isOpen(i) && !isFinished(i));
+  const locked = saga.filter(i=>!isOpen(i));
   const now = open.includes(BOOK) ? BOOK : (open[0]!=null ? open[0] : BOOK);
   // beside the big card: the next open story (or the next locked one); everything else waits on the shelf
   const side = open.filter(i=>i!==now).sort((a,b)=>(a<now)-(b<now) || a-b).slice(0,1);
@@ -1222,14 +1302,15 @@ function paintBooks(){
   side.forEach(i=>{ h += card(i,"open"); });
   if(locked.length) h += `<button class="book locked" data-locked="${locked[0]}" aria-label="נעול"><img src="${STORIES[locked[0]].art}thumb/p1-base.jpg" alt="" loading="lazy"><span class="lock">🔒</span><span class="bt">${STORIES[locked[0]].short}</span>${locked.length>1?`<span class="bp">+${locked.length-1}</span>`:""}</button>`;
   h += `</div>`;
-  const rest = STORIES.map((_,i)=>i).filter(i=>i!==now && !side.includes(i) && isOpen(i));
+  const rest = saga.filter(i=>i!==now && !side.includes(i) && isOpen(i));
   if(rest.length) h += `<button class="shelfbtn" id="shelfBtn" aria-expanded="${shelfOpen}"><span>${rest.every(isFinished)?"סִפּוּרִים שֶׁקָּרָאתִי":"עוֹד סִפּוּרִים"}</span><b>${rest.length}</b><span class="chev">${shelfOpen?"▴":"▾"}</span></button>`
     + (shelfOpen ? `<div class="bshelf">${rest.map(i=>card(i,"done")).join("")}</div>` : "");
   $("books").innerHTML = h;
 }
 function openHome(){
+  if(STORIES[BOOK].school) return openSchool(); /* home button while reading a school text → the school list */
   if(S && live()) log("home_open");
-  $("app").hidden=true; $("end").hidden=true; $("room").hidden=true; $("start").hidden=false; document.body.classList.remove("quiet");
+  $("school").hidden=true; $("app").hidden=true; $("end").hidden=true; $("room").hidden=true; $("start").hidden=false; document.body.classList.remove("quiet");
   paintHome();
 }
 function resume(){ $("start").hidden=true; $("app").hidden=false; if(S.phase==="pageEnd") pageEnd(); else paint(); log("home_resume"); }
@@ -1254,7 +1335,7 @@ $("books").addEventListener("click",e=>{
 /* ---------- Ori's room: photo, totals, every treasure slot (open or still locked), letters ---------- */
 function paintAvatar(el){ const ph = store.get("ori.t3.photo", null);
   el.innerHTML = ph ? `<img src="${ph}" alt="התמונה של אורי">` : `<svg viewBox="0 0 24 24" width="55%" height="55%" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>`; }
-function openRoom(){ if(S && live()) log("room_open"); $("start").hidden=true; $("end").hidden=true; $("app").hidden=true; $("room").hidden=false; document.body.classList.remove("quiet"); paintRoom(); $("room").scrollTop=0; }
+function openRoom(){ if(S && live()) log("room_open"); $("school").hidden=true; $("start").hidden=true; $("end").hidden=true; $("app").hidden=true; $("room").hidden=false; document.body.classList.remove("quiet"); paintRoom(); $("room").scrollTop=0; }
 function paintRoom(){
   paintAvatar($("roomAvatar")); $("photoLbl").textContent = store.get("ori.t3.photo",null) ? "החלף תמונה" : "הוסף תמונה";
   const inv = inventory(); const gotItems = ITEMS.filter(it=>inv[it.id]).length;
@@ -1262,12 +1343,12 @@ function paintRoom(){
   const order = [...LETTERS, ...FINALS];
   const mastered = order.filter(L=>(reads[L]||0)>=3).length;
   $("roomStats").innerHTML = `<div><b>${gotItems}<small>/${ITEMS.length}</small></b><span>חפצים נאספו</span></div><div><b>${seen}<small>/${ALL_WORDS.length}</small></b><span>מילים נחשפו</span></div><div><b>${mastered}<small>/${order.length}</small></b><span>אותיות שאורי שולט</span></div><div><b>⭐ ${PROG.stars}</b><span>כוכבים</span></div>`;
-  let next = null; STORIES.some((b,i)=>{ const k=b.pages.findIndex((_,j)=>!doneOf(i)[j+1]); if(k>=0){ next={b:i,p:k}; return true; } return false; });
+  let next = null; STORIES.slice(0,SAGA_N).some((b,i)=>{ const k=b.pages.findIndex((_,j)=>!doneOf(i)[j+1]); if(k>=0){ next={b:i,p:k}; return true; } return false; });
   $("roomNext").innerHTML = next ? `<span>האוצר הבא מחכה:</span> <b>${STORIES[next.b].short.replace(/[֑-ׇ]/g,"")} · דף ${next.p+1}</b> <button class="kb kb-g" data-go="${next.b}:${next.p}">לך לשם ←</button>` : `<b>כל האוצרות נפתחו! 🏆</b>`;
   const slot = (it, go) => { const n=inv[it.id]||0;
     return n ? `<button class="islot got" ${go?`data-go="${go}"`:""} aria-label="${bare(it.name)}"><img src="art/items/${it.id}.svg" alt="">${n>1?`<b class="cnt">${n}</b>`:""}<span class="nm">${it.name}</span></button>`
              : `<button class="islot" ${go?`data-go="${go}"`:""} aria-label="עדיין לא נאסף"><img src="art/items/${it.id}-locked.svg" alt=""><span class="q">?</span><span class="nm">…</span></button>`; };
-  $("roomBooks").innerHTML = STORIES.map((b,i)=>{ const D=doneOf(i), d=Object.keys(D).length;
+  $("roomBooks").innerHTML = STORIES.slice(0,SAGA_N).map((b,i)=>{ const D=doneOf(i), d=Object.keys(D).length;
     const seen = new Set(), slots = [];
     b.pages.forEach((p,j)=>{ const pi=pageItem(p); if(pi && !seen.has(pi.id)){ seen.add(pi.id); slots.push(slot(ITEM[pi.id], `${i}:${j}`)); } });
     return `<section class="shelf"><div class="sh"><h3>${b.title}</h3><span class="cnt">${d}/${b.pages.length} דפים</span><div class="bar2"><i style="width:${Math.round(d/b.pages.length*100)}%"></i></div></div><div class="inv">${slots.join("")}</div></section>`; }).join("")
@@ -1546,6 +1627,100 @@ $("startNoRec").onclick=()=>{ goFs(); begin(false); };
 $("endStopRec").onclick=stopRec;
 $("endLog").onclick=()=>downloadLog("json");
 $("endAgain").onclick=()=>{ S.ended=false; $("end").hidden=true; $("app").hidden=false; gotoPage(0); };
+/* ---------- school texts (2026-11-20): texts Ori gets from the teacher. A parent pastes the vocalized text, gives it a name,
+   and it becomes a story for the same reader (units, teacher cues, nikud colours), without pictures or items.
+   Saved on this tablet only: localStorage "ori.t3.school" = [{id, title, text, created, updated}]. Pages/units are built from
+   the text on every load (school.js), so a better splitter later fixes old texts too. Progress: PROG.books["school-<id>"]. ---------- */
+let SCHOOL = store.get("ori.t3.school", []);
+let sagaBook = 0;
+function buildSchool(){
+  const cur = STORIES[BOOK] && STORIES[BOOK].id;
+  STORIES.splice(SAGA_N);
+  SCHOOL.forEach(t=>{ const r = SCHOOL_PARSE.parse(t.text), id = "school-"+t.id;
+    STORIES.push({id, school:true, sid:t.id, title:t.title, short:t.title, art:"", day:[], cover:1, pages:r.pages, issues:r.issues});
+    if(!PROG.books[id]) PROG.books[id] = {done:{}}; });
+  const i = STORIES.findIndex(b=>b.id===cur);
+  if(i>=0){ BOOK=i; PAGES=STORIES[i].pages; }
+}
+buildSchool();
+const schoolIdx = sid => STORIES.findIndex(b=>b.sid===sid);
+function saveSchool(){ store.set("ori.t3.school", SCHOOL); buildSchool(); saveProg(); }
+function openSchool(){
+  if(S && live()) log("school_open");
+  ["start","end","app","room"].forEach(k=>$(k).hidden=true); $("school").hidden=false; document.body.classList.remove("quiet");
+  paintSchool(); $("school").scrollTop=0;
+}
+function paintSchool(){
+  const list = SCHOOL.map(t=>schoolIdx(t.id)).filter(i=>i>=0);
+  if(!list.length){ $("schoolList").innerHTML = `<div class="sempty"><b>עוד אין כאן טקסטים.</b><br>להורה: לוחצים על <b>+ טקסט חדש</b>, נותנים שם, ומדביקים את הטקסט המנוקד שאורי קיבל מהמורה. כל משפט הופך לדף, ואורי קורא אותו כמו בסיפורים, עם הרמזים והצבעים.</div>`; return; }
+  $("schoolList").innerHTML = list.slice().reverse().map(i=>{ const b=STORIES[i], d=pagesDone(i), n=b.pages.length, words=b.pages.reduce((a,p)=>a+p.words.length,0);
+    const now = live() && BOOK===i;
+    return `<button class="scard${d>=n&&n?" done":""}${now?" now":""}" data-read="${b.sid}">
+      <span class="st">${b.title}</span>
+      <span class="sx">${b.pages.slice(0,2).map(p=>p.words.map(w=>w[0]).join(" ")).join(" ")}</span>
+      ${b.issues.length?`<span class="warn">⚠ ${b.issues.length===1?"מילה אחת":b.issues.length+" מילים"} לבדיקה (להורה)</span>`:""}
+      <span class="sp">${now?`ממשיכים · דף ${S.page+1}`:`${d}/${n} דפים · ${words} מילים`}<i><b style="width:${n?Math.round(d/n*100):0}%"></b></i></span>
+      <span class="sedit" data-edit="${b.sid}" role="button" aria-label="עריכה (להורה)"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></span>
+    </button>`; }).join("");
+}
+function readSchool(sid){
+  const b = schoolIdx(sid); if(b<0 || !STORIES[b].pages.length) return;
+  if(!STORIES[BOOK].school) sagaBook = BOOK;
+  $("school").hidden = true;
+  if(live() && BOOK===b){ $("app").hidden=false; return resume(); }
+  if(BOOK!==b){ if(live()) log("book_switch",{to:STORIES[b].id}); setBook(b); }
+  const D = doneOf(b); let first = STORIES[b].pages.findIndex((_,j)=>!D[j+1]); if(first<0) first=0;
+  if(live()){ $("app").hidden=false; log("page_jump",{to:first+1}); gotoPage(first); }
+  else { startPage=first; begin(false); }   /* a recording the parent already started keeps running */
+}
+function leaveSchool(){
+  if(STORIES[BOOK].school){ if(live()){ log("session_end",{stats:S.stats}); S.ended=true; } setBook(sagaBook); startPage=0; }
+  $("school").hidden=true; openHome();
+}
+$("schoolBtn").onclick = ()=>{ if(!STORIES[BOOK].school) sagaBook=BOOK; openSchool(); };
+$("schoolHome").onclick = leaveSchool;
+$("schoolAdd").onclick = ()=>openEditor(null);
+$("schoolList").addEventListener("click",e=>{
+  const ed = e.target.closest("[data-edit]"); if(ed){ e.stopPropagation(); return openEditor(ed.dataset.edit); }
+  const c = e.target.closest("[data-read]"); if(c) readSchool(c.dataset.read);
+});
+
+/* editor (parent): name + pasted text, live preview of pages and units, words to check */
+let edId = null, edDelArm = 0;
+function openEditor(sid){
+  edId = sid||null; const t = SCHOOL.find(x=>x.id===sid);
+  $("sedTitle").textContent = t ? "עריכת טקסט" : "טקסט חדש מבית הספר";
+  $("sedName").value = t ? t.title : ""; $("sedText").value = t ? t.text : "";
+  $("sedDel").hidden = !t; $("sedDel").textContent = "מחק"; edDelArm = 0;
+  $("schoolEd").hidden = false; paintEditor(); $("schoolEd").scrollTop=0;
+}
+const escH = s => s.replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function paintEditor(){
+  const r = SCHOOL_PARSE.parse($("sedText").value), words = r.pages.reduce((a,p)=>a+p.words.length,0);
+  const bad = new Set(r.issues.map(x=>x.page+":"+x.word));
+  $("sedSum").textContent = r.pages.length ? `${r.pages.length} דפים · ${words} מילים${r.issues.length?` · ${r.issues.length} לבדיקה`:" · הכול מנוקד ✓"}` : "התצוגה של הדפים תופיע כאן.";
+  $("sedIssues").innerHTML = r.issues.slice(0,12).map(x=>`<div>דף ${x.page+1}: <b>${escH(x.display)}</b> · ${x.kinds.map(k=>SCHOOL_PARSE.ISSUE_TEXT[k]||k).join(", ")}</div>`).join("") + (r.issues.length>12?`<div>ועוד ${r.issues.length-12}…</div>`:"");
+  $("sedPages").innerHTML = r.pages.map((p,i)=>`<div class="sedpg"><small>דף ${i+1}</small>${p.words.map((w,j)=>`<span class="w${bad.has(i+":"+j)?" bad":""}">${w[1].map(escH).join("<i>·</i>")}</span>`).join(" ")}</div>`).join("");
+  $("sedSave").disabled = !r.pages.length;
+}
+$("sedText").addEventListener("input", paintEditor);
+$("sedPaste").onclick = async()=>{ try{ const t = await navigator.clipboard.readText(); if(t){ const a=$("sedText"); a.value = a.value ? a.value.replace(/\s*$/,"\n")+t : t; paintEditor(); } }catch(err){ $("sedText").focus(); $("sedSum").textContent = "אין גישה ללוח. לוחצים לחיצה ארוכה בתיבה ← הדבק."; } };
+$("sedCancel").onclick = ()=>{ $("schoolEd").hidden = true; };
+$("sedSave").onclick = ()=>{
+  const text = SCHOOL_PARSE.normalize($("sedText").value).trim(); if(!SCHOOL_PARSE.parse(text).pages.length) return;
+  const title = $("sedName").value.trim() || text.split(/[\n.!?]/)[0].trim().split(" ").slice(0,4).join(" ");
+  const t = SCHOOL.find(x=>x.id===edId), at = new Date().toISOString();
+  if(t){ if(t.text!==text){ const id="school-"+t.id; PROG.books[id] = {done:{}}; } t.title=title; t.text=text; t.updated=at; }   /* changed text = pages may move, so its page progress starts over */
+  else SCHOOL.push({id: Date.now().toString(36), title, text, created:at, updated:at});
+  saveSchool(); if(S) log("school_saved",{title}); $("schoolEd").hidden = true; paintSchool();
+};
+$("sedDel").onclick = ()=>{
+  if(!edDelArm){ edDelArm = 1; $("sedDel").textContent = "בטוח? לחצו שוב למחיקה"; setTimeout(()=>{ edDelArm=0; $("sedDel").textContent="מחק"; }, 4000); return; }
+  const t = SCHOOL.find(x=>x.id===edId); if(!t) return;
+  if(STORIES[BOOK].sid===t.id){ if(live()){ log("session_end",{stats:S.stats}); S.ended=true; } setBook(sagaBook); }
+  SCHOOL = SCHOOL.filter(x=>x!==t); delete PROG.books["school-"+t.id]; saveSchool(); if(S) log("school_deleted",{title:t.title});
+  $("schoolEd").hidden = true; paintSchool();
+};
 window.addEventListener("beforeunload",e=>{ if(REC.on){ e.preventDefault(); e.returnValue=""; } });
 paintHome();
 applySettings(); checkRecover(); preload(1); loadSounds(); loadImages();
