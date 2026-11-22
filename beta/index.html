@@ -160,6 +160,9 @@ body.quiet .bar button,body.quiet .top .kb-v{background:var(--quiet-btn);box-sha
 body.quiet .bar button:active,body.quiet .top .kb-v:active{transform:none}
 body.quiet .bar .ic{background:none;box-shadow:none}
 body.quiet #bOk .ic{color:#6FCB86} body.quiet #bAgain .ic{color:var(--amber)} body.quiet #bWhole .ic{color:#7FAEF2}
+.colbtn .cb-a{font-family:var(--word);font-size:30px;font-weight:700;line-height:1;color:#fff}
+.colbtn.on .cb-a{color:#E8604E}
+.colbtn.on{box-shadow:inset 0 0 0 2px #E8604E}
 body.quiet #quietBtn{box-shadow:inset 0 0 0 2px var(--amber);color:var(--amber)}
 body.quiet .rec{background:none!important;box-shadow:none!important;padding:0 6px}
 body.quiet .rec span{display:none}
@@ -541,6 +544,7 @@ html.ch-beta body::after{content:"בטא";position:fixed;top:6px;left:6px;z-inde
     <button class="kb kb-v rec off" id="recBadge" aria-label="מצב הקלטה, פתיחת פאנל הורה"><i></i><span id="recTxt">לא מקליט</span><span class="t" id="recTime"></span></button>
     <div class="prog"><div class="dots" id="dots"></div><b id="pageLbl"></b></div>
     <button class="kb kb-v ib" id="quietBtn" aria-label="מצב שקט"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+    <button class="kb kb-v ib colbtn" id="colorBtn" aria-label="אותיות צבועות או שחורות"><span class="cb-a">אָ</span></button>
     <button class="kb kb-v ib" id="markBtn" aria-label="סימון רגע בהקלטה"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21V4"/><path d="M6 4h11l-2.5 4L17 12H6"/></svg></button>
     <button class="kb kb-v ib" id="fsBtn" aria-label="מסך מלא"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
   </div>
@@ -641,7 +645,8 @@ html.ch-beta body::after{content:"בטא";position:fixed;top:6px;left:6px;z-inde
           <label>גודל טקסט <input type="range" id="scale" min="0.75" max="1.25" step="0.05"></label>
           <div class="seg" data-set="theme"><button data-v="dark">לילה חם</button><button data-v="sepia">ספיה</button></div>
           <div style="font-size:19px;font-weight:700">צבע לפי צליל הניקוד</div>
-          <div class="seg" data-set="color"><button data-v="nikud">רק הניקוד צבוע</button><button data-v="tint">כל היחידה צבועה</button><button data-v="off">בלי צבע</button></div>
+          <div class="seg" data-set="color"><button data-v="tint">אותיות צבועות</button><button data-v="nikud">אותיות שחורות, רק הניקוד צבוע</button><button data-v="off">בלי צבע</button></div>
+          <div class="hint">אורי יכול להחליף בעצמו בכל רגע עם כפתור ה־<b>אָ</b> בפס העליון של מסך הקריאה (צבועות ↔ שחורות).</div>
           <div class="key"><span><i style="background:#E8604E"></i>אַ אָ</span><span><i style="background:#5B93F5"></i>אִ</span><span><i style="background:#4FB877"></i>אֵ אֶ</span><span><i style="background:#F0A04A"></i>אוֹ</span><span><i style="background:#B07AE6"></i>אוּ אֻ</span></div>
           <div style="font-size:19px;font-weight:700">פונט למילה</div>
           <div class="seg fontpick" data-set="font"><button data-v="alef" style="font-family:Alef">אַלֶף</button><button data-v="noto" style="font-family:'Noto Sans Hebrew'">נוֹטוֹ</button><button data-v="rubik" style="font-family:Rubik">רוּבִּיק</button><button data-v="frank" style="font-family:'Frank Ruhl Libre'">פְרַנְק</button></div>
@@ -833,6 +838,65 @@ const PAGES_TURTLES = [
   {reveal:3, item:"tmap", words:[ORI,W("מָצָא",["מָ","צָא"]),W("מַפַּת",["מַ","פַּת"]),W("אוֹצָר!",["אוֹ","צָר"])],
      me:{reveal:2, words:[W("מָצָאתִי",["מָ","צָא","תִי"]),W("מַפַּת",["מַ","פַּת"]),W("אוֹצָר!",["אוֹ","צָר"])]}}
 ];
+/* episodes 13-15 (2026-11-22): open-ended saga continued. Each one leans on mid-word closed syllables
+   (מִדְבָּר, אַרְגָּז, מַצְפֵּן, קַקְטוּס, אִיגְלוּ), one or two per page, repeated across pages. No soft כ/ך, no sin, no double yod. */
+/* episode 13: the treasure map from episode 12 leads to a desert. Something to learn: cactus pricks; X marks the spot. */
+const PAGES_DESERT = [
+  {reveal:3, words:[ORI,W("פָּתַח",["פָּ","תַח"]),W("אֶת",["אֶת"]),W("הַמַּפָּה.",["הַ","מַּ","פָּה"])],
+     me:{reveal:2, words:[W("פָּתַחְתִּי",["פָּ","תַחְ","תִּי"]),W("אֶת",["אֶת"]),W("הַמַּפָּה.",["הַ","מַּ","פָּה"])]}},
+  {reveal:2, words:[W("בַּמַּפָּה",["בַּ","מַּ","פָּה"]),W("יֵשׁ",["יֵשׁ"]),W("אִיקְס",["אִיקְס"]),W("אָדֹם!",["אָ","דֹם"])]},
+  {reveal:3, words:[ORI,W("וְצָ׳ארְלִי",["וְ","צָ׳ארְ","לִי"]),W("יָצְאוּ",["יָצְ","אוּ"]),W("לַמִּדְבָּר.",["לַ","מִּדְ","בָּר"])],
+     me:{reveal:3, words:[W("צָ׳ארְלִי",["צָ׳ארְ","לִי"]),W("וַאֲנִי",["וַ","אֲ","נִי"]),W("יָצָאנוּ",["יָ","צָא","נוּ"]),W("לַמִּדְבָּר.",["לַ","מִּדְ","בָּר"])]}},
+  {reveal:1, words:[W("בַּמִּדְבָּר",["בַּ","מִּדְ","בָּר"]),W("חַם",["חַם"]),W("מְאֹד!",["מְ","אֹד"])]},
+  {reveal:2, words:[W("יֵשׁ",["יֵשׁ"]),W("פֹּה",["פֹּה"]),W("קַקְטוּס.",["קַקְ","טוּס"]),W("זְהִירוּת!",["זְ","הִי","רוּת"])]},
+  {reveal:3, words:[W("צָ׳ארְלִי",["צָ׳ארְ","לִי"]),W("מָצָא",["מָ","צָא"]),W("אֶת",["אֶת"]),W("הָאִיקְס!",["הָ","אִיקְס"])]},
+  {reveal:2, words:[ORI,W("חָפַר",["חָ","פַר"]),W("בַּחוֹל.",["בַּ","חוֹל"])],
+     me:{reveal:1, words:[W("חָפַרְתִּי",["חָ","פַרְ","תִּי"]),W("בַּחוֹל.",["בַּ","חוֹל"])]}},
+  {reveal:3, words:[W("בּוּם!",["בּוּם"]),W("יֵשׁ",["יֵשׁ"]),W("פֹּה",["פֹּה"]),W("אַרְגָּז!",["אַרְ","גָּז"])]},
+  {reveal:2, item:["gold",5], words:[W("בָּאַרְגָּז",["בָּ","אַרְ","גָּז"]),W("יֵשׁ",["יֵשׁ"]),W("זָהָב!",["זָ","הָב"])]},
+  {reveal:3, item:"compass", words:[ORI,W("מָצָא",["מָ","צָא"]),W("גַּם",["גַּם"]),W("מַצְפֵּן!",["מַצְ","פֵּן"])],
+     me:{reveal:2, words:[W("מָצָאתִי",["מָ","צָא","תִי"]),W("גַּם",["גַּם"]),W("מַצְפֵּן!",["מַצְ","פֵּן"])]}}
+];
+/* episode 14: the compass leads up a snowy mountain. Builds an igloo, meets a white fox (foxes like berries). */
+const PAGES_SNOW = [
+  {reveal:2, words:[ORI,W("עָלָה",["עָ","לָה"]),W("לָהָר.",["לָ","הָר"])],
+     me:{reveal:1, words:[W("עָלִיתִי",["עָ","לִי","תִי"]),W("לָהָר.",["לָ","הָר"])]}},
+  {reveal:3, words:[W("עַל",["עַל"]),W("הָהָר",["הָ","הָר"]),W("יֵשׁ",["יֵשׁ"]),W("שֶׁלֶג!",["שֶׁ","לֶג"])]},
+  {reveal:1, item:["snowball",4], words:[ORI,W("זָרַק",["זָ","רַק"]),W("כַּדּוּר",["כַּ","דּוּר"]),W("שֶׁלֶג!",["שֶׁ","לֶג"])],
+     me:{reveal:0, words:[W("זָרַקְתִּי",["זָ","רַקְ","תִּי"]),W("כַּדּוּר",["כַּ","דּוּר"]),W("שֶׁלֶג!",["שֶׁ","לֶג"])]}},
+  {reveal:2, words:[ORI,W("בָּנָה",["בָּ","נָה"]),W("אִיגְלוּ.",["אִיגְ","לוּ"])],
+     me:{reveal:1, words:[W("בָּנִיתִי",["בָּ","נִי","תִי"]),W("אִיגְלוּ.",["אִיגְ","לוּ"])]}},
+  {reveal:1, words:[W("בָּאִיגְלוּ",["בָּ","אִיגְ","לוּ"]),W("חַם",["חַם"]),W("וְנָעִים.",["וְ","נָ","עִים"])]},
+  {reveal:2, words:[W("פִּתְאוֹם",["פִּתְ","אוֹם"]),W("בָּא",["בָּא"]),W("שׁוּעָל",["שׁוּ","עָל"]),W("לָבָן!",["לָ","בָן"])]},
+  {reveal:1, words:[W("הַשּׁוּעָל",["הַ","שּׁוּ","עָל"]),W("רָעֵב.",["רָ","עֵב"])]},
+  {reveal:3, words:[ORI,W("נָתַן",["נָ","תַן"]),W("לוֹ",["לוֹ"]),W("תּוּת.",["תּוּת"])],
+     me:{reveal:2, words:[W("נָתַתִּי",["נָ","תַ","תִּי"]),W("לוֹ",["לוֹ"]),W("תּוּת.",["תּוּת"])]}},
+  {reveal:2, item:"fox", words:[W("הַשּׁוּעָל",["הַ","שּׁוּ","עָל"]),W("חָבֵר",["חָ","בֵר"]),W("שֶׁל",["שֶׁל"]),ORI],
+     me:{reveal:1, words:[W("הַשּׁוּעָל",["הַ","שּׁוּ","עָל"]),W("חָבֵר",["חָ","בֵר"]),W("שֶׁלִּי!",["שֶׁ","לִּי"])]}},
+  {reveal:3, item:["ice",3], words:[ORI,W("לָקַח",["לָ","קַח"]),W("קֶרַח",["קֶ","רַח"]),W("כָּחֹל!",["כָּ","חֹל"])],
+     me:{reveal:2, words:[W("לָקַחְתִּי",["לָ","קַחְ","תִּי"]),W("קֶרַח",["קֶ","רַח"]),W("כָּחֹל!",["כָּ","חֹל"])]}}
+];
+/* episode 15: a horse. He falls off and does not give up (לֹא וִתֵּר), carrots make the horse a friend. Lots of ס (teacher: ס/צ gap). */
+const PAGES_HORSE = [
+  {reveal:2, words:[ORI,W("רָאָה",["רָ","אָה"]),W("סוּס.",["סוּס"])],
+     me:{reveal:1, words:[W("רָאִיתִי",["רָ","אִי","תִי"]),W("סוּס.",["סוּס"])]}},
+  {reveal:1, words:[W("הַסּוּס",["הַ","סּוּס"]),W("רָץ",["רָץ"]),W("מַהֵר!",["מַ","הֵר"])]},
+  {reveal:3, words:[ORI,W("עָלָה",["עָ","לָה"]),W("עַל",["עַל"]),W("הַסּוּס.",["הַ","סּוּס"])],
+     me:{reveal:2, words:[W("עָלִיתִי",["עָ","לִי","תִי"]),W("עַל",["עַל"]),W("הַסּוּס.",["הַ","סּוּס"])]}},
+  {reveal:2, words:[W("אוֹי!",["אוֹי"]),ORI,W("נָפַל!",["נָ","פַל"])],
+     me:{reveal:1, words:[W("אוֹי!",["אוֹי"]),W("נָפַלְתִּי!",["נָ","פַלְ","תִּי"])]}},
+  {reveal:2, words:[ORI,W("לֹא",["לֹא"]),W("וִתֵּר!",["וִ","תֵּר"])],
+     me:{reveal:1, words:[W("לֹא",["לֹא"]),W("וִתַּרְתִּי!",["וִ","תַּרְ","תִּי"])]}},
+  {reveal:3, item:["carrot",3], words:[ORI,W("נָתַן",["נָ","תַן"]),W("לַסּוּס",["לַ","סּוּס"]),W("גֶּזֶר.",["גֶּ","זֶר"])],
+     me:{reveal:2, words:[W("נָתַתִּי",["נָ","תַ","תִּי"]),W("לַסּוּס",["לַ","סּוּס"]),W("גֶּזֶר.",["גֶּ","זֶר"])]}},
+  {reveal:1, words:[W("הַסּוּס",["הַ","סּוּס"]),W("אָהַב",["אָ","הַב"]),W("אֶת",["אֶת"]),W("הַגֶּזֶר!",["הַ","גֶּ","זֶר"])]},
+  {reveal:3, words:[ORI,W("עָלָה",["עָ","לָה"]),W("עוֹד",["עוֹד"]),W("פַּעַם.",["פַּ","עַם"])],
+     me:{reveal:2, words:[W("עָלִיתִי",["עָ","לִי","תִי"]),W("עוֹד",["עוֹד"]),W("פַּעַם.",["פַּ","עַם"])]}},
+  {reveal:3, words:[W("הַפַּעַם",["הַ","פַּ","עַם"]),ORI,W("לֹא",["לֹא"]),W("נָפַל!",["נָ","פַל"])],
+     me:{reveal:2, words:[W("הַפַּעַם",["הַ","פַּ","עַם"]),W("לֹא",["לֹא"]),W("נָפַלְתִּי!",["נָ","פַלְ","תִּי"])]}},
+  {reveal:2, item:"horse", words:[ORI,W("וְהַסּוּס",["וְ","הַ","סּוּס"]),W("דּוֹהֲרִים!",["דּוֹ","הֲ","רִים"])],
+     me:{reveal:2, words:[W("הַסּוּס",["הַ","סּוּס"]),W("וַאֲנִי",["וַ","אֲ","נִי"]),W("דּוֹהֲרִים!",["דּוֹ","הֲ","רִים"])]}}
+];
 /* collectible items: one slot each in the room; a page that gives an item says item:"id" or item:["id",count].
    future:true = waits for a later episode (shown as a silhouette, so there is something to look forward to). */
 const ITEMS = [
@@ -844,6 +908,7 @@ const ITEMS = [
   {id:"diamond", name:"דַּיְמוֹנְד"}, {id:"dpick", name:"דַּיְמוֹנְד פִּיקְאַקְס"}, {id:"flint", name:"מַצִּית"}, {id:"dog", name:"צָ׳ארְלִי הַכֶּלֶב"},
   {id:"obsidian", name:"אוֹבְּסִידִיאַן"},
   {id:"firerod", name:"בְּלֵיז רוֹד"}, {id:"flower", name:"פֶּרַח"}, {id:"honey", name:"דְּבַשׁ"}, {id:"turtle", name:"צָב"}, {id:"tmap", name:"מַפַּת אוֹצָר"},
+  {id:"gold", name:"זָהָב"}, {id:"compass", name:"מַצְפֵּן"}, {id:"snowball", name:"כַּדּוּר שֶׁלֶג"}, {id:"fox", name:"שׁוּעָל"}, {id:"ice", name:"קֶרַח"}, {id:"carrot", name:"גֶּזֶר"}, {id:"horse", name:"סוּס"},
   {id:"eye", name:"עַיִן", future:true}, {id:"egg", name:"בֵּיצַת דְּרָקוֹן", future:true}
 ];
 const ITEM = Object.fromEntries(ITEMS.map(i=>[i.id,i]));
@@ -860,7 +925,10 @@ const STORIES = [
   {id:"portal", title:"פֶּרֶק 9: הַפּוֹרְטָל", short:"הַפּוֹרְטָל", art:"art/s9/", day:[1], cover:8, pages:PAGES_PORTAL},
   {id:"fire", title:"פֶּרֶק 10: עוֹלַם הָאֵשׁ", short:"עוֹלַם הָאֵשׁ", art:"art/s10/", day:[], cover:7, pages:PAGES_FIRE},
   {id:"bees", title:"פֶּרֶק 11: הַדְּבוֹרִים", short:"הַדְּבוֹרִים", art:"art/s11/", day:[1,2,3,4,5,6], cover:5, pages:PAGES_BEES},
-  {id:"turtles", title:"פֶּרֶק 12: הַצָּבִים", short:"הַצָּבִים", art:"art/s12/", day:[], cover:5, pages:PAGES_TURTLES}
+  {id:"turtles", title:"פֶּרֶק 12: הַצָּבִים", short:"הַצָּבִים", art:"art/s12/", day:[], cover:5, pages:PAGES_TURTLES},
+  {id:"desert", title:"פֶּרֶק 13: הַמִּדְבָּר", short:"הַמִּדְבָּר", art:"art/s13/", day:[], cover:9, pages:PAGES_DESERT},
+  {id:"snow", title:"פֶּרֶק 14: הַשֶּׁלֶג", short:"הַשֶּׁלֶג", art:"art/s14/", day:[], cover:4, pages:PAGES_SNOW},
+  {id:"horse", title:"פֶּרֶק 15: הַסּוּס", short:"הַסּוּס", art:"art/s15/", day:[], cover:8, pages:PAGES_HORSE}
 ];
 /* Ori's name in the story (Eran, 2026-11-18): pages written with the name may carry `me` (first person, no name).
    Parent panel → "השם של אורי בסיפור" switches them; the default is with the name. */
@@ -1605,7 +1673,8 @@ function openP(){ $("veil").hidden=false; paintRec(); paintSaved(); paintSeg(); 
 function closeP(){ $("veil").hidden=true; attachPreview(); if(S && !$("app").hidden){ if(S.phase==="pageEnd") pageEnd(); else paint(); } }
 document.querySelectorAll("[data-set]").forEach(g=>g.addEventListener("click",e=>{ const b=e.target.closest("button[data-v]"); if(!b) return; const k=g.dataset.set; settings[k]=b.dataset.v; if(k==="quiet"){ quietOverride=null; log("quiet_mode",{on:isQuiet(), source:"panel"}); }
   if(k==="name"){ applyNameMode(settings.name!=="off"); if(live()){ log("name_mode",{on:settings.name!=="off"}); gotoPage(S.page); } }
-  saveSettings(); paintSeg(); if(k==="unlock" || k==="name") paintHome(); }));
+  saveSettings(); paintSeg(); paintColorBtn(); if(k==="unlock" || k==="name") paintHome(); }));
+paintColorBtn();
 $("gear").onclick=openP; $("recBadge").onclick=openP; $("closeP").onclick=closeP;
 $("veil").onclick=e=>{ if(e.target===$("veil")) closeP(); };
 $("scale").oninput=e=>{ settings.scale=+e.target.value; saveSettings(); };
@@ -1618,6 +1687,8 @@ $("restart").onclick=()=>{ $("veil").hidden=true; if(S){ $("end").hidden=true; $
 $("dlJson").onclick=()=>downloadLog("json"); $("dlCsv").onclick=()=>downloadLog("csv");
 $("cpLog").onclick=()=>{ const ev=S?S.events:allEvents(); navigator.clipboard.writeText(JSON.stringify(ev)).then(()=>{$("logInfo").textContent="היומן הועתק.";},()=>{$("logInfo").textContent="ההעתקה נכשלה.";}); };
 $("fsBtn").onclick=toggleFs;
+function paintColorBtn(){ const on=settings.color==="tint"; const b=$("colorBtn"); b.classList.toggle("on",on); b.setAttribute("aria-pressed",String(on)); }
+$("colorBtn").onclick=()=>{ settings.color = settings.color==="tint" ? "nikud" : "tint"; log("color_mode",{color:settings.color, source:"button"}); saveSettings(); paintSeg(); paintColorBtn(); if(S.phase==="pageEnd") pageEnd(); else paint(); };
 $("quietBtn").onclick=()=>{ quietOverride = !isQuiet(); log("quiet_mode",{on:quietOverride, source:"moon"}); if(S.phase==="pageEnd") pageEnd(); else paint(); };
 $("markBtn").onclick=()=>{ log("parent_marker"); const b=$("markBtn"); b.style.color="var(--amber)"; setTimeout(()=>b.style.color="",500); };
 $("stageEl").addEventListener("click",e=>{ const q=e.target.closest("[data-cue]"); if(q) return tapCue(q); const c=e.target.closest("[data-open]"); if(!c) return; const L=c.dataset.open; c.outerHTML=`<div class="card${SOUNDS[L]?" has-snd":""}" data-cue="${L}">${cueInner(L, cueChoice(L))}</div>`; log("cue_opened",{letter:L}); log("hint_shown",{letter:L, why:"tap"}); });
