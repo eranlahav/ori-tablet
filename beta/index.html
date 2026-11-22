@@ -160,10 +160,10 @@ body.quiet .bar button,body.quiet .top .kb-v{background:var(--quiet-btn);box-sha
 body.quiet .bar button:active,body.quiet .top .kb-v:active{transform:none}
 body.quiet .bar .ic{background:none;box-shadow:none}
 body.quiet #bOk .ic{color:#6FCB86} body.quiet #bAgain .ic{color:var(--amber)} body.quiet #bWhole .ic{color:#7FAEF2}
-.colbtn .cb-a{font-family:var(--word);font-size:30px;font-weight:700;line-height:1;color:#fff}
-.colbtn.on .cb-a{color:#E8604E}
-.colbtn.on{box-shadow:inset 0 0 0 2px #E8604E}
 body.quiet #quietBtn{box-shadow:inset 0 0 0 2px var(--amber);color:var(--amber)}
+#colorBtn b{font-family:var(--word);font-size:34px;line-height:1;font-weight:700;color:currentColor}
+body.tint #colorBtn{box-shadow:inset 0 0 0 2px #E8604E}
+body.tint #colorBtn b{color:#E8604E}
 body.quiet .rec{background:none!important;box-shadow:none!important;padding:0 6px}
 body.quiet .rec span{display:none}
 body.quiet .rec.off{display:none}
@@ -544,7 +544,7 @@ html.ch-beta body::after{content:"בטא";position:fixed;top:6px;left:6px;z-inde
     <button class="kb kb-v rec off" id="recBadge" aria-label="מצב הקלטה, פתיחת פאנל הורה"><i></i><span id="recTxt">לא מקליט</span><span class="t" id="recTime"></span></button>
     <div class="prog"><div class="dots" id="dots"></div><b id="pageLbl"></b></div>
     <button class="kb kb-v ib" id="quietBtn" aria-label="מצב שקט"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
-    <button class="kb kb-v ib colbtn" id="colorBtn" aria-label="אותיות צבועות או שחורות"><span class="cb-a">אָ</span></button>
+    <button class="kb kb-v ib" id="colorBtn" aria-label="אותיות צבועות או שחורות"><b>אַ</b></button>
     <button class="kb kb-v ib" id="markBtn" aria-label="סימון רגע בהקלטה"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21V4"/><path d="M6 4h11l-2.5 4L17 12H6"/></svg></button>
     <button class="kb kb-v ib" id="fsBtn" aria-label="מסך מלא"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
   </div>
@@ -645,8 +645,8 @@ html.ch-beta body::after{content:"בטא";position:fixed;top:6px;left:6px;z-inde
           <label>גודל טקסט <input type="range" id="scale" min="0.75" max="1.25" step="0.05"></label>
           <div class="seg" data-set="theme"><button data-v="dark">לילה חם</button><button data-v="sepia">ספיה</button></div>
           <div style="font-size:19px;font-weight:700">צבע לפי צליל הניקוד</div>
-          <div class="seg" data-set="color"><button data-v="tint">אותיות צבועות</button><button data-v="nikud">אותיות שחורות, רק הניקוד צבוע</button><button data-v="off">בלי צבע</button></div>
-          <div class="hint">אורי יכול להחליף בעצמו בכל רגע עם כפתור ה־<b>אָ</b> בפס העליון של מסך הקריאה (צבועות ↔ שחורות).</div>
+          <div class="hint">אורי יכול להחליף בעצמו בכל רגע בכפתור <b style="font-family:var(--word)">אַ</b> שבסרגל העליון בזמן הקריאה. הבחירה נשמרת.</div>
+          <div class="seg" data-set="color"><button data-v="nikud">אותיות שחורות, רק הניקוד צבוע</button><button data-v="tint">אותיות צבועות</button><button data-v="off">בלי צבע</button></div>
           <div class="key"><span><i style="background:#E8604E"></i>אַ אָ</span><span><i style="background:#5B93F5"></i>אִ</span><span><i style="background:#4FB877"></i>אֵ אֶ</span><span><i style="background:#F0A04A"></i>אוֹ</span><span><i style="background:#B07AE6"></i>אוּ אֻ</span></div>
           <div style="font-size:19px;font-weight:700">פונט למילה</div>
           <div class="seg fontpick" data-set="font"><button data-v="alef" style="font-family:Alef">אַלֶף</button><button data-v="noto" style="font-family:'Noto Sans Hebrew'">נוֹטוֹ</button><button data-v="rubik" style="font-family:Rubik">רוּבִּיק</button><button data-v="frank" style="font-family:'Frank Ruhl Libre'">פְרַנְק</button></div>
@@ -1673,8 +1673,7 @@ function openP(){ $("veil").hidden=false; paintRec(); paintSaved(); paintSeg(); 
 function closeP(){ $("veil").hidden=true; attachPreview(); if(S && !$("app").hidden){ if(S.phase==="pageEnd") pageEnd(); else paint(); } }
 document.querySelectorAll("[data-set]").forEach(g=>g.addEventListener("click",e=>{ const b=e.target.closest("button[data-v]"); if(!b) return; const k=g.dataset.set; settings[k]=b.dataset.v; if(k==="quiet"){ quietOverride=null; log("quiet_mode",{on:isQuiet(), source:"panel"}); }
   if(k==="name"){ applyNameMode(settings.name!=="off"); if(live()){ log("name_mode",{on:settings.name!=="off"}); gotoPage(S.page); } }
-  saveSettings(); paintSeg(); paintColorBtn(); if(k==="unlock" || k==="name") paintHome(); }));
-paintColorBtn();
+  saveSettings(); paintSeg(); if(k==="unlock" || k==="name") paintHome(); }));
 $("gear").onclick=openP; $("recBadge").onclick=openP; $("closeP").onclick=closeP;
 $("veil").onclick=e=>{ if(e.target===$("veil")) closeP(); };
 $("scale").oninput=e=>{ settings.scale=+e.target.value; saveSettings(); };
@@ -1687,8 +1686,8 @@ $("restart").onclick=()=>{ $("veil").hidden=true; if(S){ $("end").hidden=true; $
 $("dlJson").onclick=()=>downloadLog("json"); $("dlCsv").onclick=()=>downloadLog("csv");
 $("cpLog").onclick=()=>{ const ev=S?S.events:allEvents(); navigator.clipboard.writeText(JSON.stringify(ev)).then(()=>{$("logInfo").textContent="היומן הועתק.";},()=>{$("logInfo").textContent="ההעתקה נכשלה.";}); };
 $("fsBtn").onclick=toggleFs;
-function paintColorBtn(){ const on=settings.color==="tint"; const b=$("colorBtn"); b.classList.toggle("on",on); b.setAttribute("aria-pressed",String(on)); }
-$("colorBtn").onclick=()=>{ settings.color = settings.color==="tint" ? "nikud" : "tint"; log("color_mode",{color:settings.color, source:"button"}); saveSettings(); paintSeg(); paintColorBtn(); if(S.phase==="pageEnd") pageEnd(); else paint(); };
+/* Ori asked (2026-11-22) to bring back coloured letters: one tap flips letters coloured (tint) / black with coloured nikud; saved */
+$("colorBtn").onclick=()=>{ settings.color = settings.color==="tint" ? "nikud" : "tint"; saveSettings(); log("color_mode",{color:settings.color, source:"topbar"}); if(S.phase==="pageEnd") pageEnd(); else paint(); };
 $("quietBtn").onclick=()=>{ quietOverride = !isQuiet(); log("quiet_mode",{on:quietOverride, source:"moon"}); if(S.phase==="pageEnd") pageEnd(); else paint(); };
 $("markBtn").onclick=()=>{ log("parent_marker"); const b=$("markBtn"); b.style.color="var(--amber)"; setTimeout(()=>b.style.color="",500); };
 $("stageEl").addEventListener("click",e=>{ const q=e.target.closest("[data-cue]"); if(q) return tapCue(q); const c=e.target.closest("[data-open]"); if(!c) return; const L=c.dataset.open; c.outerHTML=`<div class="card${SOUNDS[L]?" has-snd":""}" data-cue="${L}">${cueInner(L, cueChoice(L))}</div>`; log("cue_opened",{letter:L}); log("hint_shown",{letter:L, why:"tap"}); });
