@@ -721,15 +721,15 @@ const PAGES_FIRE = [
   {reveal:3, words:[ORI,W("וְצָ׳ארְלִי",["וְ","צָ׳ארְ","לִי"]),W("בָּאוּ",["בָּ","אוּ"]),W("הַבַּיְתָה.",["הַ","בַּיְ","תָה"])],
      me:{reveal:3, words:[W("צָ׳ארְלִי",["צָ׳ארְ","לִי"]),W("וַאֲנִי",["וַ","אֲ","נִי"]),W("בָּאנוּ",["בָּא","נוּ"]),W("הַבַּיְתָה.",["הַ","בַּיְ","תָה"])]}}
 ];
-/* episode 11: a new house, flowers and bees. Something to learn: bees live in a nest, they sting, smoke calms them (a campfire under
-   the nest works in the game too). The soft ב in דְּבוֹרִים / דְּבַשׁ gets the v card. */
+/* episode 11: a new house, flowers and bees. Something to learn: bees live in a hive (כַּוֶּרֶת, not קֵן), they sting, smoke calms them (a campfire under
+   the hive works in the game too). The soft ב in דְּבוֹרִים / דְּבַשׁ gets the v card. */
 const PAGES_BEES = [
   {reveal:3, words:[ORI,W("בָּנָה",["בָּ","נָה"]),W("בַּיִת",["בַּ","יִת"]),W("גָּדוֹל!",["גָּ","דוֹל"])],
      me:{reveal:2, words:[W("בָּנִיתִי",["בָּ","נִי","תִי"]),W("בַּיִת",["בַּ","יִת"]),W("גָּדוֹל!",["גָּ","דוֹל"])]}},
   {reveal:3, item:["flower",3], words:[W("לְיַד",["לְ","יַד"]),W("הַבַּיִת",["הַ","בַּ","יִת"]),W("יֵשׁ",["יֵשׁ"]),W("פְּרָחִים.",["פְּ","רָ","חִים"])]},
   {reveal:3, words:[W("עַל",["עַל"]),W("הַפְּרָחִים",["הַ","פְּ","רָ","חִים"]),W("יֵשׁ",["יֵשׁ"]),W("דְּבוֹרִים!",["דְּ","בוֹ","רִים"])]},
-  {reveal:2, words:[W("דְּבוֹרִים",["דְּ","בוֹ","רִים"]),W("גָּרוֹת",["גָּ","רוֹת"]),W("בַּקֵּן.",["בַּ","קֵּן"])]},
-  {reveal:2, words:[W("בַּקֵּן",["בַּ","קֵּן"]),W("יֵשׁ",["יֵשׁ"]),W("דְּבַשׁ!",["דְּ","בַשׁ"])]},
+  {reveal:2, words:[W("דְּבוֹרִים",["דְּ","בוֹ","רִים"]),W("גָּרוֹת",["גָּ","רוֹת"]),W("בַּכַּוֶּרֶת.",["בַּ","כַּ","וֶּ","רֶת"])]},
+  {reveal:2, words:[W("בַּכַּוֶּרֶת",["בַּ","כַּ","וֶּ","רֶת"]),W("יֵשׁ",["יֵשׁ"]),W("דְּבַשׁ!",["דְּ","בַשׁ"])]},
   {reveal:2, words:[W("זְהִירוּת!",["זְ","הִי","רוּת"]),W("דְּבוֹרִים",["דְּ","בוֹ","רִים"]),W("עוֹקְצוֹת!",["עוֹקְ","צוֹת"])]},
   {reveal:2, words:[ORI,W("הִדְלִיק",["הִדְ","לִיק"]),W("מְדוּרָה.",["מְ","דוּ","רָה"])],
      me:{reveal:1, words:[W("הִדְלַקְתִּי",["הִדְ","לַקְ","תִּי"]),W("מְדוּרָה.",["מְ","דוּ","רָה"])]}},
@@ -1160,6 +1160,8 @@ STORIES.forEach(b=>{ if(!PROG.books[b.id]) PROG.books[b.id]={done:{}}; });
 if(!PROG.seen) PROG.seen = {};
 /* 2026-11-20 Ori renamed his dog דֶּנִיס → צָ׳ארְלִי: words he already read keep counting */
 [["דֶּנִיס","צָ׳ארְלִי"],["וְדֶנִיס","וְצָ׳ארְלִי"]].forEach(([o,n])=>{ if(PROG.seen[o]){ PROG.seen[n]=1; delete PROG.seen[o]; } });
+/* 2026-11-24 bees live in a כַּוֶּרֶת, not a קֵן (episode 11 text fixed): the read word keeps counting */
+if(PROG.seen["בַּקֵּן"]){ PROG.seen["בַּכַּוֶּרֶת"]=1; delete PROG.seen["בַּקֵּן"]; }
 delete PROG.done;
 const doneOf = b => PROG.books[STORIES[b].id].done;
 const bookDone = () => doneOf(BOOK);
