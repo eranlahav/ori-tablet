@@ -50,3 +50,14 @@ Eran: no need to reach the dragon now; let Ori grow, collect things and learn th
 | 12 | הַצָּבִים | beach, turtles lay eggs in the sand, babies run to the sea, Ori guards them, dives to an old ship, finds a treasure map (hook for 13) | צָב, מַפַּת אוֹצָר |
 
 Art: `beta/art/saga2.js` (node beta/art/saga2.js s10|s11|s12). Words to check with Ori: בְּלֵיז / בְּלֵיז רוֹד (spelled with one yod so the app does not cue a second letter).
+
+## Update 2026-11-24: episodes 16–18 (Eran's three asks)
+Same rules as 13–15 (name version default, `me` version kept, page 1 easy, at most one mid-word closed syllable per page, repeated patterns from earlier episodes, no soft כ/ך, no sin, no ף). Bees live in a כַּוֶּרֶת.
+
+| # | Episode | What happens | Items |
+|---|---|---|---|
+| 16 | הַתַּנּוּר | Ori is hungry, builds a furnace, catches a fish; recipe: wood below, food on top; fish and a potato (תַּפּוּד) come out cooked; Charlie gets fish; "זֶה הַמַּתְכּוֹן שֶׁל אוֹרִי" | תַּנּוּר, דָּג ×2, תַּפּוּד ×3, מַתְכּוֹן |
+| 17 | הַקְּרִיפֶּר | night; a skeleton shoots arrows, the shield stops them, Ori wins; a creeper (קְרִיפֶּר) turns white "הוּא מִתְפּוֹצֵץ!", Ori runs, בּוּם; morning, Charlie guarded Ori | חֵץ ×3, עֶצֶם ×2 |
+| 18 | גַּן הַחַיּוֹת | Ori builds a zoo with a pen for every animal he met: panda + bamboo, turtles + water, the white fox + berry, the horse + carrot, bees in a כַּוֶּרֶת, Charlie on guard, a sign | בַּמְבּוּק ×3, שֶׁלֶט |
+
+Art: `beta/art/saga4.js` (node beta/art/saga4.js s16|s17|s18), thumbs = tall SVG at width 440, clip y 150..430. Words to check with Ori: תַּפּוּד (vs תַּפּוּחַ אֲדָמָה), קְרִיפֶּר, סְקֶלֶטוֹן.

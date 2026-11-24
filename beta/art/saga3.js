@@ -193,5 +193,5 @@ const HMAP = { desert: hmDesert(), snow: hmSnow() };
 for (const [sid, st] of Object.entries(SAGA3)) for (const pg of Object.values(st.pages)) for (const o of [pg.base, pg.reveal]) {
   const which = o.extra && o.noIsland && o.sky !== 'night' ? (sid === 's13' ? 'desert' : sid === 's14' ? 'snow' : null) : null;
   if (which) { const ex = o.extra; o.extra = (S, G0, H0) => { const H = HMAP[which]; const G = (x, y) => H[Math.floor(x)][Math.floor(y)] + 1; ex(S, G, H); }; } }
-module.exports = { SAGA3 };
+module.exports = { SAGA3, fox, horse };
 if (require.main === module) { renderAll(SAGA3, process.argv.slice(2), __dirname); console.log('done'); }

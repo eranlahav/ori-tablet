@@ -272,5 +272,5 @@ for (const [sid, st] of Object.entries(STORIES)) { if (onlyStory && onlyStory !=
       } } } }
 }
 
-module.exports = { build, person, house, chest, portal, gem, boat, cloud, sky, LIGHT, variants, P, glow, islandH, renderAll, N, c, pick, GRASS, SAND, WATER, DIRT, STONE, LEAF, GOLD, DIAM, EMER, EMER2, DARK };
+module.exports = { build, person, house, chest, portal, panda, gem, boat, cloud, sky, LIGHT, variants, P, glow, islandH, renderAll, N, c, pick, GRASS, SAND, WATER, DIRT, STONE, LEAF, GOLD, DIAM, EMER, EMER2, DARK };
 if (require.main === module) { renderAll(STORIES, process.argv.slice(2)); console.log('done'); }
