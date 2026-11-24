@@ -132,10 +132,10 @@ const S17 = {
   5: { base: night({ hero: HA({}), skel: true }), reveal: night({ hero: HA({ x: 13.4, y: 11.4 }), bones: true, puff: [SK.x + 0.6, SK.y + 0.4] }) },
   6: { base: night({ hero: HA({}) }), reveal: night({ hero: HA({}), creeper: true, glow2: [CR.x + 0.8, CR.y + 1, 3, 3.2, '#B8F0A0'] }) },
   7: { base: night({ hero: HA({}), creeper: true }), reveal: night({ hero: HA({}), creeper: 'flash', glow2: [CR.x + 0.8, CR.y + 1, 3, 3.6, '#FFFFFF'] }) },
-  8: { base: night({ hero: HA({}), creeper: 'flash' }), reveal: night({ hero: HA({ x: HRUN.x, y: HRUN.y, arms: 'up' }), dog: { x: 7.4, y: 15.2, collar: true }, creeper: 'flash', glow2: [CR.x + 0.8, CR.y + 1, 3, 3.6, '#FFFFFF'] }) },
-  9: { base: night({ hero: HA(HRUN), dog: { x: 7.4, y: 15.2, collar: true }, creeper: 'flash' }),
-       reveal: night({ hero: HA({ x: HRUN.x, y: HRUN.y, arms: 'up' }), dog: { x: 7.4, y: 15.2, collar: true }, crater: true, bang: true, glow2: [CR.x + 0.8, CR.y + 0.8, 2, 7, '#FFE9B0'] }) },
-  10: { base: night({ hero: HA(HRUN), dog: { x: 7.4, y: 15.2, collar: true }, crater: true }),
+  8: { base: night({ hero: HA({}), creeper: 'flash' }), reveal: night({ hero: HA({ x: HRUN.x, y: HRUN.y, arms: 'up' }), dog: { x: 6.2, y: 14.0, collar: true }, creeper: 'flash', glow2: [CR.x + 0.8, CR.y + 1, 3, 3.6, '#FFFFFF'] }) },
+  9: { base: night({ hero: HA(HRUN), dog: { x: 6.2, y: 14.0, collar: true }, creeper: 'flash' }),
+       reveal: night({ hero: HA({ x: HRUN.x, y: HRUN.y, arms: 'up' }), dog: { x: 6.2, y: 14.0, collar: true }, crater: true, bang: true, glow2: [CR.x + 0.8, CR.y + 0.8, 2, 7, '#FFE9B0'] }) },
+  10: { base: night({ hero: HA(HRUN), dog: { x: 6.2, y: 14.0, collar: true }, crater: true }),
         reveal: night({ sky: 'morning', hero: HA({ x: HRUN.x, y: HRUN.y, arms: 'up' }), dog: { x: 10.4, y: 14.6, collar: true, wag: true, happy: true }, crater: true, top: iconBubble([HRUN.x, HRUN.y, 6.6], 'heart') }) },
 };
 
