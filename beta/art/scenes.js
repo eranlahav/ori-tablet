@@ -76,7 +76,7 @@ function chest(S, G, { x, y, open }) { const z = G(x, y); const W = '#A06A2E', D
     [[0.2, 0.2, GOLD], [0.8, 0.5, GOLD], [1.3, 0.3, '#5FD3E0'], [0.5, 0.8, '#E8732C'], [1.2, 0.9, GOLD]].forEach(([u, v, col], i) => S.box(x + u, y + v, z + 1.1, 0.45, 0.45, 0.35 + (i % 2) * 0.15, col, { nojit: true, sort: x + y + 1.62 + i * 0.001 }));
   } }
 function person(S, G, p) { const { x: ox, y: oy, kind } = p; const z0 = (p.z != null ? p.z : G(ox, oy)); const u = p.scale || 0.44; const k = ox + oy + 1.2; let n = 0;
-  const B = (x, y, z, w, d, h, col, o) => S.box(ox + x * u, oy + y * u, z0 + z * u, w * u, d * u, h * u, col, Object.assign({ sort: k + (n++) * 0.001, nojit: true, fl: 0.9, fr: 0.78 }, o || {}));
+  const B = (x, y, z, w, d, h, col, o) => S.box(ox + x * u, oy + y * u, z0 + z * u, w * u, d * u, h * u, col, Object.assign({ grp: ox + ',' + oy, sort: k + (n++) * 0.001, nojit: true, fl: 0.9, fr: 0.78 }, o || {}));
   const Z = kind === 'zombie';
   const SKIN = Z ? '#7FB35A' : '#EDBE94', TOP = Z ? '#6A4C9C' : '#E8732C', TOP2 = Z ? '#57407F' : '#F6A45A', PANTS = Z ? '#5B4A3A' : '#3D5A8C', SHOE = Z ? '#3A3040' : '#F4EAD6', HAIR = Z ? '#4F7F3A' : '#33263A', EYE = Z ? '#E84A3A' : '#2A2233';
   const arms = p.arms || 'down';
