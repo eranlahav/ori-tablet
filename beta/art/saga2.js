@@ -9,7 +9,7 @@ const { hero, outdoor2, fireWorld, mobber2, iconBubble, poof, hmSaga, LAVA, CAVE
 /* ---------- episode 10: the fire world ---------- */
 // a floating fire monster (original design): glowing block head, rods turning round it, smoke under it
 function blaze(S, p) { const { x: ox, y: oy } = p; const z0 = p.z != null ? p.z : 2.0; const u = 0.62; const k = ox + oy + 1.4; let n = 0;
-  const B = (x, y, z, w, d, h, col, o) => S.box(ox + x * u, oy + y * u, z0 + z * u, w * u, d * u, h * u, col, Object.assign({ sort: k + (n++) * 0.001, nojit: true, fl: 1.05, fr: 0.92 }, o || {}));
+  const B = (x, y, z, w, d, h, col, o) => S.box(ox + x * u, oy + y * u, z0 + z * u, w * u, d * u, h * u, col, Object.assign({ grp: ox + ',' + oy, sort: k + (n++) * 0.001, nojit: true, fl: 1.05, fr: 0.92 }, o || {}));
   [[-2.4, -1.6, 0], [2.8, -1.4, 1.2], [-1.8, 3.6, 0.6], [3.2, 3.4, 1.8]].forEach(([x, y, z]) => B(x, y, z, 1.0, 1.0, 3.6, '#F2A541', { top: '#FFE58A' }));
   B(0.2, 0.4, 1.0, 1.6, 1.6, 2.4, '#5A4A40', { op: 0.75 });
   B(-0.6, -0.4, 3.6, 3.4, 3.4, 3.2, '#F2C94C', { top: '#FFE58A', decR: [[0.6 * u, 1.4 * u, 0.8 * u, 0.7 * u, '#3A1E10'], [2.0 * u, 1.4 * u, 0.8 * u, 0.7 * u, '#3A1E10'], [0.9 * u, 0.4 * u, 1.6 * u, 0.4 * u, '#C9781E']] });
@@ -82,7 +82,7 @@ const S11 = {
 /* ---------- episode 12: the turtles: a wide beach at the front of the island, then under the sea ---------- */
 function hmBeach() { const H = hmSaga(); for (let x = 0; x < N; x++) for (let y = 0; y < N; y++) if (H[x][y] >= 1 && x + y >= 24 && !(x <= 7)) H[x][y] = 1; H.mt = true; return H; }
 function turtle(S, G, p) { const { x: ox, y: oy } = p; const u = p.baby ? 0.3 : 0.55; const z0 = p.z != null ? p.z : G(ox, oy); const k = ox + oy + 1.2; let n = 0;
-  const B = (x, y, z, w, d, h, col, o) => S.box(ox + x * u, oy + y * u, z0 + z * u, w * u, d * u, h * u, col, Object.assign({ sort: k + (n++) * 0.001, nojit: true, fl: 0.9, fr: 0.78 }, o || {}));
+  const B = (x, y, z, w, d, h, col, o) => S.box(ox + x * u, oy + y * u, z0 + z * u, w * u, d * u, h * u, col, Object.assign({ grp: ox + ',' + oy, sort: k + (n++) * 0.001, nojit: true, fl: 0.9, fr: 0.78 }, o || {}));
   [[0, 0], [0, 3.4], [3.6, 0], [3.6, 3.4]].forEach(([x, y]) => B(x - 0.4, y - 0.4, 0, 1.2, 1.2, 0.6, '#8FD07A'));
   B(-0.4, -0.2, 0.4, 5.2, 4.8, 1.8, '#3E8F4A', { top: '#4FA058', decR: [[1.2 * u, 0.4 * u, 1.4 * u, 0.6 * u, '#6FBF6A']] }); B(0.6, 0.8, 2.2, 3.2, 2.8, 1.0, '#357A3E', { top: '#5DAA5E', decR: [[0.8 * u, 0.2 * u, 1.0 * u, 0.4 * u, '#6FBF6A']] });
   B(4.6, 1.0, 1.0, 2.0, 2.2, 1.8, '#8FD07A', { decR: [[0.3 * u, 1.0 * u, 0.4 * u, 0.4 * u, '#241C2E'], [1.3 * u, 1.0 * u, 0.4 * u, 0.4 * u, '#241C2E']] }); }
