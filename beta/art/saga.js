@@ -20,7 +20,7 @@ const VPATH = [[8, 10], [9, 10], [10, 10], [11, 10], [12, 10], [13, 10], [14, 10
 
 /* ---------- characters that only the saga needs ---------- */
 function mobber(S, G, p) { const { x: ox, y: oy, kind } = p; const z0 = (p.z != null ? p.z : G(ox, oy)); const u = p.scale || 0.44; const k = ox + oy + 1.2; let n = 0;
-  const B = (x, y, z, w, d, h, col, o) => S.box(ox + x * u, oy + y * u, z0 + z * u, w * u, d * u, h * u, col, Object.assign({ sort: k + (n++) * 0.001, nojit: true, fl: 0.9, fr: 0.78 }, o || {}));
+  const B = (x, y, z, w, d, h, col, o) => S.box(ox + x * u, oy + y * u, z0 + z * u, w * u, d * u, h * u, col, Object.assign({ grp: ox + ',' + oy, sort: k + (n++) * 0.001, nojit: true, fl: 0.9, fr: 0.78 }, o || {}));
   if (kind === 'skeleton') { const BN = '#E9E4D6', BN2 = '#C9C2AE', EYE = '#1E1822';
     B(0.6, 0.6, 0, 1.0, 1.0, 4.2, BN2); B(0.6, 3.0, 0, 1.0, 1.0, 4.2, BN2); // legs
     B(0.4, 0.2, 4.2, 1.4, 4.2, 4.6, BN, { decR: [[0, 0.9 * u, 1.4 * u, 0.5 * u, BN2], [0, 2.1 * u, 1.4 * u, 0.5 * u, BN2], [0, 3.3 * u, 1.4 * u, 0.5 * u, BN2]] }); // ribs
@@ -48,7 +48,7 @@ function mobber(S, G, p) { const { x: ox, y: oy, kind } = p; const z0 = (p.z != 
 function hero(S, G, p) { const q = Object.assign({ kind: 'ori' }, p); const hold = p.hold; if (hold) q.arms = 'up';
   person(S, G, q);
   const ox = p.x, oy = p.y, z0 = (p.z != null ? p.z : G(ox, oy)), u = p.scale || 0.44, k = ox + oy + 1.2 + 0.05; let n = 0;
-  const B = (x, y, z, w, d, h, col, o) => S.box(ox + x * u, oy + y * u, z0 + z * u, w * u, d * u, h * u, col, Object.assign({ sort: k + (n++) * 0.001, nojit: true, fl: 0.9, fr: 0.78 }, o || {}));
+  const B = (x, y, z, w, d, h, col, o) => S.box(ox + x * u, oy + y * u, z0 + z * u, w * u, d * u, h * u, col, Object.assign({ grp: ox + ',' + oy, sort: k + (n++) * 0.001, nojit: true, fl: 0.9, fr: 0.78 }, o || {}));
   if (hold === 'torch') { B(0.9, 5.1, 13.4, 0.8, 0.8, 3.0, '#7A4E2B'); B(0.7, 4.9, 16.4, 1.2, 1.2, 1.4, '#F2A541', { top: '#FFF2C4', fl: 1.1, fr: 1 }); }
   if (hold === 'pick') { B(0.9, 5.0, 12.4, 0.8, 0.8, 4.4, '#7A4E2B'); B(0.5, 3.0, 16.4, 1.6, 4.8, 1.1, '#9FB3C8', { top: '#C8D6E4' }); }
   if (hold === 'sword') { B(0.5, 4.5, 13.5, 1.6, 2.2, 0.5, '#F2C94C'); B(0.9, 5.2, 14.0, 0.8, 0.8, 6.6, '#C9D2DC', { top: '#E3E9F0', fl: 1.05, fr: 0.92 }); }
@@ -186,7 +186,7 @@ const RIVER = { y0: 9, y1: 10 }, BRIDGE = { x0: 13, x1: 14 };
 const inRiver = (x, y) => y >= RIVER.y0 && y <= RIVER.y1;
 const OBS_CELLS = (x, y) => inRiver(x, y) && x >= 4 && x <= 7;
 function mobber2(S, G, p) { const { x: ox, y: oy, kind } = p; const z0 = (p.z != null ? p.z : G(ox, oy)); const u = p.scale || (kind === 'dog' ? 0.5 : 0.44); const k = ox + oy + 1.2; let n = 0;
-  const B = (x, y, z, w, d, h, col, o) => S.box(ox + x * u, oy + y * u, z0 + z * u, w * u, d * u, h * u, col, Object.assign({ sort: k + (n++) * 0.001, nojit: true, fl: 0.9, fr: 0.78 }, o || {}));
+  const B = (x, y, z, w, d, h, col, o) => S.box(ox + x * u, oy + y * u, z0 + z * u, w * u, d * u, h * u, col, Object.assign({ grp: ox + ',' + oy, sort: k + (n++) * 0.001, nojit: true, fl: 0.9, fr: 0.78 }, o || {}));
   if (kind === 'dog') { const W = '#F1ECE4', W2 = '#D9D2C6', NOSE = '#3A3040', EYE = '#1E1822';
     const sit = p.pose === 'sit';
     if (sit) { B(0, 0.2, 0, 2.0, 2.0, 2.2, W2); B(3.4, 0.4, 0, 1.0, 0.8, 2.6, W2); B(3.4, 1.6, 0, 1.0, 0.8, 2.6, W2); B(0, 0, 1.6, 4.2, 2.4, 3.0, W, { top: '#FFFFFF' }); }

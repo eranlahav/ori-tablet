@@ -57,7 +57,7 @@ function build(o, Hm) {
       if (topv) S.vox(x, y, z, pick(GRASS, hash(x, y, 4)), { side: DIRT, lip: true, shadow: leafAt.has(x + ',' + y) || leafAt.has((x - 1) + ',' + (y - 1)) });
       else S.vox(x, y, z, DIRT); } }
   // dug-out tunnel floor: a dark slot in front of the cliff
-  for (const t of tunnels) for (let j = 0; j < (t.w || 2); j++) S.box(MT.x1 + 1, t.y + j, G(MT.x1 + 1, t.y + j) - 0.02, 0.35, 1, 0.04, '#3A2E2A', { nojit: true });
+  for (const t of tunnels) for (let j = 0; j < (t.w || 2); j++) S.box(MT.x1 + 1, t.y + j, G(MT.x1 + 1, t.y + j), 0.35, 1, 0.04, '#3A2E2A', { nojit: true });
   for (const [tx, ty, th, , jungle] of (o.trees || [])) for (let i = 1; i <= th + 1; i++) S.vox(tx, ty, H(tx, ty) + i, jungle ? (i % 2 ? '#6B5A2E' : '#7A6634') : (i % 2 ? '#7A4E2B' : '#845630'));
   for (const [x, y, z, jungle] of leaves) { if (S.has(x, y, z)) continue; S.vox(x, y, z, pick(jungle ? JLEAF : LEAF, hash(x, y, z + 11))); }
   for (const [bx, by, bh] of (o.bamboo || [])) for (let i = 0; i < bh; i++) S.box(bx + 0.35, by + 0.35, G(bx, by) + i, 0.3, 0.3, 1, i % 2 ? '#7FB83E' : '#6EA634', { nojit: true, sort: bx + by + 1 });
@@ -113,7 +113,7 @@ function portal(S, G, { x, y }) { const z = G(x, y); const OB = '#2A1E3C', OB2 =
     decR: [[0.3, 0.4, 0.35, 0.35, '#D9A6FA'], [1.2, 1.5, 0.3, 0.3, '#D9A6FA'], [0.6, 2.3, 0.25, 0.25, '#E8C8FF']] }); }
 function gem(S, x, y, z, k) { const s = 0.5 * k; S.box(x, y, z, s, s, s * 1.3, EMER, { nojit: true, top: EMER2, sort: x + y + 1.4, fl: 0.85, fr: 0.7, decR: [[s * 0.2, s * 0.6, s * 0.25, s * 0.35, EMER2]] }); }
 function panda(S, G, p) { const { x: ox, y: oy, pose } = p; const z0 = G(ox, oy); const u = 0.42; const k = ox + oy + 1.3; let n = 0;
-  const B = (x, y, z, w, d, h, col, o) => S.box(ox + x * u, oy + y * u, z0 + z * u, w * u, d * u, h * u, col, Object.assign({ sort: k + (n++) * 0.001, nojit: true, fl: 0.9, fr: 0.78 }, o || {}));
+  const B = (x, y, z, w, d, h, col, o) => S.box(ox + x * u, oy + y * u, z0 + z * u, w * u, d * u, h * u, col, Object.assign({ grp: ox + ',' + oy, sort: k + (n++) * 0.001, nojit: true, fl: 0.9, fr: 0.78 }, o || {}));
   const W = '#F4F1EA', K = '#262230';
   const face = [[0.6 * u, 1.4 * u, 1.3 * u, 1.2 * u, K], [2.9 * u, 1.4 * u, 1.3 * u, 1.2 * u, K], [2.0 * u, 0.5 * u, 0.9 * u, 0.6 * u, K]];
   const eyesOpen = [[0.95 * u, 1.9 * u, 0.4 * u, 0.4 * u, '#FFFFFF'], [3.25 * u, 1.9 * u, 0.4 * u, 0.4 * u, '#FFFFFF']];
@@ -131,7 +131,7 @@ function panda(S, G, p) { const { x: ox, y: oy, pose } = p; const z0 = G(ox, oy)
     B(0.6, 0, 10, 1.3, 1.3, 1.1, K); B(0.6, 3.4, 10, 1.3, 1.3, 1.1, K);
   } }
 function person(S, G, p) { const { x: ox, y: oy, kind } = p; const z0 = (p.z != null ? p.z : G(ox, oy)); const u = p.scale || 0.44; const k = ox + oy + 1.2; let n = 0;
-  const B = (x, y, z, w, d, h, col, o) => S.box(ox + x * u, oy + y * u, z0 + z * u, w * u, d * u, h * u, col, Object.assign({ sort: k + (n++) * 0.001, nojit: true, fl: 0.9, fr: 0.78 }, o || {}));
+  const B = (x, y, z, w, d, h, col, o) => S.box(ox + x * u, oy + y * u, z0 + z * u, w * u, d * u, h * u, col, Object.assign({ grp: ox + ',' + oy, sort: k + (n++) * 0.001, nojit: true, fl: 0.9, fr: 0.78 }, o || {}));
   const V = kind === 'villager';
   const SKIN = V ? '#D9A57A' : '#EDBE94', TOP = V ? '#7A5230' : '#E8732C', TOP2 = V ? '#4F8F3A' : '#F6A45A', PANTS = V ? '#6B4426' : '#3D5A8C', SHOE = V ? '#4A3020' : '#F4EAD6', HAIR = V ? '#5A3A1C' : '#33263A', EYE = '#2A2233';
   const arms = p.arms || 'down';

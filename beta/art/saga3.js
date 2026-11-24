@@ -17,7 +17,7 @@ function heroX(S, G, p) { const q = Object.assign({}, p); const extra = p.hold3;
   if (p.z == null && p.ride) q.z = G(p.x, p.y) + 2.0;
   hero(S, G, q); if (!extra) return;
   const ox = p.x, oy = p.y, z0 = (q.z != null ? q.z : G(ox, oy)), u = p.scale || 0.44, k = ox + oy + 1.2 + 0.06; let n = 0;
-  const B = (x, y, z, w, d, h, col, o) => S.box(ox + x * u, oy + y * u, z0 + z * u, w * u, d * u, h * u, col, Object.assign({ sort: k + (n++) * 0.001, nojit: true, fl: 0.9, fr: 0.78 }, o || {}));
+  const B = (x, y, z, w, d, h, col, o) => S.box(ox + x * u, oy + y * u, z0 + z * u, w * u, d * u, h * u, col, Object.assign({ grp: ox + ',' + oy, sort: k + (n++) * 0.001, nojit: true, fl: 0.9, fr: 0.78 }, o || {}));
   if (extra === 'shovel') { B(0.9, 5.0, 11.0, 0.8, 0.8, 6.0, '#7A4E2B'); B(0.5, 4.6, 7.6, 1.6, 1.6, 3.4, '#9FB3C8', { top: '#C8D6E4' }); }
   if (extra === 'compass') { B(0.7, 4.6, 13.0, 1.8, 1.8, 0.7, '#8792A0', { top: '#E9E2CF', decT: [[0.35 * u, 0.75 * u, 1.1 * u, 0.3 * u, '#D8323C']] }); }
   if (extra === 'gold') { B(0.6, 4.4, 13.0, 2.2, 1.4, 0.9, GOLD, { top: '#FFE58A' }); B(0.9, 4.6, 13.9, 1.6, 1.0, 0.8, GOLD, { top: '#FFE58A' }); }
@@ -106,7 +106,7 @@ function igloo(S, G, lit) { const { x, y } = IG; const z = G(x, y);
   S.box(x - 0.6, y + 1.9, z, 1.2, 0.6, 1.4, '#EBEFF6', { nojit: true, top: '#FFFFFF', sort: x + y + 2.2, decL: [[0.25, 0, 0.7, 1.0, lit ? '#FFB54A' : '#2A3040']] }); }
 function snowflakes(S) { for (let i = 0; i < 26; i++) { const x = 2 + hash(i, 1, 41) * 17, y = 2 + hash(i, 2, 42) * 17, z = 4 + hash(i, 3, 43) * 9; S.box(x, y, z, 0.22, 0.22, 0.22, '#FFFFFF', { nojit: true, op: 0.9, sort: 95 + i * 0.01 }); } }
 function fox(S, G, p) { const { x: ox, y: oy } = p; const z0 = G(ox, oy); const u = 0.42; const k = ox + oy + 1.2; let n = 0;
-  const B = (x, y, z, w, d, h, col, o) => S.box(ox + x * u, oy + y * u, z0 + z * u, w * u, d * u, h * u, col, Object.assign({ sort: k + (n++) * 0.001, nojit: true, fl: 0.9, fr: 0.78 }, o || {}));
+  const B = (x, y, z, w, d, h, col, o) => S.box(ox + x * u, oy + y * u, z0 + z * u, w * u, d * u, h * u, col, Object.assign({ grp: ox + ',' + oy, sort: k + (n++) * 0.001, nojit: true, fl: 0.9, fr: 0.78 }, o || {}));
   const W = '#F4F2EE', W2 = '#D9D6D0', EYE = '#1E1822';
   [[0.3, 0.2], [0.3, 1.6], [3.4, 0.2], [3.4, 1.6]].forEach(([x, y]) => B(x, y, 0, 0.7, 0.7, 1.6, '#3A3040'));
   B(0, 0, 1.6, 4.4, 2.4, 1.8, W, { top: '#FFFFFF' });
@@ -147,7 +147,7 @@ const S14 = {
 
 /* ---------- episode 15: the horse (on the saga island, near the house) ---------- */
 function horse(S, G, p) { const { x: ox, y: oy } = p; const z0 = (p.z != null ? p.z : G(ox, oy)) + (p.jump ? 1.0 : 0); const u = 0.56; const k = ox + oy + 1.1; let n = 0;
-  const B = (x, y, z, w, d, h, col, o) => S.box(ox + x * u, oy + y * u, z0 + z * u, w * u, d * u, h * u, col, Object.assign({ sort: k + (n++) * 0.001, nojit: true, fl: 0.9, fr: 0.78 }, o || {}));
+  const B = (x, y, z, w, d, h, col, o) => S.box(ox + x * u, oy + y * u, z0 + z * u, w * u, d * u, h * u, col, Object.assign({ grp: ox + ',' + oy, sort: k + (n++) * 0.001, nojit: true, fl: 0.9, fr: 0.78 }, o || {}));
   const C = '#9A6438', C2 = '#80512C', M = '#3A2A20', EYE = '#1E1822';
   const legs = p.jump ? [[0.2, 0.2, 1.2], [0.2, 2.2, 1.2], [5.0, 0.2, 2.0], [5.0, 2.2, 2.0]] : [[0.2, 0.2, 0], [0.2, 2.2, 0], [5.0, 0.2, 0], [5.0, 2.2, 0]];
   legs.forEach(([x, y, z]) => { B(x, y, z, 1.0, 1.0, 3.6 - z, C2); B(x, y, z, 1.0, 1.0, 0.6, '#E9E2CF'); });
