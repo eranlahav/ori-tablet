@@ -127,5 +127,5 @@ const S12 = {
 };
 
 const SAGA2 = { s10: { pages: S10, hm: hmSaga }, s11: { pages: S11, hm: hmSaga }, s12: { pages: S12, hm: hmBeach } };
-module.exports = { SAGA2 };
+module.exports = { SAGA2, turtle, bee, campfire };
 if (require.main === module) { renderAll(SAGA2, process.argv.slice(2), __dirname); console.log('done'); }

@@ -897,6 +897,66 @@ const PAGES_HORSE = [
   {reveal:2, item:"horse", words:[ORI,W("וְהַסּוּס",["וְ","הַ","סּוּס"]),W("דּוֹהֲרִים!",["דּוֹ","הֲ","רִים"])],
      me:{reveal:2, words:[W("הַסּוּס",["הַ","סּוּס"]),W("וַאֲנִי",["וַ","אֲ","נִי"]),W("דּוֹהֲרִים!",["דּוֹ","הֲ","רִים"])]}}
 ];
+/* episodes 16-18 (2026-11-24, Eran asked for: furnace recipes, fighting skeletons and creepers, a zoo for the animals he found).
+   Kept at the level of 13-15: short pages, at most one mid-word closed syllable per page (מַתְכּוֹן, לְמַעְלָה, מִתְפּוֹצֵץ, בַּמְבּוּק),
+   lots of repeated patterns from earlier episodes (נָתַן ... לַ..., פִּתְאוֹם בָּא, יָרָה, הֵרִים אֶת הַמָּגֵן, לַ... יֵשׁ ...). No soft כ/ך, no sin, no ף.
+   Everyday Minecraft words: תַּנּוּר, תַּפּוּד, סְקֶלֶטוֹן, קְרִיפֶּר. Bees live in a כַּוֶּרֶת. */
+/* episode 16: the furnace. Something to learn: a furnace needs fuel below (wood) and the food on top; what goes in raw comes out cooked. */
+const PAGES_COOK = [
+  {reveal:1, words:[ORI,W("רָעֵב.",["רָ","עֵב"])],
+     me:{reveal:1, words:[W("אֲנִי",["אֲ","נִי"]),W("רָעֵב.",["רָ","עֵב"])]}},
+  {reveal:2, item:"furnace", words:[ORI,W("בָּנָה",["בָּ","נָה"]),W("תַּנּוּר.",["תַּ","נּוּר"])],
+     me:{reveal:1, words:[W("בָּנִיתִי",["בָּ","נִי","תִי"]),W("תַּנּוּר.",["תַּ","נּוּר"])]}},
+  {reveal:2, words:[W("בַּתַּנּוּר",["בַּ","תַּ","נּוּר"]),W("יֵשׁ",["יֵשׁ"]),W("אֵשׁ!",["אֵשׁ"])]},
+  {reveal:2, words:[ORI,W("תָּפַס",["תָּ","פַס"]),W("דָּג.",["דָּג"])],
+     me:{reveal:1, words:[W("תָּפַסְתִּי",["תָּ","פַסְ","תִּי"]),W("דָּג.",["דָּג"])]}},
+  {reveal:3, words:[W("לְמַטָּה",["לְ","מַ","טָּה"]),W("עֵץ,",["עֵץ"]),W("לְמַעְלָה",["לְ","מַעְ","לָה"]),W("דָּג.",["דָּג"])]},
+  {reveal:3, words:[ORI,W("נָתַן",["נָ","תַן"]),W("לַתַּנּוּר",["לַ","תַּ","נּוּר"]),W("דָּג.",["דָּג"])],
+     me:{reveal:2, words:[W("נָתַתִּי",["נָ","תַ","תִּי"]),W("לַתַּנּוּר",["לַ","תַּ","נּוּר"]),W("דָּג.",["דָּג"])]}},
+  {reveal:1, item:["fish",2], words:[W("יָצָא",["יָ","צָא"]),W("דָּג",["דָּג"]),W("חַם",["חַם"]),W("וְטָעִים!",["וְ","טָ","עִים"])]},
+  {reveal:3, words:[ORI,W("נָתַן",["נָ","תַן"]),W("דָּג",["דָּג"]),W("לְצָ׳ארְלִי.",["לְ","צָ׳ארְ","לִי"])],
+     me:{reveal:2, words:[W("נָתַתִּי",["נָ","תַ","תִּי"]),W("דָּג",["דָּג"]),W("לְצָ׳ארְלִי.",["לְ","צָ׳ארְ","לִי"])]}},
+  {reveal:2, item:["potato",3], words:[W("מֵהַתַּנּוּר",["מֵ","הַ","תַּ","נּוּר"]),W("יָצָא",["יָ","צָא"]),W("תַּפּוּד!",["תַּ","פּוּד"])]},
+  {reveal:3, item:"recipe", words:[W("זֶה",["זֶה"]),W("הַמַּתְכּוֹן",["הַ","מַּתְ","כּוֹן"]),W("שֶׁל",["שֶׁל"]),ORI],
+     me:{reveal:2, words:[W("זֶה",["זֶה"]),W("הַמַּתְכּוֹן",["הַ","מַּתְ","כּוֹן"]),W("שֶׁלִּי!",["שֶׁ","לִּי"])]}}
+];
+/* episode 17: the night. Something to learn: a shield stops arrows; a creeper goes white before it explodes, so you run away.
+   A lot of צ (teacher: ס/צ gap) in מִתְפּוֹצֵץ / הִתְפּוֹצֵץ, and ס in סְקֶלֶטוֹן. */
+const PAGES_MOBS = [
+  {reveal:2, words:[ORI,W("יָצָא",["יָ","צָא"]),W("בַּלַּיְלָה.",["בַּ","לַּיְ","לָה"])],
+     me:{reveal:1, words:[W("יָצָאתִי",["יָ","צָא","תִי"]),W("בַּלַּיְלָה.",["בַּ","לַּיְ","לָה"])]}},
+  {reveal:2, words:[W("יֵשׁ",["יֵשׁ"]),W("פֹּה",["פֹּה"]),W("סְקֶלֶטוֹן!",["סְ","קֶ","לֶ","טוֹן"])]},
+  {reveal:2, words:[W("הַסְּקֶלֶטוֹן",["הַ","סְּ","קֶ","לֶ","טוֹן"]),W("יָרָה",["יָ","רָה"]),W("חֵץ!",["חֵץ"])]},
+  {reveal:3, item:["arrow",3], words:[ORI,W("הֵרִים",["הֵ","רִים"]),W("אֶת",["אֶת"]),W("הַמָּגֵן.",["הַ","מָּ","גֵן"])],
+     me:{reveal:2, words:[W("הֵרַמְתִּי",["הֵ","רַמְ","תִּי"]),W("אֶת",["אֶת"]),W("הַמָּגֵן.",["הַ","מָּ","גֵן"])]}},
+  {reveal:3, item:["bone",2], words:[ORI,W("הִכָּה",["הִ","כָּה"]),W("אֶת",["אֶת"]),W("הַסְּקֶלֶטוֹן!",["הַ","סְּ","קֶ","לֶ","טוֹן"])],
+     me:{reveal:2, words:[W("הִכֵּיתִי",["הִ","כֵּי","תִי"]),W("אֶת",["אֶת"]),W("הַסְּקֶלֶטוֹן!",["הַ","סְּ","קֶ","לֶ","טוֹן"])]}},
+  {reveal:2, words:[W("פִּתְאוֹם",["פִּתְ","אוֹם"]),W("בָּא",["בָּא"]),W("קְרִיפֶּר!",["קְ","רִי","פֶּר"])]},
+  {reveal:2, words:[W("זְהִירוּת!",["זְ","הִי","רוּת"]),W("הוּא",["הוּא"]),W("מִתְפּוֹצֵץ!",["מִתְ","פּוֹ","צֵץ"])]},
+  {reveal:2, words:[ORI,W("רָץ",["רָץ"]),W("מַהֵר!",["מַ","הֵר"])],
+     me:{reveal:1, words:[W("רַצְתִּי",["רַצְ","תִּי"]),W("מַהֵר!",["מַ","הֵר"])]}},
+  {reveal:0, words:[W("בּוּם!",["בּוּם"]),W("הַקְּרִיפֶּר",["הַ","קְּ","רִי","פֶּר"]),W("הִתְפּוֹצֵץ!",["הִתְ","פּוֹ","צֵץ"])]},
+  {reveal:3, words:[W("צָ׳ארְלִי",["צָ׳ארְ","לִי"]),W("שָׁמַר",["שָׁ","מַר"]),W("עַל",["עַל"]),ORI],
+     me:{reveal:2, words:[W("צָ׳ארְלִי",["צָ׳ארְ","לִי"]),W("שָׁמַר",["שָׁ","מַר"]),W("עָלַי.",["עָ","לַי"])]}}
+];
+/* episode 18: the zoo, with a pen for every animal from earlier episodes: the panda (2), the turtles (12), the white fox (14),
+   the horse (15), the bees (11, in a כַּוֶּרֶת) and Charlie on guard. Something to learn: each animal needs its own food and home.
+   One pattern repeats on purpose: לַ... יֵשׁ ... */
+const PAGES_ZOO = [
+  {reveal:3, words:[ORI,W("בָּנָה",["בָּ","נָה"]),W("גַּן",["גַּן"]),W("חַיּוֹת!",["חַ","יּוֹת"])],
+     me:{reveal:2, words:[W("בָּנִיתִי",["בָּ","נִי","תִי"]),W("גַּן",["גַּן"]),W("חַיּוֹת!",["חַ","יּוֹת"])]}},
+  {reveal:2, words:[W("הַפַּנְדָּה",["הַ","פַּנְ","דָּה"]),W("בָּא",["בָּא"]),W("לַגַּן!",["לַ","גַּן"])]},
+  {reveal:2, item:["bamboo",3], words:[W("לַפַּנְדָּה",["לַ","פַּנְ","דָּה"]),W("יֵשׁ",["יֵשׁ"]),W("בַּמְבּוּק.",["בַּמְ","בּוּק"])]},
+  {reveal:2, words:[W("לַצָּבִים",["לַ","צָּ","בִים"]),W("יֵשׁ",["יֵשׁ"]),W("מַיִם.",["מַ","יִם"])]},
+  {reveal:2, words:[W("לַשּׁוּעָל",["לַ","שּׁוּ","עָל"]),W("יֵשׁ",["יֵשׁ"]),W("תּוּת.",["תּוּת"])]},
+  {reveal:2, words:[W("לַסּוּס",["לַ","סּוּס"]),W("יֵשׁ",["יֵשׁ"]),W("גֶּזֶר.",["גֶּ","זֶר"])]},
+  {reveal:2, words:[W("הַדְּבוֹרִים",["הַ","דְּ","בוֹ","רִים"]),W("גָּרוֹת",["גָּ","רוֹת"]),W("בַּכַּוֶּרֶת.",["בַּ","כַּ","וֶּ","רֶת"])]},
+  {reveal:3, words:[W("צָ׳ארְלִי",["צָ׳ארְ","לִי"]),W("שׁוֹמֵר",["שׁוֹ","מֵר"]),W("עַל",["עַל"]),W("הַגַּן.",["הַ","גַּן"])]},
+  {reveal:2, item:"sign", words:[ORI,W("תָּלָה",["תָּ","לָה"]),W("שֶׁלֶט.",["שֶׁ","לֶט"])],
+     me:{reveal:1, words:[W("תָּלִיתִי",["תָּ","לִי","תִי"]),W("שֶׁלֶט.",["שֶׁ","לֶט"])]}},
+  {reveal:3, words:[W("גַּן",["גַּן"]),W("הַחַיּוֹת",["הַ","חַ","יּוֹת"]),W("שֶׁל",["שֶׁל"]),ORI],
+     me:{reveal:2, words:[W("גַּן",["גַּן"]),W("הַחַיּוֹת",["הַ","חַ","יּוֹת"]),W("שֶׁלִּי!",["שֶׁ","לִּי"])]}}
+];
 /* collectible items: one slot each in the room; a page that gives an item says item:"id" or item:["id",count].
    future:true = waits for a later episode (shown as a silhouette, so there is something to look forward to). */
 const ITEMS = [
@@ -909,6 +969,7 @@ const ITEMS = [
   {id:"obsidian", name:"אוֹבְּסִידִיאַן"},
   {id:"firerod", name:"בְּלֵיז רוֹד"}, {id:"flower", name:"פֶּרַח"}, {id:"honey", name:"דְּבַשׁ"}, {id:"turtle", name:"צָב"}, {id:"tmap", name:"מַפַּת אוֹצָר"},
   {id:"gold", name:"זָהָב"}, {id:"compass", name:"מַצְפֵּן"}, {id:"snowball", name:"כַּדּוּר שֶׁלֶג"}, {id:"fox", name:"שׁוּעָל"}, {id:"ice", name:"קֶרַח"}, {id:"carrot", name:"גֶּזֶר"}, {id:"horse", name:"סוּס"},
+  {id:"furnace", name:"תַּנּוּר"}, {id:"fish", name:"דָּג"}, {id:"potato", name:"תַּפּוּד"}, {id:"recipe", name:"מַתְכּוֹן"}, {id:"bamboo", name:"בַּמְבּוּק"}, {id:"sign", name:"שֶׁלֶט"},
   {id:"eye", name:"עַיִן", future:true}, {id:"egg", name:"בֵּיצַת דְּרָקוֹן", future:true}
 ];
 const ITEM = Object.fromEntries(ITEMS.map(i=>[i.id,i]));
@@ -928,7 +989,10 @@ const STORIES = [
   {id:"turtles", title:"פֶּרֶק 12: הַצָּבִים", short:"הַצָּבִים", art:"art/s12/", day:[], cover:5, pages:PAGES_TURTLES},
   {id:"desert", title:"פֶּרֶק 13: הַמִּדְבָּר", short:"הַמִּדְבָּר", art:"art/s13/", day:[], cover:9, pages:PAGES_DESERT},
   {id:"snow", title:"פֶּרֶק 14: הַשֶּׁלֶג", short:"הַשֶּׁלֶג", art:"art/s14/", day:[], cover:4, pages:PAGES_SNOW},
-  {id:"horse", title:"פֶּרֶק 15: הַסּוּס", short:"הַסּוּס", art:"art/s15/", day:[], cover:8, pages:PAGES_HORSE}
+  {id:"horse", title:"פֶּרֶק 15: הַסּוּס", short:"הַסּוּס", art:"art/s15/", day:[], cover:8, pages:PAGES_HORSE},
+  {id:"cook", title:"פֶּרֶק 16: הַתַּנּוּר", short:"הַתַּנּוּר", art:"art/s16/", day:[], cover:7, pages:PAGES_COOK},
+  {id:"mobs", title:"פֶּרֶק 17: הַקְּרִיפֶּר", short:"הַקְּרִיפֶּר", art:"art/s17/", day:[], cover:7, pages:PAGES_MOBS},
+  {id:"zoo", title:"פֶּרֶק 18: גַּן הַחַיּוֹת", short:"גַּן הַחַיּוֹת", art:"art/s18/", day:[], cover:10, pages:PAGES_ZOO}
 ];
 /* Ori's name in the story (Eran, 2026-11-18): pages written with the name may carry `me` (first person, no name).
    Parent panel → "השם של אורי בסיפור" switches them; the default is with the name. */
